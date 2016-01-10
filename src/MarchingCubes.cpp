@@ -21,9 +21,6 @@
 #include "ply.h"
 #include "LookUpTable.h"
 
-// step size of the arrays of vertices and triangles
-#define ALLOC_SIZE 65536
-
 //_____________________________________________________________________________
 // print cube for debug
 void MarchingCubes::print_cube() { printf( "\t%f %f %f %f %f %f %f %f\n", _cube[0], _cube[1], _cube[2], _cube[3], _cube[4], _cube[5], _cube[6], _cube[7]) ; }
@@ -38,8 +35,7 @@ MarchingCubes::MarchingCubes( const int size_x /*= -1*/, const int size_y /*= -1
   _originalMC(false),
   _size_x    (size_x),
   _size_y    (size_y),
-  _size_z    (size_z),
-  _ntrigs    (0)
+  _size_z    (size_z)
 {}
 //_____________________________________________________________________________
 
@@ -77,7 +73,7 @@ void MarchingCubes::run( real iso )
       if( _cube[p] > 0 ) _lut_entry += 1 << p ;
     }
 
-    process_cube( ) ;
+    process_cube() ;
   }
 
   printf("Marching Cubes ran in %lf secs.\n", (double)(clock() - time)/CLOCKS_PER_SEC) ;
@@ -109,11 +105,7 @@ void MarchingCubes::init_temps()
 void MarchingCubes::init_all ()
 //-----------------------------------------------------------------------------
 {
-  init_temps() ;
-
-  _ntrigs = 0 ;
-  //_vertices.resize(ALLOC_SIZE);
-	_triangles.resize(ALLOC_SIZE);
+  init_temps();
 }
 //_____________________________________________________________________________
 
@@ -123,7 +115,6 @@ void MarchingCubes::init_all ()
 void MarchingCubes::clean_all()
 //-----------------------------------------------------------------------------
 {
-  _ntrigs = 0 ;
   _size_x = _size_y = _size_z = -1 ;
 }
 //_____________________________________________________________________________
@@ -710,13 +701,10 @@ void MarchingCubes::process_cube( )
 
 //_____________________________________________________________________________
 // Adding triangles
-void MarchingCubes::add_triangle( const char* trig, char n, int v12 )
-//-----------------------------------------------------------------------------
-{
-  int    tv[3] ;
+void MarchingCubes::add_triangle( const char* trig, char n, int v12 ) {
+  int tv[3] ;
 
-  for( int t = 0 ; t < 3*n ; t++ )
-  {
+  for(int t = 0 ; t < 3*n; ++t) {
     switch( trig[t] )
     {
     case  0 : tv[ t % 3 ] = get_x_vert( _i , _j , _k ) ; break ;
@@ -737,21 +725,13 @@ void MarchingCubes::add_triangle( const char* trig, char n, int v12 )
 
     if( tv[t%3] == -1 )
     {
-      printf("Marching Cubes: invalid triangle %d\n", _ntrigs+1) ;
+      printf("Marching Cubes: invalid triangle %d\n", ntrigs() + 1) ;
       print_cube() ;
     }
 
     if( t%3 == 2 )
     {
-			if( _ntrigs >= _triangles.size() )
-      {
-				_triangles.resize(_triangles.size() * 2);
-      }
-
-      Triangle *T = _triangles.data() + _ntrigs++ ;
-      T->v1    = tv[0] ;
-      T->v2    = tv[1] ;
-      T->v3    = tv[2] ;
+			_triangles.push_back(Triangle{tv[0], tv[1], tv[2]});
     }
   }
 }

@@ -86,11 +86,11 @@ public :
   /** accesses the number of vertices of the generated mesh */
   inline const int nverts() const { return _vertices.size() ; }
   /** accesses the number of triangles of the generated mesh */
-  inline const int ntrigs() const { return _ntrigs ; }
+  inline const int ntrigs() const { return _triangles.size() ; }
   /** accesses a specific vertex of the generated mesh */
   inline const Vertex   * vert( const int i ) const { if( i < 0  || i >= nverts() ) return ( Vertex *)NULL ; return _vertices.data()  + i ; }
   /** accesses a specific triangle of the generated mesh */
-  inline const Triangle * trig( const int i ) const { if( i < 0  || i >= _ntrigs ) return (Triangle*)NULL ; return _triangles.data() + i ; }
+  inline const Triangle * trig( const int i ) const { if( i < 0  || i >= ntrigs() ) return (Triangle*)NULL ; return _triangles.data() + i ; }
 
   /** accesses the vertex buffer of the generated mesh */
   inline Vertex   *vertices () { return _vertices.data()  ; }
@@ -266,7 +266,6 @@ protected :
 	std::vector<int> _y_verts    ;  /**< pre-computed vertex indices on the lower longitudinal edge of each cube */
 	std::vector<int> _z_verts    ;  /**< pre-computed vertex indices on the lower vertical     edge of each cube */
 
-  int       _ntrigs     ;  /**< number of allocated triangles in the triangle buffer */
   std::vector<Vertex> _vertices   ;  /**< vertex   buffer */
 	std::vector<Triangle> _triangles  ;  /**< triangle buffer */
 
