@@ -45,7 +45,6 @@ MarchingCubes::MarchingCubes( const int size_x /*= -1*/, const int size_y /*= -1
   _ntrigs    (0),
   _Nverts    (0),
   _Ntrigs    (0),
-  _vertices  (( Vertex *)NULL),
   _triangles ((Triangle*)NULL)
 {}
 //_____________________________________________________________________________
@@ -129,7 +128,8 @@ void MarchingCubes::init_all ()
 
   _nverts = _ntrigs = 0 ;
   _Nverts = _Ntrigs = ALLOC_SIZE ;
-  _vertices  = new Vertex  [_Nverts] ;
+  //_vertices  = new Vertex  [_Nverts] ;
+	_vertices.resize(_Nverts);
   _triangles = new Triangle[_Ntrigs] ;
 }
 //_____________________________________________________________________________
@@ -140,9 +140,7 @@ void MarchingCubes::init_all ()
 void MarchingCubes::clean_all()
 //-----------------------------------------------------------------------------
 {
-  delete [] _vertices  ;
   delete [] _triangles ;
-  _vertices  = (Vertex   *)NULL ;
   _triangles = (Triangle *)NULL ;
   _nverts = _ntrigs = 0 ;
   _Nverts = _Ntrigs = 0 ;
@@ -839,12 +837,9 @@ void MarchingCubes::test_vertex_addition()
 {
   if( _nverts >= _Nverts )
   {
-    Vertex *temp = _vertices ;
-    _vertices = new Vertex[ _Nverts*2 ] ;
-    memcpy( _vertices, temp, _Nverts*sizeof(Vertex) ) ;
-    delete[] temp ;
     printf("%d allocated vertices\n", _Nverts) ;
     _Nverts *= 2 ;
+		_vertices.resize(_Nverts);
   }
 }
 
@@ -853,7 +848,7 @@ int MarchingCubes::add_x_vertex( )
 //-----------------------------------------------------------------------------
 {
   test_vertex_addition() ;
-  Vertex *vert = _vertices + _nverts++ ;
+  Vertex *vert = _vertices.data() + _nverts++ ;
 
   real u = ( _cube[0] ) / ( _cube[0] - _cube[1] ) ;
 
@@ -882,7 +877,7 @@ int MarchingCubes::add_y_vertex( )
 //-----------------------------------------------------------------------------
 {
   test_vertex_addition() ;
-  Vertex *vert = _vertices + _nverts++ ;
+  Vertex *vert = _vertices.data() + _nverts++ ;
 
   real u = ( _cube[0] ) / ( _cube[0] - _cube[3] ) ;
 
@@ -910,7 +905,7 @@ int MarchingCubes::add_z_vertex( )
 //-----------------------------------------------------------------------------
 {
   test_vertex_addition() ;
-  Vertex *vert = _vertices + _nverts++ ;
+  Vertex *vert = _vertices.data() + _nverts++ ;
 
   real u = ( _cube[0] ) / ( _cube[0] - _cube[4] ) ;
 
@@ -938,7 +933,7 @@ int MarchingCubes::add_c_vertex( )
 //-----------------------------------------------------------------------------
 {
   test_vertex_addition() ;
-  Vertex *vert = _vertices + _nverts++ ;
+  Vertex *vert = _vertices.data() + _nverts++ ;
 
   real u = 0 ;
   int   vid ;
