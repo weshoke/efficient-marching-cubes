@@ -136,7 +136,6 @@ bool run()
   //if( export_iso && strlen( out_filename->get_text() ) <= 0 ) export_iso = 0 ;
 
   // Init data
-  mc.clean_all() ;
   mc.set_resolution( size_x, size_y, size_z ) ;
   mc.init_all() ;
 

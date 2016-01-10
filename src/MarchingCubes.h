@@ -77,8 +77,6 @@ public :
    * \param size_z height of the grid
    */
   MarchingCubes ( const int size_x = -1, const int size_y = -1, const int size_z = -1 ) ;
-  /** Destructor */
-  ~MarchingCubes() ;
 
 //-----------------------------------------------------------------------------
 // Accessors
@@ -139,8 +137,6 @@ public :
   void init_temps () ;
   /** inits all structures (must set sizes before call) : the temporary structures and the mesh buffers */
   void init_all   () ;
-  /** clears all structures : the temporary structures and the mesh buffers */
-  void clean_all  () ;
 
 
 //-----------------------------------------------------------------------------
