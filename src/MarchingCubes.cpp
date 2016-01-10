@@ -10,15 +10,13 @@
 //________________________________________________
 
 
-#if !defined(WIN32) || defined(__CYGWIN__)
-#pragma implementation
-#endif // WIN32
-
 #include <math.h>
 #include <time.h>
 #include <memory.h>
 #include <stdlib.h>
 #include <float.h>
+#include <cmath>
+#include <limits>
 #include "MarchingCubes.h"
 #include "ply.h"
 #include "LookUpTable.h"
@@ -78,7 +76,7 @@ void MarchingCubes::run( real iso )
     for( int p = 0 ; p < 8 ; ++p )
     {
       _cube[p] = get_data( _i+((p^(p>>1))&1), _j+((p>>1)&1), _k+((p>>2)&1) ) - iso ;
-      if( fabs( _cube[p] ) < FLT_EPSILON ) _cube[p] = FLT_EPSILON ;
+			if( std::abs( _cube[p] ) < std::numeric_limits<float>::epsilon() ) _cube[p] = std::numeric_limits<float>::epsilon() ;
       if( _cube[p] > 0 ) _lut_entry += 1 << p ;
     }
 /*
@@ -170,10 +168,10 @@ void MarchingCubes::compute_intersection_points( real iso )
     if( _k < _size_z - 1 ) _cube[4] = get_data( _i , _j ,_k+1) - iso ;
     else                   _cube[4] = _cube[0] ;
 
-    if( fabs( _cube[0] ) < FLT_EPSILON ) _cube[0] = FLT_EPSILON ;
-    if( fabs( _cube[1] ) < FLT_EPSILON ) _cube[1] = FLT_EPSILON ;
-    if( fabs( _cube[3] ) < FLT_EPSILON ) _cube[3] = FLT_EPSILON ;
-    if( fabs( _cube[4] ) < FLT_EPSILON ) _cube[4] = FLT_EPSILON ;
+		if( std::abs( _cube[0] ) < std::numeric_limits<float>::epsilon() ) _cube[0] = std::numeric_limits<float>::epsilon() ;
+    if( std::abs( _cube[1] ) < std::numeric_limits<float>::epsilon() ) _cube[1] = std::numeric_limits<float>::epsilon() ;
+    if( std::abs( _cube[3] ) < std::numeric_limits<float>::epsilon() ) _cube[3] = std::numeric_limits<float>::epsilon() ;
+    if( std::abs( _cube[4] ) < std::numeric_limits<float>::epsilon() ) _cube[4] = std::numeric_limits<float>::epsilon() ;
 
     if( _cube[0] < 0 )
     {
@@ -214,7 +212,7 @@ bool MarchingCubes::test_face( schar face )
   default : printf( "Invalid face code %d\n", face ) ;  print_cube() ;  A = B = C = D = 0 ;
   };
 
-  if( fabs( A*C - B*D ) < FLT_EPSILON )
+  if( fabs( A*C - B*D ) < std::numeric_limits<float>::epsilon() )
     return face >= 0 ;
   return face * A * ( A*C - B*D ) >= 0  ;  // face and A invert signs
 }
@@ -366,12 +364,12 @@ bool MarchingCubes::test_interior( schar s )
   case  2 : return s>0 ;
   case  3 : return s>0 ;
   case  4 : return s>0 ;
-  case  5 : if( At * Ct - Bt * Dt <  FLT_EPSILON ) return s>0 ; break ;
+  case  5 : if( At * Ct - Bt * Dt <  std::numeric_limits<float>::epsilon() ) return s>0 ; break ;
   case  6 : return s>0 ;
   case  7 : return s<0 ;
   case  8 : return s>0 ;
   case  9 : return s>0 ;
-  case 10 : if( At * Ct - Bt * Dt >= FLT_EPSILON ) return s>0 ; break ;
+  case 10 : if( At * Ct - Bt * Dt >= std::numeric_limits<float>::epsilon() ) return s>0 ; break ;
   case 11 : return s<0 ;
   case 12 : return s>0 ;
   case 13 : return s<0 ;
@@ -829,7 +827,6 @@ void MarchingCubes::test_vertex_addition()
 {
   if( _nverts >= _Nverts )
   {
-    printf("%d allocated vertices\n", _Nverts) ;
     _Nverts *= 2 ;
 		_vertices.resize(_Nverts);
   }
