@@ -41,8 +41,7 @@ MarchingCubes::MarchingCubes( const int size_x /*= -1*/, const int size_y /*= -1
   _size_z    (size_z),
   _nverts    (0),
   _ntrigs    (0),
-  _Nverts    (0),
-  _Ntrigs    (0)
+  _Nverts    (0)
 {}
 //_____________________________________________________________________________
 
@@ -115,9 +114,9 @@ void MarchingCubes::init_all ()
   init_temps() ;
 
   _nverts = _ntrigs = 0 ;
-  _Nverts = _Ntrigs = ALLOC_SIZE ;
+  _Nverts = ALLOC_SIZE ;
   _vertices.resize(_Nverts);
-	_triangles.resize(_Ntrigs);
+	_triangles.resize(ALLOC_SIZE);
 }
 //_____________________________________________________________________________
 
@@ -128,7 +127,7 @@ void MarchingCubes::clean_all()
 //-----------------------------------------------------------------------------
 {
   _nverts = _ntrigs = 0 ;
-  _Nverts = _Ntrigs = 0 ;
+  _Nverts = 0 ;
 
   _size_x = _size_y = _size_z = -1 ;
 }
@@ -749,10 +748,9 @@ void MarchingCubes::add_triangle( const char* trig, char n, int v12 )
 
     if( t%3 == 2 )
     {
-      if( _ntrigs >= _Ntrigs )
+			if( _ntrigs >= _triangles.size() )
       {
-        _Ntrigs *= 2 ;
-				_triangles.resize(_Ntrigs);
+				_triangles.resize(_triangles.size() * 2);
       }
 
       Triangle *T = _triangles.data() + _ntrigs++ ;

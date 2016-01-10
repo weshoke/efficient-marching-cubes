@@ -276,7 +276,7 @@ protected :
   int       _nverts     ;  /**< number of allocated vertices  in the vertex   buffer */
   int       _ntrigs     ;  /**< number of allocated triangles in the triangle buffer */
   int       _Nverts     ;  /**< size of the vertex   buffer */
-  int       _Ntrigs     ;  /**< size of the triangle buffer */
+  //int       _Ntrigs     ;  /**< size of the triangle buffer */
 	std::vector<Vertex> _vertices   ;  /**< vertex   buffer */
 	std::vector<Triangle> _triangles  ;  /**< triangle buffer */
 
