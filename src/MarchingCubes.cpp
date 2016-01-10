@@ -40,8 +40,7 @@ MarchingCubes::MarchingCubes( const int size_x /*= -1*/, const int size_y /*= -1
   _size_y    (size_y),
   _size_z    (size_z),
   _nverts    (0),
-  _ntrigs    (0),
-  _Nverts    (0)
+  _ntrigs    (0)
 {}
 //_____________________________________________________________________________
 
@@ -114,8 +113,7 @@ void MarchingCubes::init_all ()
   init_temps() ;
 
   _nverts = _ntrigs = 0 ;
-  _Nverts = ALLOC_SIZE ;
-  _vertices.resize(_Nverts);
+  _vertices.resize(ALLOC_SIZE);
 	_triangles.resize(ALLOC_SIZE);
 }
 //_____________________________________________________________________________
@@ -127,8 +125,6 @@ void MarchingCubes::clean_all()
 //-----------------------------------------------------------------------------
 {
   _nverts = _ntrigs = 0 ;
-  _Nverts = 0 ;
-
   _size_x = _size_y = _size_z = -1 ;
 }
 //_____________________________________________________________________________
@@ -818,10 +814,9 @@ real MarchingCubes::get_z_grad( const int i, const int j, const int k ) const
 
 void MarchingCubes::test_vertex_addition()
 {
-  if( _nverts >= _Nverts )
+  if( _nverts >= _vertices.size() )
   {
-    _Nverts *= 2 ;
-		_vertices.resize(_Nverts);
+		_vertices.resize(_vertices.size() * 2);
   }
 }
 
