@@ -32,7 +32,7 @@ MarchingCubes mc ;
 float isoval = 0.0f ;
 
 // original/topological MC switch
-int   originalMC = 1 ;
+int   originalMC = 0 ;
 
 // grid extension
 float xmin=-1.0f, xmax=1.0f,  ymin=-1.0f, ymax=1.0f,  zmin=-1.0f, zmax=1.0f ;

@@ -79,16 +79,7 @@ void MarchingCubes::run( real iso )
 			if( std::abs( _cube[p] ) < std::numeric_limits<float>::epsilon() ) _cube[p] = std::numeric_limits<float>::epsilon() ;
       if( _cube[p] > 0 ) _lut_entry += 1 << p ;
     }
-/*
-    if( ( _cube[0] = get_data( _i , _j , _k ) ) > 0 ) _lut_entry +=   1 ;
-    if( ( _cube[1] = get_data(_i+1, _j , _k ) ) > 0 ) _lut_entry +=   2 ;
-    if( ( _cube[2] = get_data(_i+1,_j+1, _k ) ) > 0 ) _lut_entry +=   4 ;
-    if( ( _cube[3] = get_data( _i ,_j+1, _k ) ) > 0 ) _lut_entry +=   8 ;
-    if( ( _cube[4] = get_data( _i , _j ,_k+1) ) > 0 ) _lut_entry +=  16 ;
-    if( ( _cube[5] = get_data(_i+1, _j ,_k+1) ) > 0 ) _lut_entry +=  32 ;
-    if( ( _cube[6] = get_data(_i+1,_j+1,_k+1) ) > 0 ) _lut_entry +=  64 ;
-    if( ( _cube[7] = get_data( _i ,_j+1,_k+1) ) > 0 ) _lut_entry += 128 ;
-*/
+
     process_cube( ) ;
   }
 
@@ -199,22 +190,28 @@ void MarchingCubes::compute_intersection_points( real iso )
 bool MarchingCubes::test_face( schar face )
 //-----------------------------------------------------------------------------
 {
-  real A,B,C,D ;
+  static int corner_lookup[6][4] = {
+		{0, 4, 5, 1},
+		{1, 5, 6, 2},
+		{2, 6, 7, 3},
+		{3, 7, 4, 0},
+		{0, 3, 2, 1},
+		{4, 7, 6, 5}
+	};
+	
+	auto idx = std::abs(face) - 1;
+	auto corners = corner_lookup[idx];
+	auto A = _cube[corners[0]];
+	auto B = _cube[corners[1]];
+	auto C = _cube[corners[2]];
+	auto D = _cube[corners[3]];
 
-  switch( face )
-  {
-  case -1 : case 1 :  A = _cube[0] ;  B = _cube[4] ;  C = _cube[5] ;  D = _cube[1] ;  break ;
-  case -2 : case 2 :  A = _cube[1] ;  B = _cube[5] ;  C = _cube[6] ;  D = _cube[2] ;  break ;
-  case -3 : case 3 :  A = _cube[2] ;  B = _cube[6] ;  C = _cube[7] ;  D = _cube[3] ;  break ;
-  case -4 : case 4 :  A = _cube[3] ;  B = _cube[7] ;  C = _cube[4] ;  D = _cube[0] ;  break ;
-  case -5 : case 5 :  A = _cube[0] ;  B = _cube[3] ;  C = _cube[2] ;  D = _cube[1] ;  break ;
-  case -6 : case 6 :  A = _cube[4] ;  B = _cube[7] ;  C = _cube[6] ;  D = _cube[5] ;  break ;
-  default : printf( "Invalid face code %d\n", face ) ;  print_cube() ;  A = B = C = D = 0 ;
-  };
-
-  if( fabs( A*C - B*D ) < std::numeric_limits<float>::epsilon() )
+	if(std::abs(A * C - B * D) < std::numeric_limits<float>::epsilon()) {
     return face >= 0 ;
-  return face * A * ( A*C - B*D ) >= 0  ;  // face and A invert signs
+	}
+	
+	// face and A invert signs
+  return face * A * ( A * C - B * D ) >= 0.f ;
 }
 //_____________________________________________________________________________
 
