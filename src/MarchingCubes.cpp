@@ -690,38 +690,36 @@ void MarchingCubes::process_cube( )
 //_____________________________________________________________________________
 // Adding triangles
 void MarchingCubes::add_triangle( const char* trig, char n, int v12 ) {
-  int tv[3] ;
-
-  for(int t = 0 ; t < 3*n; ++t) {
-    switch( trig[t] )
-    {
-    case  0 : tv[ t % 3 ] = get_x_vert( _i , _j , _k ) ; break ;
-    case  1 : tv[ t % 3 ] = get_y_vert(_i+1, _j , _k ) ; break ;
-    case  2 : tv[ t % 3 ] = get_x_vert( _i ,_j+1, _k ) ; break ;
-    case  3 : tv[ t % 3 ] = get_y_vert( _i , _j , _k ) ; break ;
-    case  4 : tv[ t % 3 ] = get_x_vert( _i , _j ,_k+1) ; break ;
-    case  5 : tv[ t % 3 ] = get_y_vert(_i+1, _j ,_k+1) ; break ;
-    case  6 : tv[ t % 3 ] = get_x_vert( _i ,_j+1,_k+1) ; break ;
-    case  7 : tv[ t % 3 ] = get_y_vert( _i , _j ,_k+1) ; break ;
-    case  8 : tv[ t % 3 ] = get_z_vert( _i , _j , _k ) ; break ;
-    case  9 : tv[ t % 3 ] = get_z_vert(_i+1, _j , _k ) ; break ;
-    case 10 : tv[ t % 3 ] = get_z_vert(_i+1,_j+1, _k ) ; break ;
-    case 11 : tv[ t % 3 ] = get_z_vert( _i ,_j+1, _k ) ; break ;
-    case 12 : tv[ t % 3 ] = v12 ; break ;
-    default : break ;
-    }
-
-    if( tv[t%3] == -1 )
-    {
-			std::cout << "Marching Cubes: invalid triangle " << (ntrigs() + 1) << "\n";
-			print_cube() ;
-    }
-
-    if( t%3 == 2 )
-    {
-			_triangles.push_back(Triangle{tv[0], tv[1], tv[2]});
-    }
-  }
+	int i = 0;
+	while(i < 3 * n) {
+		int tv[3];
+		
+		for(int t=0; t < 3; ++t, ++i) {
+			switch(trig[i]) {
+				case  0 : tv[t] = get_x_vert( _i , _j , _k ) ; break ;
+				case  1 : tv[t] = get_y_vert(_i+1, _j , _k ) ; break ;
+				case  2 : tv[t] = get_x_vert( _i ,_j+1, _k ) ; break ;
+				case  3 : tv[t] = get_y_vert( _i , _j , _k ) ; break ;
+				case  4 : tv[t] = get_x_vert( _i , _j ,_k+1) ; break ;
+				case  5 : tv[t] = get_y_vert(_i+1, _j ,_k+1) ; break ;
+				case  6 : tv[t] = get_x_vert( _i ,_j+1,_k+1) ; break ;
+				case  7 : tv[t] = get_y_vert( _i , _j ,_k+1) ; break ;
+				case  8 : tv[t] = get_z_vert( _i , _j , _k ) ; break ;
+				case  9 : tv[t] = get_z_vert(_i+1, _j , _k ) ; break ;
+				case 10 : tv[t] = get_z_vert(_i+1,_j+1, _k ) ; break ;
+				case 11 : tv[t] = get_z_vert( _i ,_j+1, _k ) ; break ;
+				case 12 : tv[t] = v12 ; break ;
+				default : break ;
+			}
+			
+			if( tv[t] == -1 ) {
+				std::cout << "Marching Cubes: invalid triangle " << (ntrigs() + 1) << "\n";
+				print_cube() ;
+			}
+		}
+		
+		_triangles.push_back(Triangle{tv[0], tv[1], tv[2]});
+	}
 }
 //_____________________________________________________________________________
 
@@ -796,17 +794,11 @@ int MarchingCubes::add_vertex(const glm::ivec3 &grid_coord, const glm::ivec3 &di
 int MarchingCubes::add_c_vertex()
 //-----------------------------------------------------------------------------
 {
-  _vertices.push_back(Vertex{0.f, 0.f, 0.f, 0.f, 0.f, 0.f});
-	Vertex& vert = _vertices.back();
-
-  real u = 0 ;
-  //int vid;
-	
+  auto u = float{0.f};
 	auto pos = glm::vec3(0.f);
 	auto n = glm::vec3(0.f);
 
   // Computes the average of the intersection points of the cube
-	
 	// x-face
 	for(auto t : {0, 1}) {
 		for(auto s : {0, 1}) {
@@ -846,52 +838,9 @@ int MarchingCubes::add_c_vertex()
 		}
 	}
 	
-	
-	/*
-  vid = get_x_vert( _i , _j , _k ) ;
-  if( vid != -1 ) { ++u ; const Vertex &v = _vertices[vid] ; vert.x += v.x ;  vert.y += v.y ;  vert.z += v.z ;  vert.nx += v.nx ; vert.ny += v.ny ; vert.nz += v.nz ; }
-  vid = get_x_vert( _i ,_j+1, _k ) ;
-  if( vid != -1 ) { ++u ; const Vertex &v = _vertices[vid] ; vert.x += v.x ;  vert.y += v.y ;  vert.z += v.z ;  vert.nx += v.nx ; vert.ny += v.ny ; vert.nz += v.nz ; }
-  vid = get_x_vert( _i , _j ,_k+1) ;
-  if( vid != -1 ) { ++u ; const Vertex &v = _vertices[vid] ; vert.x += v.x ;  vert.y += v.y ;  vert.z += v.z ;  vert.nx += v.nx ; vert.ny += v.ny ; vert.nz += v.nz ; }
-	vid = get_x_vert( _i ,_j+1,_k+1) ;
-	if( vid != -1 ) { ++u ; const Vertex &v = _vertices[vid] ; vert.x += v.x ;  vert.y += v.y ;  vert.z += v.z ;  vert.nx += v.nx ; vert.ny += v.ny ; vert.nz += v.nz ; }
-	
-	
-	vid = get_y_vert(_i+1, _j , _k ) ;
-	if( vid != -1 ) { ++u ; const Vertex &v = _vertices[vid] ; vert.x += v.x ;  vert.y += v.y ;  vert.z += v.z ;  vert.nx += v.nx ; vert.ny += v.ny ; vert.nz += v.nz ; }
-	vid = get_y_vert( _i , _j , _k ) ;
-	if( vid != -1 ) { ++u ; const Vertex &v = _vertices[vid] ; vert.x += v.x ;  vert.y += v.y ;  vert.z += v.z ;  vert.nx += v.nx ; vert.ny += v.ny ; vert.nz += v.nz ; }
-	vid = get_y_vert(_i+1, _j ,_k+1) ;
-  if( vid != -1 ) { ++u ; const Vertex &v = _vertices[vid] ; vert.x += v.x ;  vert.y += v.y ;  vert.z += v.z ;  vert.nx += v.nx ; vert.ny += v.ny ; vert.nz += v.nz ; }
-  vid = get_y_vert( _i , _j ,_k+1) ;
-  if( vid != -1 ) { ++u ; const Vertex &v = _vertices[vid] ; vert.x += v.x ;  vert.y += v.y ;  vert.z += v.z ;  vert.nx += v.nx ; vert.ny += v.ny ; vert.nz += v.nz ; }
-	
-	
-	vid = get_z_vert( _i , _j , _k ) ;
-  if( vid != -1 ) { ++u ; const Vertex &v = _vertices[vid] ; vert.x += v.x ;  vert.y += v.y ;  vert.z += v.z ;  vert.nx += v.nx ; vert.ny += v.ny ; vert.nz += v.nz ; }
-  vid = get_z_vert(_i+1, _j , _k ) ;
-  if( vid != -1 ) { ++u ; const Vertex &v = _vertices[vid] ; vert.x += v.x ;  vert.y += v.y ;  vert.z += v.z ;  vert.nx += v.nx ; vert.ny += v.ny ; vert.nz += v.nz ; }
-  vid = get_z_vert(_i+1,_j+1, _k ) ;
-  if( vid != -1 ) { ++u ; const Vertex &v = _vertices[vid] ; vert.x += v.x ;  vert.y += v.y ;  vert.z += v.z ;  vert.nx += v.nx ; vert.ny += v.ny ; vert.nz += v.nz ; }
-  vid = get_z_vert( _i ,_j+1, _k ) ;
-  if( vid != -1 ) { ++u ; const Vertex &v = _vertices[vid] ; vert.x += v.x ;  vert.y += v.y ;  vert.z += v.z ;  vert.nx += v.nx ; vert.ny += v.ny ; vert.nz += v.nz ; }
-	*/
-
-/*
-  vert.x /= u ;
-  vert.y /= u ;
-  vert.z /= u ;
-	*/
-
-	//auto n = glm::normalize(glm::vec3(vert.nx, vert.ny, vert.nz));
-	
 	pos *= 1.f/u;
 	n = glm::normalize(n);
-	vert.nx = n.x;
-	vert.ny = n.y;
-	vert.nz = n.z;
-	
+	_vertices.push_back(Vertex{pos.x, pos.y, pos.z, n.x, n.y, n.z});
   return _vertices.size() - 1;
 }
 //_____________________________________________________________________________
