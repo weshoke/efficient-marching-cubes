@@ -17,13 +17,20 @@
 #include <float.h>
 #include <cmath>
 #include <limits>
+#include <iostream>
 #include "MarchingCubes.h"
 #include "ply.h"
 #include "LookUpTable.h"
 
 //_____________________________________________________________________________
 // print cube for debug
-void MarchingCubes::print_cube() { printf( "\t%f %f %f %f %f %f %f %f\n", _cube[0], _cube[1], _cube[2], _cube[3], _cube[4], _cube[5], _cube[6], _cube[7]) ; }
+void MarchingCubes::print_cube() {
+	std::cout << "\t";
+	for(int i=0; i < 8; ++i) {
+		std::cout << _cube[i] << " ";
+	}
+	std::cout << "\n";
+}
 //_____________________________________________________________________________
 
 
@@ -65,7 +72,7 @@ void MarchingCubes::run( real iso )
     process_cube() ;
   }
 
-  printf("Marching Cubes ran in %lf secs.\n", (double)(clock() - time)/CLOCKS_PER_SEC) ;
+	std::cout << "Marching Cubes ran in " << ((double)(clock() - time)/CLOCKS_PER_SEC) << " secs.\n";
 }
 //_____________________________________________________________________________
 
@@ -305,11 +312,11 @@ bool MarchingCubes::test_interior( schar s )
       Ct = _cube[1] + ( _cube[5] - _cube[1] ) * t ;
       Dt = _cube[0] + ( _cube[4] - _cube[0] ) * t ;
       break ;
-    default : printf( "Invalid edge %d\n", edge ) ;  print_cube() ;  break ;
+			default : std::cout << " Invalid edge " << edge << "\n";  print_cube() ;  break ;
     }
     break ;
 
-  default : printf( "Invalid ambiguous case %d\n", _case ) ;  print_cube() ;  break ;
+  default : std::cout << " Invalid ambiguous case " << _case << "\n";  print_cube() ;  break ;
   }
 
   if( At >= 0 ) test ++ ;
@@ -665,7 +672,7 @@ void MarchingCubes::process_cube( )
         add_triangle( tiling13_1_[_config], 4 ) ; break ;
 
       default :
-        printf("Marching Cubes: Impossible case 13?\n" ) ;  print_cube() ;
+				std::cout << "Marching Cubes: Impossible case 13?\n";  print_cube() ;
       }
       break ;
 
@@ -704,8 +711,8 @@ void MarchingCubes::add_triangle( const char* trig, char n, int v12 ) {
 
     if( tv[t%3] == -1 )
     {
-      printf("Marching Cubes: invalid triangle %d\n", ntrigs() + 1) ;
-      print_cube() ;
+			std::cout << "Marching Cubes: invalid triangle " << (ntrigs() + 1) << "\n";
+			print_cube() ;
     }
 
     if( t%3 == 2 )
