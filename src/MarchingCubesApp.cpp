@@ -61,16 +61,10 @@ void MarchingCubesApp::setup()
 		const Vertex   *v ;
 		v = mc.vert(t->v1) ;
 		verts.push_back(glm::vec3(v->x, v->y, v->z));
-		//::glNormal3f( v->nx, v->ny, v->nz ) ;
-		//::glVertex3f( v->x , v->y , v->z  ) ;
 		v = mc.vert(t->v2) ;
 		verts.push_back(glm::vec3(v->x, v->y, v->z));
-		//::glNormal3f( v->nx, v->ny, v->nz ) ;
-		//::glVertex3f( v->x , v->y , v->z  ) ;
 		v = mc.vert(t->v3) ;
 		verts.push_back(glm::vec3(v->x, v->y, v->z));
-		//::glNormal3f( v->nx, v->ny, v->nz ) ;
-		//::glVertex3f( v->x , v->y , v->z  ) ;
 	}
 	
 	auto mesh = gl::VboMesh::create(verts.size(), GL_LINES, {gl::VboMesh::Layout().attrib(geom::POSITION, 3)});
