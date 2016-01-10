@@ -781,10 +781,7 @@ real MarchingCubes::get_z_grad( const int i, const int j, const int k ) const
 
 int MarchingCubes::add_vertex(const glm::ivec3 &grid_coord, const glm::ivec3 &dir, int corner, float *cube) {
 	auto u = cube[0] / (cube[0] - cube[corner]);
-	
-	auto x = (float)_i + u * dir.x;
-	auto y = (float)_j + u * dir.y;
-	auto z = (float)_k + u * dir.z;
+	auto pos = glm::vec3(grid_coord) + glm::vec3(dir) * u;
 	
 	auto grid_coord2 = grid_coord + dir;
 	auto nx = (1-u)*get_x_grad(grid_coord.x, grid_coord.y, grid_coord.z) + u * get_x_grad(grid_coord2.x, grid_coord2.y, grid_coord2.z);
@@ -792,11 +789,11 @@ int MarchingCubes::add_vertex(const glm::ivec3 &grid_coord, const glm::ivec3 &di
 	auto nz = (1-u)*get_z_grad(grid_coord.x, grid_coord.y, grid_coord.z) + u * get_z_grad(grid_coord2.x, grid_coord2.y, grid_coord2.z);
 	
 	auto n = glm::normalize(glm::vec3(nx, ny, nz));
-	_vertices.push_back(Vertex{x, y, z, n.x, n.y, n.z});
+	_vertices.push_back(Vertex{pos.x, pos.y, pos.z, n.x, n.y, n.z});
 	return _vertices.size() - 1;
 }
 
-int MarchingCubes::add_c_vertex( )
+int MarchingCubes::add_c_vertex()
 //-----------------------------------------------------------------------------
 {
   _vertices.push_back(Vertex{0.f, 0.f, 0.f, 0.f, 0.f, 0.f});
