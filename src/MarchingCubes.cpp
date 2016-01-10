@@ -44,8 +44,7 @@ MarchingCubes::MarchingCubes( const int size_x /*= -1*/, const int size_y /*= -1
   _nverts    (0),
   _ntrigs    (0),
   _Nverts    (0),
-  _Ntrigs    (0),
-  _triangles ((Triangle*)NULL)
+  _Ntrigs    (0)
 {}
 //_____________________________________________________________________________
 
@@ -128,9 +127,8 @@ void MarchingCubes::init_all ()
 
   _nverts = _ntrigs = 0 ;
   _Nverts = _Ntrigs = ALLOC_SIZE ;
-  //_vertices  = new Vertex  [_Nverts] ;
-	_vertices.resize(_Nverts);
-  _triangles = new Triangle[_Ntrigs] ;
+  _vertices.resize(_Nverts);
+	_triangles.resize(_Ntrigs);
 }
 //_____________________________________________________________________________
 
@@ -140,8 +138,6 @@ void MarchingCubes::init_all ()
 void MarchingCubes::clean_all()
 //-----------------------------------------------------------------------------
 {
-  delete [] _triangles ;
-  _triangles = (Triangle *)NULL ;
   _nverts = _ntrigs = 0 ;
   _Nverts = _Ntrigs = 0 ;
 
@@ -762,15 +758,11 @@ void MarchingCubes::add_triangle( const char* trig, char n, int v12 )
     {
       if( _ntrigs >= _Ntrigs )
       {
-        Triangle *temp = _triangles ;
-        _triangles = new Triangle[ 2*_Ntrigs ] ;
-        memcpy( _triangles, temp, _Ntrigs*sizeof(Triangle) ) ;
-        delete[] temp ;
-        printf("%d allocated triangles\n", _Ntrigs) ;
         _Ntrigs *= 2 ;
+				_triangles.resize(_Ntrigs);
       }
 
-      Triangle *T = _triangles + _ntrigs++ ;
+      Triangle *T = _triangles.data() + _ntrigs++ ;
       T->v1    = tv[0] ;
       T->v2    = tv[1] ;
       T->v3    = tv[2] ;

@@ -90,12 +90,12 @@ public :
   /** accesses a specific vertex of the generated mesh */
   inline const Vertex   * vert( const int i ) const { if( i < 0  || i >= _nverts ) return ( Vertex *)NULL ; return _vertices.data()  + i ; }
   /** accesses a specific triangle of the generated mesh */
-  inline Triangle * trig( const int i ) const { if( i < 0  || i >= _ntrigs ) return (Triangle*)NULL ; return _triangles + i ; }
+  inline const Triangle * trig( const int i ) const { if( i < 0  || i >= _ntrigs ) return (Triangle*)NULL ; return _triangles.data() + i ; }
 
   /** accesses the vertex buffer of the generated mesh */
   inline Vertex   *vertices () { return _vertices.data()  ; }
   /** accesses the triangle buffer of the generated mesh */
-  inline Triangle *triangles() { return _triangles ; }
+  inline Triangle *triangles() { return _triangles.data() ; }
 
   /**  accesses the width  of the grid */
   inline const int size_x() const { return _size_x ; }
@@ -280,7 +280,7 @@ protected :
   int       _Nverts     ;  /**< size of the vertex   buffer */
   int       _Ntrigs     ;  /**< size of the triangle buffer */
 	std::vector<Vertex> _vertices   ;  /**< vertex   buffer */
-  Triangle *_triangles  ;  /**< triangle buffer */
+	std::vector<Triangle> _triangles  ;  /**< triangle buffer */
 
   int       _i          ;  /**< abscisse of the active cube */
   int       _j          ;  /**< height of the active cube */
