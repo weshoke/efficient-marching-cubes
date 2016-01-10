@@ -38,7 +38,6 @@ void MarchingCubes::print_cube() { printf( "\t%f %f %f %f %f %f %f %f\n", _cube[
 MarchingCubes::MarchingCubes( const int size_x /*= -1*/, const int size_y /*= -1*/, const int size_z /*= -1*/ ) :
 //-----------------------------------------------------------------------------
   _originalMC(false),
-  _ext_data  (false),
   _size_x    (size_x),
   _size_y    (size_y),
   _size_z    (size_z),
@@ -112,9 +111,7 @@ void MarchingCubes::run( real iso )
 void MarchingCubes::init_temps()
 //-----------------------------------------------------------------------------
 {
-  if( !_ext_data )
-    //_data    = new real [_size_x * _size_y * _size_z] ;
-		_data.resize(_size_x * _size_y * _size_z);
+	_data.resize(_size_x * _size_y * _size_z);
   _x_verts = new int  [_size_x * _size_y * _size_z] ;
   _y_verts = new int  [_size_x * _size_y * _size_z] ;
   _z_verts = new int  [_size_x * _size_y * _size_z] ;

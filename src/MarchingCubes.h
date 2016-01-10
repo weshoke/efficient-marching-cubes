@@ -267,7 +267,6 @@ protected :
 // Elements
 protected :
   bool      _originalMC ;   /**< selects wether the algorithm will use the enhanced topologically controlled lookup table or the original MarchingCubes */
-  bool      _ext_data   ;   /**< selects wether to allocate data or use data from another class */
 
   int       _size_x     ;  /**< width  of the grid */
   int       _size_y     ;  /**< depth  of the grid */
