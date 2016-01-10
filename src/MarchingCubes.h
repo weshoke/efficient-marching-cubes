@@ -13,10 +13,7 @@
 #ifndef _MARCHINGCUBES_H_
 #define _MARCHINGCUBES_H_
 
-#if !defined(WIN32) || defined(__CYGWIN__)
-#pragma interface
-#endif // WIN32
-
+#include <vector>
 
 //_____________________________________________________________________________
 // types
@@ -119,16 +116,6 @@ public :
    * \param originalMC true for the original Marching Cubes
    */
   inline void set_method    ( const bool originalMC = false ) { _originalMC = originalMC ; }
-  /**
-   * selects to use data from another class
-   * \param data is the pointer to the external data, allocated as a size_x*size_y*size_z vector running in x first
-   */
-  inline void set_ext_data  ( real *data )
-  { if( !_ext_data ) delete [] _data ;  _ext_data = data != NULL ;  if( _ext_data ) _data = data ; }
-  /**
-   * selects to allocate data
-   */
-  inline void set_int_data  () { _ext_data = false ;  _data = NULL ; }
 
   // Data access
   /**
@@ -156,35 +143,6 @@ public :
   void clean_temps() ;
   /** clears all structures : the temporary structures and the mesh buffers */
   void clean_all  () ;
-
-
-//-----------------------------------------------------------------------------
-// Exportation
-public :
-  /**
-   * PLY exportation of the generated mesh
-   * \param fn  name of the PLY file to create
-   * \param bin if true, the PLY will be written in binary mode
-   */
-  void writePLY( const char *fn, bool bin = false ) ;
-
-  /**
-   * PLY importation of a mesh
-   * \param fn  name of the PLY file to read from
-   */
-  void readPLY( const char *fn ) ;
-
-  /**
-   * VRML / Open Inventor exportation of the generated mesh
-   * \param fn  name of the IV file to create
-   */
-  void writeIV ( const char *fn ) ;
-
-  /**
-   * ISO exportation of the input grid
-   * \param fn  name of the ISO file to create
-   */
-  void writeISO( const char *fn ) ;
 
 
 //-----------------------------------------------------------------------------
@@ -314,7 +272,7 @@ protected :
   int       _size_x     ;  /**< width  of the grid */
   int       _size_y     ;  /**< depth  of the grid */
   int       _size_z     ;  /**< height of the grid */
-  real     *_data       ;  /**< implicit function values sampled on the grid */
+  std::vector<float> _data;
 
   int      *_x_verts    ;  /**< pre-computed vertex indices on the lower horizontal   edge of each cube */
   int      *_y_verts    ;  /**< pre-computed vertex indices on the lower longitudinal edge of each cube */
