@@ -130,7 +130,7 @@ void export_tga() ;
 bool run()
 //-----------------------------------------------------------------------------
 {
-	strcpy(formula, fun_def[1]);
+	strcpy(formula, fun_def[9]);
 
   if( strlen(formula) <= 0 ) return false ;
   //if( export_iso && strlen( out_filename->get_text() ) <= 0 ) export_iso = 0 ;

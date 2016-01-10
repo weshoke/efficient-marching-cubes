@@ -800,26 +800,75 @@ int MarchingCubes::add_c_vertex()
 	Vertex& vert = _vertices.back();
 
   real u = 0 ;
-  int   vid ;
+  //int vid;
+	
+	auto pos = glm::vec3(0.f);
+	auto n = glm::vec3(0.f);
 
   // Computes the average of the intersection points of the cube
+	
+	// x-face
+	for(auto t : {0, 1}) {
+		for(auto s : {0, 1}) {
+			auto vid = get_x_vert( _i , _j + s , _k + t ) ;
+			if( vid != -1 ) {
+				++u ;
+				const Vertex &v = _vertices[vid];
+				pos += glm::vec3(v.x, v.y, v.z);
+				n += glm::vec3(v.nx, v.ny, v.nz);
+			}
+		}
+	}
+	
+	// y-face
+	for(auto t : {0, 1}) {
+		for(auto s : {0, 1}) {
+			auto vid = get_y_vert( _i + t , _j , _k + s ) ;
+			if( vid != -1 ) {
+				++u ;
+				const Vertex &v = _vertices[vid];
+				pos += glm::vec3(v.x, v.y, v.z);
+				n += glm::vec3(v.nx, v.ny, v.nz);
+			}
+		}
+	}
+	
+	// z-face
+	for(auto t : {0, 1}) {
+		for(auto s : {0, 1}) {
+			auto vid = get_z_vert( _i + s , _j + t , _k ) ;
+			if( vid != -1 ) {
+				++u ;
+				const Vertex &v = _vertices[vid];
+				pos += glm::vec3(v.x, v.y, v.z);
+				n += glm::vec3(v.nx, v.ny, v.nz);
+			}
+		}
+	}
+	
+	
+	/*
   vid = get_x_vert( _i , _j , _k ) ;
-  if( vid != -1 ) { ++u ; const Vertex &v = _vertices[vid] ; vert.x += v.x ;  vert.y += v.y ;  vert.z += v.z ;  vert.nx += v.nx ; vert.ny += v.ny ; vert.nz += v.nz ; }
-  vid = get_y_vert(_i+1, _j , _k ) ;
   if( vid != -1 ) { ++u ; const Vertex &v = _vertices[vid] ; vert.x += v.x ;  vert.y += v.y ;  vert.z += v.z ;  vert.nx += v.nx ; vert.ny += v.ny ; vert.nz += v.nz ; }
   vid = get_x_vert( _i ,_j+1, _k ) ;
   if( vid != -1 ) { ++u ; const Vertex &v = _vertices[vid] ; vert.x += v.x ;  vert.y += v.y ;  vert.z += v.z ;  vert.nx += v.nx ; vert.ny += v.ny ; vert.nz += v.nz ; }
-  vid = get_y_vert( _i , _j , _k ) ;
-  if( vid != -1 ) { ++u ; const Vertex &v = _vertices[vid] ; vert.x += v.x ;  vert.y += v.y ;  vert.z += v.z ;  vert.nx += v.nx ; vert.ny += v.ny ; vert.nz += v.nz ; }
   vid = get_x_vert( _i , _j ,_k+1) ;
   if( vid != -1 ) { ++u ; const Vertex &v = _vertices[vid] ; vert.x += v.x ;  vert.y += v.y ;  vert.z += v.z ;  vert.nx += v.nx ; vert.ny += v.ny ; vert.nz += v.nz ; }
-  vid = get_y_vert(_i+1, _j ,_k+1) ;
-  if( vid != -1 ) { ++u ; const Vertex &v = _vertices[vid] ; vert.x += v.x ;  vert.y += v.y ;  vert.z += v.z ;  vert.nx += v.nx ; vert.ny += v.ny ; vert.nz += v.nz ; }
-  vid = get_x_vert( _i ,_j+1,_k+1) ;
+	vid = get_x_vert( _i ,_j+1,_k+1) ;
+	if( vid != -1 ) { ++u ; const Vertex &v = _vertices[vid] ; vert.x += v.x ;  vert.y += v.y ;  vert.z += v.z ;  vert.nx += v.nx ; vert.ny += v.ny ; vert.nz += v.nz ; }
+	
+	
+	vid = get_y_vert(_i+1, _j , _k ) ;
+	if( vid != -1 ) { ++u ; const Vertex &v = _vertices[vid] ; vert.x += v.x ;  vert.y += v.y ;  vert.z += v.z ;  vert.nx += v.nx ; vert.ny += v.ny ; vert.nz += v.nz ; }
+	vid = get_y_vert( _i , _j , _k ) ;
+	if( vid != -1 ) { ++u ; const Vertex &v = _vertices[vid] ; vert.x += v.x ;  vert.y += v.y ;  vert.z += v.z ;  vert.nx += v.nx ; vert.ny += v.ny ; vert.nz += v.nz ; }
+	vid = get_y_vert(_i+1, _j ,_k+1) ;
   if( vid != -1 ) { ++u ; const Vertex &v = _vertices[vid] ; vert.x += v.x ;  vert.y += v.y ;  vert.z += v.z ;  vert.nx += v.nx ; vert.ny += v.ny ; vert.nz += v.nz ; }
   vid = get_y_vert( _i , _j ,_k+1) ;
   if( vid != -1 ) { ++u ; const Vertex &v = _vertices[vid] ; vert.x += v.x ;  vert.y += v.y ;  vert.z += v.z ;  vert.nx += v.nx ; vert.ny += v.ny ; vert.nz += v.nz ; }
-  vid = get_z_vert( _i , _j , _k ) ;
+	
+	
+	vid = get_z_vert( _i , _j , _k ) ;
   if( vid != -1 ) { ++u ; const Vertex &v = _vertices[vid] ; vert.x += v.x ;  vert.y += v.y ;  vert.z += v.z ;  vert.nx += v.nx ; vert.ny += v.ny ; vert.nz += v.nz ; }
   vid = get_z_vert(_i+1, _j , _k ) ;
   if( vid != -1 ) { ++u ; const Vertex &v = _vertices[vid] ; vert.x += v.x ;  vert.y += v.y ;  vert.z += v.z ;  vert.nx += v.nx ; vert.ny += v.ny ; vert.nz += v.nz ; }
@@ -827,19 +876,22 @@ int MarchingCubes::add_c_vertex()
   if( vid != -1 ) { ++u ; const Vertex &v = _vertices[vid] ; vert.x += v.x ;  vert.y += v.y ;  vert.z += v.z ;  vert.nx += v.nx ; vert.ny += v.ny ; vert.nz += v.nz ; }
   vid = get_z_vert( _i ,_j+1, _k ) ;
   if( vid != -1 ) { ++u ; const Vertex &v = _vertices[vid] ; vert.x += v.x ;  vert.y += v.y ;  vert.z += v.z ;  vert.nx += v.nx ; vert.ny += v.ny ; vert.nz += v.nz ; }
+	*/
 
-  vert.x  /= u ;
-  vert.y  /= u ;
-  vert.z  /= u ;
+/*
+  vert.x /= u ;
+  vert.y /= u ;
+  vert.z /= u ;
+	*/
 
-  u = (real) sqrt( vert.nx * vert.nx + vert.ny * vert.ny +vert.nz * vert.nz ) ;
-  if( u > 0 )
-  {
-    vert.nx /= u ;
-    vert.ny /= u ;
-    vert.nz /= u ;
-  }
-
+	//auto n = glm::normalize(glm::vec3(vert.nx, vert.ny, vert.nz));
+	
+	pos *= 1.f/u;
+	n = glm::normalize(n);
+	vert.nx = n.x;
+	vert.ny = n.y;
+	vert.nz = n.z;
+	
   return _vertices.size() - 1;
 }
 //_____________________________________________________________________________
