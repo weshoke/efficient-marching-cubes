@@ -139,8 +139,6 @@ public :
   void init_temps () ;
   /** inits all structures (must set sizes before call) : the temporary structures and the mesh buffers */
   void init_all   () ;
-  /** clears temporary structures : the grid and the main */
-  void clean_temps() ;
   /** clears all structures : the temporary structures and the mesh buffers */
   void clean_all  () ;
 
@@ -273,9 +271,9 @@ protected :
   int       _size_z     ;  /**< height of the grid */
   std::vector<float> _data;
 
-  int      *_x_verts    ;  /**< pre-computed vertex indices on the lower horizontal   edge of each cube */
-  int      *_y_verts    ;  /**< pre-computed vertex indices on the lower longitudinal edge of each cube */
-  int      *_z_verts    ;  /**< pre-computed vertex indices on the lower vertical     edge of each cube */
+	std::vector<int> _x_verts    ;  /**< pre-computed vertex indices on the lower horizontal   edge of each cube */
+	std::vector<int> _y_verts    ;  /**< pre-computed vertex indices on the lower longitudinal edge of each cube */
+	std::vector<int> _z_verts    ;  /**< pre-computed vertex indices on the lower vertical     edge of each cube */
 
   int       _nverts     ;  /**< number of allocated vertices  in the vertex   buffer */
   int       _ntrigs     ;  /**< number of allocated triangles in the triangle buffer */

@@ -41,10 +41,6 @@ MarchingCubes::MarchingCubes( const int size_x /*= -1*/, const int size_y /*= -1
   _size_x    (size_x),
   _size_y    (size_y),
   _size_z    (size_z),
-  //_data      ((real *)NULL),
-  _x_verts   (( int *)NULL),
-  _y_verts   (( int *)NULL),
-  _z_verts   (( int *)NULL),
   _nverts    (0),
   _ntrigs    (0),
   _Nverts    (0),
@@ -112,13 +108,13 @@ void MarchingCubes::init_temps()
 //-----------------------------------------------------------------------------
 {
 	_data.resize(_size_x * _size_y * _size_z);
-  _x_verts = new int  [_size_x * _size_y * _size_z] ;
-  _y_verts = new int  [_size_x * _size_y * _size_z] ;
-  _z_verts = new int  [_size_x * _size_y * _size_z] ;
-
-  memset( _x_verts, -1, _size_x * _size_y * _size_z * sizeof( int ) ) ;
-  memset( _y_verts, -1, _size_x * _size_y * _size_z * sizeof( int ) ) ;
-  memset( _z_verts, -1, _size_x * _size_y * _size_z * sizeof( int ) ) ;
+	_x_verts.resize(_size_x * _size_y * _size_z);
+	_y_verts.resize(_size_x * _size_y * _size_z);
+	_z_verts.resize(_size_x * _size_y * _size_z);
+	
+	memset( _x_verts.data(), -1, _x_verts.size() * sizeof( int ) ) ;
+  memset( _y_verts.data(), -1, _y_verts.size() * sizeof( int ) ) ;
+  memset( _z_verts.data(), -1, _z_verts.size() * sizeof( int ) ) ;
 }
 //_____________________________________________________________________________
 
@@ -139,30 +135,11 @@ void MarchingCubes::init_all ()
 //_____________________________________________________________________________
 
 
-
-//_____________________________________________________________________________
-// clean temporary structures
-void MarchingCubes::clean_temps()
-//-----------------------------------------------------------------------------
-{
-  delete [] _x_verts;
-  delete [] _y_verts;
-  delete [] _z_verts;
-
-  _x_verts  = (int*)NULL ;
-  _y_verts  = (int*)NULL ;
-  _z_verts  = (int*)NULL ;
-}
-//_____________________________________________________________________________
-
-
-
 //_____________________________________________________________________________
 // clean all structures
 void MarchingCubes::clean_all()
 //-----------------------------------------------------------------------------
 {
-  clean_temps() ;
   delete [] _vertices  ;
   delete [] _triangles ;
   _vertices  = (Vertex   *)NULL ;

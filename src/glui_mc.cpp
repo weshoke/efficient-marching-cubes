@@ -205,7 +205,6 @@ bool run()
   // Run MC
   mc.set_method( originalMC == 1 ) ;
   mc.run() ;
-  mc.clean_temps() ;
 
   // Rescale positions
   for( i = 0 ; i < mc.nverts() ; ++i )
