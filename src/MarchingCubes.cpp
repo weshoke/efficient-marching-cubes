@@ -40,9 +40,9 @@ void MarchingCubes::print_cube() {
 MarchingCubes::MarchingCubes( const int size_x /*= -1*/, const int size_y /*= -1*/, const int size_z /*= -1*/ ) :
 //-----------------------------------------------------------------------------
   _originalMC(false),
-  _size_x    (size_x),
-  _size_y    (size_y),
-  _size_z    (size_z)
+  _size_x(size_x),
+  _size_y(size_y),
+  _size_z(size_z)
 {}
 //_____________________________________________________________________________
 
@@ -135,17 +135,19 @@ void MarchingCubes::compute_intersection_points( real iso )
     if( std::abs( _cube[3] ) < std::numeric_limits<float>::epsilon() ) _cube[3] = std::numeric_limits<float>::epsilon() ;
     if( std::abs( _cube[4] ) < std::numeric_limits<float>::epsilon() ) _cube[4] = std::numeric_limits<float>::epsilon() ;
 
+		auto grid_coord = glm::ivec3(_i, _j, _k);
+
     if( _cube[0] < 0 )
     {
-			if( _cube[1] > 0 ) set_x_vert( add_vertex(glm::ivec3(1, 0, 0), 1 ), _i,_j,_k ) ;
-      if( _cube[3] > 0 ) set_y_vert( add_vertex(glm::ivec3(0, 1, 0), 3 ), _i,_j,_k ) ;
-      if( _cube[4] > 0 ) set_z_vert( add_vertex(glm::ivec3(0, 0, 1), 4 ), _i,_j,_k ) ;
+			if( _cube[1] > 0 ) set_x_vert( add_vertex(grid_coord, glm::ivec3(1, 0, 0), 1, _cube), _i,_j,_k ) ;
+      if( _cube[3] > 0 ) set_y_vert( add_vertex(grid_coord, glm::ivec3(0, 1, 0), 3, _cube), _i,_j,_k ) ;
+      if( _cube[4] > 0 ) set_z_vert( add_vertex(grid_coord, glm::ivec3(0, 0, 1), 4, _cube), _i,_j,_k ) ;
     }
     else
     {
-      if( _cube[1] < 0 ) set_x_vert( add_vertex(glm::ivec3(1, 0, 0), 1 ), _i,_j,_k ) ;
-      if( _cube[3] < 0 ) set_y_vert( add_vertex(glm::ivec3(0, 1, 0), 3 ), _i,_j,_k ) ;
-      if( _cube[4] < 0 ) set_z_vert( add_vertex(glm::ivec3(0, 0, 1), 4 ), _i,_j,_k ) ;
+      if( _cube[1] < 0 ) set_x_vert( add_vertex(grid_coord, glm::ivec3(1, 0, 0), 1, _cube), _i,_j,_k ) ;
+      if( _cube[3] < 0 ) set_y_vert( add_vertex(grid_coord, glm::ivec3(0, 1, 0), 3, _cube), _i,_j,_k ) ;
+      if( _cube[4] < 0 ) set_z_vert( add_vertex(grid_coord, glm::ivec3(0, 0, 1), 4, _cube), _i,_j,_k ) ;
     }
   }
 }
@@ -343,7 +345,7 @@ bool MarchingCubes::test_interior( schar s )
   case 15 : return s<0 ;
   }
 
-  return s<0 ;
+  return s < 0;
 }
 //_____________________________________________________________________________
 
@@ -777,26 +779,20 @@ real MarchingCubes::get_z_grad( const int i, const int j, const int k ) const
 //_____________________________________________________________________________
 // Adding vertices
 
-int MarchingCubes::add_vertex(const glm::ivec3 &dir, int corner) {
-	auto u = ( _cube[0] ) / ( _cube[0] - _cube[corner] ) ;
+int MarchingCubes::add_vertex(const glm::ivec3 &grid_coord, const glm::ivec3 &dir, int corner, float *cube) {
+	auto u = cube[0] / (cube[0] - cube[corner]);
 	
 	auto x = (float)_i + u * dir.x;
 	auto y = (float)_j + u * dir.y;
 	auto z = (float)_k + u * dir.z;
 	
-	auto nx = (1-u)*get_x_grad(_i,_j,_k) + u*get_x_grad(_i+1,_j,_k) ;
-	auto ny = (1-u)*get_y_grad(_i,_j,_k) + u*get_y_grad(_i+1,_j,_k) ;
-	auto nz = (1-u)*get_z_grad(_i,_j,_k) + u*get_z_grad(_i+1,_j,_k) ;
+	auto grid_coord2 = grid_coord + dir;
+	auto nx = (1-u)*get_x_grad(grid_coord.x, grid_coord.y, grid_coord.z) + u * get_x_grad(grid_coord2.x, grid_coord2.y, grid_coord2.z);
+	auto ny = (1-u)*get_y_grad(grid_coord.x, grid_coord.y, grid_coord.z) + u * get_y_grad(grid_coord2.x, grid_coord2.y, grid_coord2.z);
+	auto nz = (1-u)*get_z_grad(grid_coord.x, grid_coord.y, grid_coord.z) + u * get_z_grad(grid_coord2.x, grid_coord2.y, grid_coord2.z);
 	
-	u = (float) sqrt(nx * nx + ny * ny + nz * nz ) ;
-	if( u > 0 )
-	{
-		nx /= u ;
-		ny /= u ;
-		nz /= u ;
-	}
-	
-	_vertices.push_back(Vertex{x, y, z, nx, ny, nz});
+	auto n = glm::normalize(glm::vec3(nx, ny, nz));
+	_vertices.push_back(Vertex{x, y, z, n.x, n.y, n.z});
 	return _vertices.size() - 1;
 }
 

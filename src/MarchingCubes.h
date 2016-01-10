@@ -172,7 +172,7 @@ protected :
    */
   void add_triangle ( const char* trig, char n, int v12 = -1 ) ;
 
-  int add_vertex(const glm::ivec3 &dir, int corner);
+  int add_vertex(const glm::ivec3 &grid_coord, const glm::ivec3 &dir, int corner, float *cube);
   /** adds a vertex inside the current cube */
   int add_c_vertex() ;
 
