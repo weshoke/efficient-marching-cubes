@@ -161,15 +161,15 @@ void MarchingCubes::compute_intersection_points( real iso )
 
     if( _cube[0] < 0 )
     {
-      if( _cube[1] > 0 ) set_x_vert( add_x_vertex( ), _i,_j,_k ) ;
-      if( _cube[3] > 0 ) set_y_vert( add_y_vertex( ), _i,_j,_k ) ;
-      if( _cube[4] > 0 ) set_z_vert( add_z_vertex( ), _i,_j,_k ) ;
+			if( _cube[1] > 0 ) set_x_vert( add_vertex(glm::ivec3(1, 0, 0), 1 ), _i,_j,_k ) ;
+      if( _cube[3] > 0 ) set_y_vert( add_vertex(glm::ivec3(0, 1, 0), 3 ), _i,_j,_k ) ;
+      if( _cube[4] > 0 ) set_z_vert( add_vertex(glm::ivec3(0, 0, 1), 4 ), _i,_j,_k ) ;
     }
     else
     {
-      if( _cube[1] < 0 ) set_x_vert( add_x_vertex( ), _i,_j,_k ) ;
-      if( _cube[3] < 0 ) set_y_vert( add_y_vertex( ), _i,_j,_k ) ;
-      if( _cube[4] < 0 ) set_z_vert( add_z_vertex( ), _i,_j,_k ) ;
+      if( _cube[1] < 0 ) set_x_vert( add_vertex(glm::ivec3(1, 0, 0), 1 ), _i,_j,_k ) ;
+      if( _cube[3] < 0 ) set_y_vert( add_vertex(glm::ivec3(0, 1, 0), 3 ), _i,_j,_k ) ;
+      if( _cube[4] < 0 ) set_z_vert( add_vertex(glm::ivec3(0, 0, 1), 4 ), _i,_j,_k ) ;
     }
   }
 }
@@ -821,90 +821,31 @@ void MarchingCubes::test_vertex_addition()
 }
 
 
-int MarchingCubes::add_x_vertex( )
-//-----------------------------------------------------------------------------
-{
-  test_vertex_addition() ;
-  Vertex *vert = _vertices.data() + _nverts++ ;
-
-  real u = ( _cube[0] ) / ( _cube[0] - _cube[1] ) ;
-
-  vert->x      = (real)_i+u;
-  vert->y      = (real) _j ;
-  vert->z      = (real) _k ;
-
-  vert->nx = (1-u)*get_x_grad(_i,_j,_k) + u*get_x_grad(_i+1,_j,_k) ;
-  vert->ny = (1-u)*get_y_grad(_i,_j,_k) + u*get_y_grad(_i+1,_j,_k) ;
-  vert->nz = (1-u)*get_z_grad(_i,_j,_k) + u*get_z_grad(_i+1,_j,_k) ;
-
-  u = (real) sqrt( vert->nx * vert->nx + vert->ny * vert->ny +vert->nz * vert->nz ) ;
-  if( u > 0 )
-  {
-    vert->nx /= u ;
-    vert->ny /= u ;
-    vert->nz /= u ;
-  }
-
-
-  return _nverts-1 ;
+int MarchingCubes::add_vertex(const glm::ivec3 &dir, int corner) {
+	test_vertex_addition() ;
+	Vertex *vert = _vertices.data() + _nverts++ ;
+	
+	real u = ( _cube[0] ) / ( _cube[0] - _cube[corner] ) ;
+	
+	vert->x      = (real)_i + u * dir.x;
+	vert->y      = (real) _j + u * dir.y;
+	vert->z      = (real) _k + u * dir.z;
+	
+	vert->nx = (1-u)*get_x_grad(_i,_j,_k) + u*get_x_grad(_i+1,_j,_k) ;
+	vert->ny = (1-u)*get_y_grad(_i,_j,_k) + u*get_y_grad(_i+1,_j,_k) ;
+	vert->nz = (1-u)*get_z_grad(_i,_j,_k) + u*get_z_grad(_i+1,_j,_k) ;
+	
+	u = (real) sqrt( vert->nx * vert->nx + vert->ny * vert->ny +vert->nz * vert->nz ) ;
+	if( u > 0 )
+	{
+		vert->nx /= u ;
+		vert->ny /= u ;
+		vert->nz /= u ;
+	}
+	
+	
+	return _nverts-1 ;
 }
-//-----------------------------------------------------------------------------
-
-int MarchingCubes::add_y_vertex( )
-//-----------------------------------------------------------------------------
-{
-  test_vertex_addition() ;
-  Vertex *vert = _vertices.data() + _nverts++ ;
-
-  real u = ( _cube[0] ) / ( _cube[0] - _cube[3] ) ;
-
-  vert->x      = (real) _i ;
-  vert->y      = (real)_j+u;
-  vert->z      = (real) _k ;
-
-  vert->nx = (1-u)*get_x_grad(_i,_j,_k) + u*get_x_grad(_i,_j+1,_k) ;
-  vert->ny = (1-u)*get_y_grad(_i,_j,_k) + u*get_y_grad(_i,_j+1,_k) ;
-  vert->nz = (1-u)*get_z_grad(_i,_j,_k) + u*get_z_grad(_i,_j+1,_k) ;
-
-  u = (real) sqrt( vert->nx * vert->nx + vert->ny * vert->ny +vert->nz * vert->nz ) ;
-  if( u > 0 )
-  {
-    vert->nx /= u ;
-    vert->ny /= u ;
-    vert->nz /= u ;
-  }
-
-  return _nverts-1 ;
-}
-//-----------------------------------------------------------------------------
-
-int MarchingCubes::add_z_vertex( )
-//-----------------------------------------------------------------------------
-{
-  test_vertex_addition() ;
-  Vertex *vert = _vertices.data() + _nverts++ ;
-
-  real u = ( _cube[0] ) / ( _cube[0] - _cube[4] ) ;
-
-  vert->x      = (real) _i ;
-  vert->y      = (real) _j ;
-  vert->z      = (real)_k+u;
-
-  vert->nx = (1-u)*get_x_grad(_i,_j,_k) + u*get_x_grad(_i,_j,_k+1) ;
-  vert->ny = (1-u)*get_y_grad(_i,_j,_k) + u*get_y_grad(_i,_j,_k+1) ;
-  vert->nz = (1-u)*get_z_grad(_i,_j,_k) + u*get_z_grad(_i,_j,_k+1) ;
-
-  u = (real) sqrt( vert->nx * vert->nx + vert->ny * vert->ny +vert->nz * vert->nz ) ;
-  if( u > 0 )
-  {
-    vert->nx /= u ;
-    vert->ny /= u ;
-    vert->nz /= u ;
-  }
-
-  return _nverts-1 ;
-}
-
 
 int MarchingCubes::add_c_vertex( )
 //-----------------------------------------------------------------------------

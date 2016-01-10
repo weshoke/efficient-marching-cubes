@@ -178,12 +178,8 @@ protected :
 
   /** tests and eventually doubles the vertex buffer capacity for a new vertex insertion */
   void test_vertex_addition() ;
-  /** adds a vertex on the current horizontal edge */
-  int add_x_vertex() ;
-  /** adds a vertex on the current longitudinal edge */
-  int add_y_vertex() ;
-  /** adds a vertex on the current vertical edge */
-  int add_z_vertex() ;
+	
+	int add_vertex(const glm::ivec3 &dir, int corner);
   /** adds a vertex inside the current cube */
   int add_c_vertex() ;
 
