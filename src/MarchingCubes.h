@@ -155,8 +155,6 @@ public :
 protected :
   /** tesselates one cube */
   void process_cube ()             ;
-  /** tests if the components of the tesselation of the cube should be connected by the interior of an ambiguous face */
-  bool test_face    ( schar face ) ;
   /** tests if the components of the tesselation of the cube should be connected through the interior of the cube */
   bool test_interior( schar s )    ;
 
@@ -286,7 +284,7 @@ protected :
   int       _j          ;  /**< height of the active cube */
   int       _k          ;  /**< ordinate of the active cube */
 
-  real      _cube[8]    ;  /**< values of the implicit function on the active cube */
+  float      _cube[8]    ;  /**< values of the implicit function on the active cube */
   uchar     _lut_entry  ;  /**< cube sign representation in [0..255] */
   uchar     _case       ;  /**< case of the active cube in [0..15] */
   uchar     _config     ;  /**< configuration of the active cube */

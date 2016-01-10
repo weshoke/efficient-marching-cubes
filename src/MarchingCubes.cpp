@@ -185,11 +185,10 @@ void MarchingCubes::compute_intersection_points( real iso )
 
 
 //_____________________________________________________________________________
+// tests if the components of the tesselation of the cube should be connected by the interior of an ambiguous face
 // Test a face
 // if face>0 return true if the face contains a part of the surface
-bool MarchingCubes::test_face( schar face )
-//-----------------------------------------------------------------------------
-{
+bool test_face( schar face, float *cube ) {
   static int corner_lookup[6][4] = {
 		{0, 4, 5, 1},
 		{1, 5, 6, 2},
@@ -201,10 +200,10 @@ bool MarchingCubes::test_face( schar face )
 	
 	auto idx = std::abs(face) - 1;
 	auto corners = corner_lookup[idx];
-	auto A = _cube[corners[0]];
-	auto B = _cube[corners[1]];
-	auto C = _cube[corners[2]];
-	auto D = _cube[corners[3]];
+	auto A = cube[corners[0]];
+	auto B = cube[corners[1]];
+	auto C = cube[corners[2]];
+	auto D = cube[corners[3]];
 
 	if(std::abs(A * C - B * D) < std::numeric_limits<float>::epsilon()) {
     return face >= 0 ;
@@ -213,7 +212,6 @@ bool MarchingCubes::test_face( schar face )
 	// face and A invert signs
   return face * A * ( A * C - B * D ) >= 0.f ;
 }
-//_____________________________________________________________________________
 
 
 
@@ -413,7 +411,7 @@ void MarchingCubes::process_cube( )
     break ;
 
   case  3 :
-    if( test_face( test3[_config]) )
+    if( test_face( test3[_config], _cube) )
       add_triangle( tiling3_2[_config], 4 ) ; // 3.2
     else
       add_triangle( tiling3_1[_config], 2 ) ; // 3.1
@@ -431,7 +429,7 @@ void MarchingCubes::process_cube( )
     break ;
 
   case  6 :
-    if( test_face( test6[_config][0]) )
+    if( test_face( test6[_config][0], _cube) )
       add_triangle( tiling6_2[_config], 5 ) ; // 6.2
     else
     {
@@ -446,9 +444,9 @@ void MarchingCubes::process_cube( )
     break ;
 
   case  7 :
-    if( test_face( test7[_config][0] ) ) _subconfig +=  1 ;
-    if( test_face( test7[_config][1] ) ) _subconfig +=  2 ;
-    if( test_face( test7[_config][2] ) ) _subconfig +=  4 ;
+    if( test_face( test7[_config][0], _cube ) ) _subconfig +=  1 ;
+    if( test_face( test7[_config][1], _cube ) ) _subconfig +=  2 ;
+    if( test_face( test7[_config][2], _cube ) ) _subconfig +=  4 ;
     switch( _subconfig )
       {
       case 0 :
@@ -486,9 +484,9 @@ void MarchingCubes::process_cube( )
     break ;
 
   case 10 :
-    if( test_face( test10[_config][0]) )
+    if( test_face( test10[_config][0], _cube) )
     {
-      if( test_face( test10[_config][1]) )
+      if( test_face( test10[_config][1], _cube) )
         add_triangle( tiling10_1_1_[_config], 4 ) ; // 10.1.1
       else
       {
@@ -498,7 +496,7 @@ void MarchingCubes::process_cube( )
     }
     else
     {
-      if( test_face( test10[_config][1]) )
+      if( test_face( test10[_config][1], _cube) )
       {
         v12 = add_c_vertex() ;
         add_triangle( tiling10_2_[_config], 8, v12 ) ; // 10.2
@@ -518,9 +516,9 @@ void MarchingCubes::process_cube( )
     break ;
 
   case 12 :
-    if( test_face( test12[_config][0]) )
+    if( test_face( test12[_config][0], _cube) )
     {
-      if( test_face( test12[_config][1]) )
+      if( test_face( test12[_config][1], _cube) )
         add_triangle( tiling12_1_1_[_config], 4 ) ; // 12.1.1
       else
       {
@@ -530,7 +528,7 @@ void MarchingCubes::process_cube( )
     }
     else
     {
-      if( test_face( test12[_config][1]) )
+      if( test_face( test12[_config][1], _cube) )
       {
         v12 = add_c_vertex() ;
         add_triangle( tiling12_2_[_config], 8, v12 ) ; // 12.2
@@ -546,12 +544,12 @@ void MarchingCubes::process_cube( )
     break ;
 
   case 13 :
-    if( test_face( test13[_config][0] ) ) _subconfig +=  1 ;
-    if( test_face( test13[_config][1] ) ) _subconfig +=  2 ;
-    if( test_face( test13[_config][2] ) ) _subconfig +=  4 ;
-    if( test_face( test13[_config][3] ) ) _subconfig +=  8 ;
-    if( test_face( test13[_config][4] ) ) _subconfig += 16 ;
-    if( test_face( test13[_config][5] ) ) _subconfig += 32 ;
+    if( test_face( test13[_config][0], _cube ) ) _subconfig +=  1 ;
+    if( test_face( test13[_config][1], _cube ) ) _subconfig +=  2 ;
+    if( test_face( test13[_config][2], _cube ) ) _subconfig +=  4 ;
+    if( test_face( test13[_config][3], _cube ) ) _subconfig +=  8 ;
+    if( test_face( test13[_config][4], _cube ) ) _subconfig += 16 ;
+    if( test_face( test13[_config][5], _cube ) ) _subconfig += 32 ;
     switch( subconfig13[_subconfig] )
     {
       case 0 :/* 13.1 */
