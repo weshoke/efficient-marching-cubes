@@ -84,11 +84,11 @@ public :
 // Accessors
 public :
   /** accesses the number of vertices of the generated mesh */
-  inline const int nverts() const { return _nverts ; }
+  inline const int nverts() const { return _vertices.size() ; }
   /** accesses the number of triangles of the generated mesh */
   inline const int ntrigs() const { return _ntrigs ; }
   /** accesses a specific vertex of the generated mesh */
-  inline const Vertex   * vert( const int i ) const { if( i < 0  || i >= _nverts ) return ( Vertex *)NULL ; return _vertices.data()  + i ; }
+  inline const Vertex   * vert( const int i ) const { if( i < 0  || i >= nverts() ) return ( Vertex *)NULL ; return _vertices.data()  + i ; }
   /** accesses a specific triangle of the generated mesh */
   inline const Triangle * trig( const int i ) const { if( i < 0  || i >= _ntrigs ) return (Triangle*)NULL ; return _triangles.data() + i ; }
 
@@ -176,10 +176,7 @@ protected :
    */
   void add_triangle ( const char* trig, char n, int v12 = -1 ) ;
 
-  /** tests and eventually doubles the vertex buffer capacity for a new vertex insertion */
-  void test_vertex_addition() ;
-	
-	int add_vertex(const glm::ivec3 &dir, int corner);
+  int add_vertex(const glm::ivec3 &dir, int corner);
   /** adds a vertex inside the current cube */
   int add_c_vertex() ;
 
@@ -269,7 +266,6 @@ protected :
 	std::vector<int> _y_verts    ;  /**< pre-computed vertex indices on the lower longitudinal edge of each cube */
 	std::vector<int> _z_verts    ;  /**< pre-computed vertex indices on the lower vertical     edge of each cube */
 
-  int       _nverts     ;  /**< number of allocated vertices  in the vertex   buffer */
   int       _ntrigs     ;  /**< number of allocated triangles in the triangle buffer */
   std::vector<Vertex> _vertices   ;  /**< vertex   buffer */
 	std::vector<Triangle> _triangles  ;  /**< triangle buffer */

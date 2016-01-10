@@ -39,7 +39,6 @@ MarchingCubes::MarchingCubes( const int size_x /*= -1*/, const int size_y /*= -1
   _size_x    (size_x),
   _size_y    (size_y),
   _size_z    (size_z),
-  _nverts    (0),
   _ntrigs    (0)
 {}
 //_____________________________________________________________________________
@@ -112,8 +111,8 @@ void MarchingCubes::init_all ()
 {
   init_temps() ;
 
-  _nverts = _ntrigs = 0 ;
-  _vertices.resize(ALLOC_SIZE);
+  _ntrigs = 0 ;
+  //_vertices.resize(ALLOC_SIZE);
 	_triangles.resize(ALLOC_SIZE);
 }
 //_____________________________________________________________________________
@@ -124,7 +123,7 @@ void MarchingCubes::init_all ()
 void MarchingCubes::clean_all()
 //-----------------------------------------------------------------------------
 {
-  _nverts = _ntrigs = 0 ;
+  _ntrigs = 0 ;
   _size_x = _size_y = _size_z = -1 ;
 }
 //_____________________________________________________________________________
@@ -812,90 +811,76 @@ real MarchingCubes::get_z_grad( const int i, const int j, const int k ) const
 //_____________________________________________________________________________
 // Adding vertices
 
-void MarchingCubes::test_vertex_addition()
-{
-  if( _nverts >= _vertices.size() )
-  {
-		_vertices.resize(_vertices.size() * 2);
-  }
-}
-
-
 int MarchingCubes::add_vertex(const glm::ivec3 &dir, int corner) {
-	test_vertex_addition() ;
-	Vertex *vert = _vertices.data() + _nverts++ ;
+	auto u = ( _cube[0] ) / ( _cube[0] - _cube[corner] ) ;
 	
-	real u = ( _cube[0] ) / ( _cube[0] - _cube[corner] ) ;
+	auto x = (float)_i + u * dir.x;
+	auto y = (float)_j + u * dir.y;
+	auto z = (float)_k + u * dir.z;
 	
-	vert->x      = (real)_i + u * dir.x;
-	vert->y      = (real) _j + u * dir.y;
-	vert->z      = (real) _k + u * dir.z;
+	auto nx = (1-u)*get_x_grad(_i,_j,_k) + u*get_x_grad(_i+1,_j,_k) ;
+	auto ny = (1-u)*get_y_grad(_i,_j,_k) + u*get_y_grad(_i+1,_j,_k) ;
+	auto nz = (1-u)*get_z_grad(_i,_j,_k) + u*get_z_grad(_i+1,_j,_k) ;
 	
-	vert->nx = (1-u)*get_x_grad(_i,_j,_k) + u*get_x_grad(_i+1,_j,_k) ;
-	vert->ny = (1-u)*get_y_grad(_i,_j,_k) + u*get_y_grad(_i+1,_j,_k) ;
-	vert->nz = (1-u)*get_z_grad(_i,_j,_k) + u*get_z_grad(_i+1,_j,_k) ;
-	
-	u = (real) sqrt( vert->nx * vert->nx + vert->ny * vert->ny +vert->nz * vert->nz ) ;
+	u = (float) sqrt(nx * nx + ny * ny + nz * nz ) ;
 	if( u > 0 )
 	{
-		vert->nx /= u ;
-		vert->ny /= u ;
-		vert->nz /= u ;
+		nx /= u ;
+		ny /= u ;
+		nz /= u ;
 	}
 	
-	
-	return _nverts-1 ;
+	_vertices.push_back(Vertex{x, y, z, nx, ny, nz});
+	return _vertices.size() - 1;
 }
 
 int MarchingCubes::add_c_vertex( )
 //-----------------------------------------------------------------------------
 {
-  test_vertex_addition() ;
-  Vertex *vert = _vertices.data() + _nverts++ ;
+  _vertices.push_back(Vertex{0.f, 0.f, 0.f, 0.f, 0.f, 0.f});
+	Vertex& vert = _vertices.back();
 
   real u = 0 ;
   int   vid ;
 
-  vert->x = vert->y = vert->z =  vert->nx = vert->ny = vert->nz = 0 ;
-
   // Computes the average of the intersection points of the cube
   vid = get_x_vert( _i , _j , _k ) ;
-  if( vid != -1 ) { ++u ; const Vertex &v = _vertices[vid] ; vert->x += v.x ;  vert->y += v.y ;  vert->z += v.z ;  vert->nx += v.nx ; vert->ny += v.ny ; vert->nz += v.nz ; }
+  if( vid != -1 ) { ++u ; const Vertex &v = _vertices[vid] ; vert.x += v.x ;  vert.y += v.y ;  vert.z += v.z ;  vert.nx += v.nx ; vert.ny += v.ny ; vert.nz += v.nz ; }
   vid = get_y_vert(_i+1, _j , _k ) ;
-  if( vid != -1 ) { ++u ; const Vertex &v = _vertices[vid] ; vert->x += v.x ;  vert->y += v.y ;  vert->z += v.z ;  vert->nx += v.nx ; vert->ny += v.ny ; vert->nz += v.nz ; }
+  if( vid != -1 ) { ++u ; const Vertex &v = _vertices[vid] ; vert.x += v.x ;  vert.y += v.y ;  vert.z += v.z ;  vert.nx += v.nx ; vert.ny += v.ny ; vert.nz += v.nz ; }
   vid = get_x_vert( _i ,_j+1, _k ) ;
-  if( vid != -1 ) { ++u ; const Vertex &v = _vertices[vid] ; vert->x += v.x ;  vert->y += v.y ;  vert->z += v.z ;  vert->nx += v.nx ; vert->ny += v.ny ; vert->nz += v.nz ; }
+  if( vid != -1 ) { ++u ; const Vertex &v = _vertices[vid] ; vert.x += v.x ;  vert.y += v.y ;  vert.z += v.z ;  vert.nx += v.nx ; vert.ny += v.ny ; vert.nz += v.nz ; }
   vid = get_y_vert( _i , _j , _k ) ;
-  if( vid != -1 ) { ++u ; const Vertex &v = _vertices[vid] ; vert->x += v.x ;  vert->y += v.y ;  vert->z += v.z ;  vert->nx += v.nx ; vert->ny += v.ny ; vert->nz += v.nz ; }
+  if( vid != -1 ) { ++u ; const Vertex &v = _vertices[vid] ; vert.x += v.x ;  vert.y += v.y ;  vert.z += v.z ;  vert.nx += v.nx ; vert.ny += v.ny ; vert.nz += v.nz ; }
   vid = get_x_vert( _i , _j ,_k+1) ;
-  if( vid != -1 ) { ++u ; const Vertex &v = _vertices[vid] ; vert->x += v.x ;  vert->y += v.y ;  vert->z += v.z ;  vert->nx += v.nx ; vert->ny += v.ny ; vert->nz += v.nz ; }
+  if( vid != -1 ) { ++u ; const Vertex &v = _vertices[vid] ; vert.x += v.x ;  vert.y += v.y ;  vert.z += v.z ;  vert.nx += v.nx ; vert.ny += v.ny ; vert.nz += v.nz ; }
   vid = get_y_vert(_i+1, _j ,_k+1) ;
-  if( vid != -1 ) { ++u ; const Vertex &v = _vertices[vid] ; vert->x += v.x ;  vert->y += v.y ;  vert->z += v.z ;  vert->nx += v.nx ; vert->ny += v.ny ; vert->nz += v.nz ; }
+  if( vid != -1 ) { ++u ; const Vertex &v = _vertices[vid] ; vert.x += v.x ;  vert.y += v.y ;  vert.z += v.z ;  vert.nx += v.nx ; vert.ny += v.ny ; vert.nz += v.nz ; }
   vid = get_x_vert( _i ,_j+1,_k+1) ;
-  if( vid != -1 ) { ++u ; const Vertex &v = _vertices[vid] ; vert->x += v.x ;  vert->y += v.y ;  vert->z += v.z ;  vert->nx += v.nx ; vert->ny += v.ny ; vert->nz += v.nz ; }
+  if( vid != -1 ) { ++u ; const Vertex &v = _vertices[vid] ; vert.x += v.x ;  vert.y += v.y ;  vert.z += v.z ;  vert.nx += v.nx ; vert.ny += v.ny ; vert.nz += v.nz ; }
   vid = get_y_vert( _i , _j ,_k+1) ;
-  if( vid != -1 ) { ++u ; const Vertex &v = _vertices[vid] ; vert->x += v.x ;  vert->y += v.y ;  vert->z += v.z ;  vert->nx += v.nx ; vert->ny += v.ny ; vert->nz += v.nz ; }
+  if( vid != -1 ) { ++u ; const Vertex &v = _vertices[vid] ; vert.x += v.x ;  vert.y += v.y ;  vert.z += v.z ;  vert.nx += v.nx ; vert.ny += v.ny ; vert.nz += v.nz ; }
   vid = get_z_vert( _i , _j , _k ) ;
-  if( vid != -1 ) { ++u ; const Vertex &v = _vertices[vid] ; vert->x += v.x ;  vert->y += v.y ;  vert->z += v.z ;  vert->nx += v.nx ; vert->ny += v.ny ; vert->nz += v.nz ; }
+  if( vid != -1 ) { ++u ; const Vertex &v = _vertices[vid] ; vert.x += v.x ;  vert.y += v.y ;  vert.z += v.z ;  vert.nx += v.nx ; vert.ny += v.ny ; vert.nz += v.nz ; }
   vid = get_z_vert(_i+1, _j , _k ) ;
-  if( vid != -1 ) { ++u ; const Vertex &v = _vertices[vid] ; vert->x += v.x ;  vert->y += v.y ;  vert->z += v.z ;  vert->nx += v.nx ; vert->ny += v.ny ; vert->nz += v.nz ; }
+  if( vid != -1 ) { ++u ; const Vertex &v = _vertices[vid] ; vert.x += v.x ;  vert.y += v.y ;  vert.z += v.z ;  vert.nx += v.nx ; vert.ny += v.ny ; vert.nz += v.nz ; }
   vid = get_z_vert(_i+1,_j+1, _k ) ;
-  if( vid != -1 ) { ++u ; const Vertex &v = _vertices[vid] ; vert->x += v.x ;  vert->y += v.y ;  vert->z += v.z ;  vert->nx += v.nx ; vert->ny += v.ny ; vert->nz += v.nz ; }
+  if( vid != -1 ) { ++u ; const Vertex &v = _vertices[vid] ; vert.x += v.x ;  vert.y += v.y ;  vert.z += v.z ;  vert.nx += v.nx ; vert.ny += v.ny ; vert.nz += v.nz ; }
   vid = get_z_vert( _i ,_j+1, _k ) ;
-  if( vid != -1 ) { ++u ; const Vertex &v = _vertices[vid] ; vert->x += v.x ;  vert->y += v.y ;  vert->z += v.z ;  vert->nx += v.nx ; vert->ny += v.ny ; vert->nz += v.nz ; }
+  if( vid != -1 ) { ++u ; const Vertex &v = _vertices[vid] ; vert.x += v.x ;  vert.y += v.y ;  vert.z += v.z ;  vert.nx += v.nx ; vert.ny += v.ny ; vert.nz += v.nz ; }
 
-  vert->x  /= u ;
-  vert->y  /= u ;
-  vert->z  /= u ;
+  vert.x  /= u ;
+  vert.y  /= u ;
+  vert.z  /= u ;
 
-  u = (real) sqrt( vert->nx * vert->nx + vert->ny * vert->ny +vert->nz * vert->nz ) ;
+  u = (real) sqrt( vert.nx * vert.nx + vert.ny * vert.ny +vert.nz * vert.nz ) ;
   if( u > 0 )
   {
-    vert->nx /= u ;
-    vert->ny /= u ;
-    vert->nz /= u ;
+    vert.nx /= u ;
+    vert.ny /= u ;
+    vert.nz /= u ;
   }
 
-  return _nverts-1 ;
+  return _vertices.size() - 1;
 }
 //_____________________________________________________________________________
