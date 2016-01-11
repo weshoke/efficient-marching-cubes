@@ -151,8 +151,6 @@ public :
 protected :
   /** tesselates one cube */
   void process_cube (const glm::ivec3 &grid_coord, uchar lut_entry, float *cube);
-  /** tests if the components of the tesselation of the cube should be connected through the interior of the cube */
-  bool test_interior( schar s, uchar config_case, uchar config, uchar subconfig, float *cube )    ;
 
 
 //-----------------------------------------------------------------------------

@@ -22,6 +22,8 @@
 #include "ply.h"
 #include "LookUpTable.h"
 
+bool test_interior( schar s, uchar config_case, uchar config, uchar subconfig, float *cube );
+
 //_____________________________________________________________________________
 // print cube for debug
 void print_cube(float *cube) {
@@ -196,10 +198,11 @@ bool test_face( schar face, float *cube ) {
 
 
 //_____________________________________________________________________________
+// tests if the components of the tesselation of the cube should be connected through the interior of the cube
 // Test the interior of a cube
 // if s == 7, return true  if the interior is empty
 // if s ==-7, return false if the interior is empty
-bool MarchingCubes::test_interior( schar s, uchar config_case, uchar config, uchar subconfig, float *cube )
+bool test_interior( schar s, uchar config_case, uchar config, uchar subconfig, float *cube )
 //-----------------------------------------------------------------------------
 {
   real t, At=0, Bt=0, Ct=0, Dt=0, a, b ;
