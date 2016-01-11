@@ -122,7 +122,10 @@ public :
    * \param j ordinate of the cube
    * \param k height of the cube
    */
-  inline const real get_data  ( const int i, const int j, const int k ) const { return _data[ i + j*_size_x + k*_size_x*_size_y] ; }
+	inline const float get_data(const glm::ivec3 &coord) const {
+		return _data[ coord.x + coord.y*_size_x + coord.z*_size_x*_size_y];
+	}
+	
   /**
    * sets a specific cube of the grid
    * \param val new value for the cube

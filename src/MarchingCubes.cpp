@@ -65,7 +65,7 @@ void MarchingCubes::run( real iso )
     _lut_entry = 0 ;
     for( int p = 0 ; p < 8 ; ++p )
     {
-      cube[p] = get_data( _i+((p^(p>>1))&1), _j+((p>>1)&1), _k+((p>>2)&1) ) - iso ;
+			cube[p] = get_data(glm::ivec3(_i+((p^(p>>1))&1), _j+((p>>1)&1), _k+((p>>2)&1))) - iso ;
 			if( std::abs( cube[p] ) < std::numeric_limits<float>::epsilon() ) {
 				cube[p] = std::numeric_limits<float>::epsilon() ;
 			}
@@ -119,41 +119,42 @@ void MarchingCubes::init_all ()
 void MarchingCubes::compute_intersection_points( real iso )
 //-----------------------------------------------------------------------------
 {
-	float cube[8];
-	
-  for( _k = 0 ; _k < _size_z ; _k++ )
-  for( _j = 0 ; _j < _size_y ; _j++ )
-  for( _i = 0 ; _i < _size_x ; _i++ )
-  {
-    cube[0] = get_data( _i, _j, _k ) - iso ;
-    if( _i < _size_x - 1 ) cube[1] = get_data(_i+1, _j , _k ) - iso ;
-    else                   cube[1] = cube[0] ;
+	for(int k=0; k < _size_z; ++k) {
+		for(int j=0; j < _size_y; ++j) {
+			for(int i=0; i < _size_x; ++i) {
+				auto grid_coord = glm::ivec3(i, j, k);
+			
+				float cube[8];
+				cube[0] = get_data(grid_coord) - iso ;
+				if( _i < _size_x - 1 ) cube[1] = get_data(glm::ivec3(i+1, j, k)) - iso ;
+				else                   cube[1] = cube[0] ;
 
-    if( _j < _size_y - 1 ) cube[3] = get_data( _i ,_j+1, _k ) - iso ;
-    else                   cube[3] = cube[0] ;
+				if( _j < _size_y - 1 ) cube[3] = get_data(glm::ivec3(i, j+1, k)) - iso ;
+				else                   cube[3] = cube[0] ;
 
-    if( _k < _size_z - 1 ) cube[4] = get_data( _i , _j ,_k+1) - iso ;
-    else                   cube[4] = cube[0] ;
+				if( _k < _size_z - 1 ) cube[4] = get_data(glm::ivec3(i, j ,k+1)) - iso ;
+				else                   cube[4] = cube[0] ;
 
-		if( std::abs( cube[0] ) < std::numeric_limits<float>::epsilon() ) cube[0] = std::numeric_limits<float>::epsilon() ;
-    if( std::abs( cube[1] ) < std::numeric_limits<float>::epsilon() ) cube[1] = std::numeric_limits<float>::epsilon() ;
-    if( std::abs( cube[3] ) < std::numeric_limits<float>::epsilon() ) cube[3] = std::numeric_limits<float>::epsilon() ;
-    if( std::abs( cube[4] ) < std::numeric_limits<float>::epsilon() ) cube[4] = std::numeric_limits<float>::epsilon() ;
+				if( std::abs( cube[0] ) < std::numeric_limits<float>::epsilon() ) cube[0] = std::numeric_limits<float>::epsilon() ;
+				if( std::abs( cube[1] ) < std::numeric_limits<float>::epsilon() ) cube[1] = std::numeric_limits<float>::epsilon() ;
+				if( std::abs( cube[3] ) < std::numeric_limits<float>::epsilon() ) cube[3] = std::numeric_limits<float>::epsilon() ;
+				if( std::abs( cube[4] ) < std::numeric_limits<float>::epsilon() ) cube[4] = std::numeric_limits<float>::epsilon() ;
 
-		auto grid_coord = glm::ivec3(_i, _j, _k);
-    if( cube[0] < 0 )
-    {
-			if( cube[1] > 0 ) set_x_vert( add_vertex(grid_coord, glm::ivec3(1, 0, 0), 1, cube), _i,_j,_k ) ;
-      if( cube[3] > 0 ) set_y_vert( add_vertex(grid_coord, glm::ivec3(0, 1, 0), 3, cube), _i,_j,_k ) ;
-      if( cube[4] > 0 ) set_z_vert( add_vertex(grid_coord, glm::ivec3(0, 0, 1), 4, cube), _i,_j,_k ) ;
-    }
-    else
-    {
-      if( cube[1] < 0 ) set_x_vert( add_vertex(grid_coord, glm::ivec3(1, 0, 0), 1, cube), _i,_j,_k ) ;
-      if( cube[3] < 0 ) set_y_vert( add_vertex(grid_coord, glm::ivec3(0, 1, 0), 3, cube), _i,_j,_k ) ;
-      if( cube[4] < 0 ) set_z_vert( add_vertex(grid_coord, glm::ivec3(0, 0, 1), 4, cube), _i,_j,_k ) ;
-    }
-  }
+				if( cube[0] < 0 )
+				{
+					if( cube[1] > 0 ) set_x_vert( add_vertex(grid_coord, glm::ivec3(1, 0, 0), 1, cube), _i,_j,_k ) ;
+					if( cube[3] > 0 ) set_y_vert( add_vertex(grid_coord, glm::ivec3(0, 1, 0), 3, cube), _i,_j,_k ) ;
+					if( cube[4] > 0 ) set_z_vert( add_vertex(grid_coord, glm::ivec3(0, 0, 1), 4, cube), _i,_j,_k ) ;
+				}
+				else
+				{
+					if( cube[1] < 0 ) set_x_vert( add_vertex(grid_coord, glm::ivec3(1, 0, 0), 1, cube), _i,_j,_k ) ;
+					if( cube[3] < 0 ) set_y_vert( add_vertex(grid_coord, glm::ivec3(0, 1, 0), 3, cube), _i,_j,_k ) ;
+					if( cube[4] < 0 ) set_z_vert( add_vertex(grid_coord, glm::ivec3(0, 0, 1), 4, cube), _i,_j,_k ) ;
+				}
+			}
+		}
+	}
 }
 //_____________________________________________________________________________
 
@@ -735,45 +736,51 @@ void MarchingCubes::add_triangle( const char* trig, char n, int v12 ) {
 real MarchingCubes::get_x_grad( const int i, const int j, const int k ) const
 //-----------------------------------------------------------------------------
 {
-  if( i > 0 )
-  {
-    if ( i < _size_x - 1 )
-      return ( get_data( i+1, j, k ) - get_data( i-1, j, k ) ) / 2 ;
-    else
-      return get_data( i, j, k ) - get_data( i-1, j, k ) ;
+  if(i > 0) {
+		if(i < _size_x - 1 ) {
+			return ( get_data(glm::ivec3(i+1, j, k)) - get_data(glm::ivec3(i-1, j, k ))) / 2 ;
+		}
+		else {
+      return get_data(glm::ivec3(i, j, k)) - get_data(glm::ivec3(i-1, j, k)) ;
+		}
   }
-  else
-    return get_data( i+1, j, k ) - get_data( i, j, k ) ;
+	else {
+    return get_data(glm::ivec3(i+1, j, k)) - get_data(glm::ivec3(i, j, k)) ;
+	}
 }
 //-----------------------------------------------------------------------------
 
 real MarchingCubes::get_y_grad( const int i, const int j, const int k ) const
 //-----------------------------------------------------------------------------
 {
-  if( j > 0 )
-  {
-    if ( j < _size_y - 1 )
-      return ( get_data( i, j+1, k ) - get_data( i, j-1, k ) ) / 2 ;
-    else
-      return get_data( i, j, k ) - get_data( i, j-1, k ) ;
+  if(j > 0) {
+		if (j < _size_y - 1) {
+			return ( get_data(glm::ivec3(i, j+1, k)) - get_data(glm::ivec3(i, j-1, k)) ) / 2 ;
+		}
+		else {
+      return get_data(glm::ivec3(i, j, k)) - get_data(glm::ivec3(i, j-1, k));
+		}
   }
-  else
-    return get_data( i, j+1, k ) - get_data( i, j, k ) ;
+	else {
+    return get_data(glm::ivec3(i, j+1, k)) - get_data(glm::ivec3(i, j, k));
+	}
 }
 //-----------------------------------------------------------------------------
 
 real MarchingCubes::get_z_grad( const int i, const int j, const int k ) const
 //-----------------------------------------------------------------------------
 {
-  if( k > 0 )
-  {
-    if ( k < _size_z - 1 )
-      return ( get_data( i, j, k+1 ) - get_data( i, j, k-1 ) ) / 2 ;
-    else
-      return get_data( i, j, k ) - get_data( i, j, k-1 ) ;
+  if(k > 0) {
+		if(k < _size_z - 1) {
+      return ( get_data(glm::ivec3(i, j, k+1)) - get_data(glm::ivec3(i, j, k-1)) ) / 2 ;
+		}
+		else {
+      return get_data(glm::ivec3(i, j, k)) - get_data(glm::ivec3(i, j, k-1)) ;
+		}
   }
-  else
-    return get_data( i, j, k+1 ) - get_data( i, j, k ) ;
+	else {
+    return get_data(glm::ivec3(i, j, k+1)) - get_data(glm::ivec3(i, j, k)) ;
+	}
 }
 //_____________________________________________________________________________
 
