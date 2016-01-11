@@ -39,12 +39,9 @@ void print_cube(float *cube) {
 
 //_____________________________________________________________________________
 // Constructor
-MarchingCubes::MarchingCubes( const int size_x /*= -1*/, const int size_y /*= -1*/, const int size_z /*= -1*/ ) :
-//-----------------------------------------------------------------------------
-  _originalMC(false),
-  _size_x(size_x),
-  _size_y(size_y),
-  _size_z(size_z)
+MarchingCubes::MarchingCubes( const int size_x /*= -1*/, const int size_y /*= -1*/, const int size_z /*= -1*/ )
+: _originalMC(false)
+, _size(size_x, size_y, size_z)
 {}
 //_____________________________________________________________________________
 
@@ -59,9 +56,9 @@ void MarchingCubes::run( real iso )
 
   compute_intersection_points( iso ) ;
 
-  for(int k = 0 ; k < _size_z-1 ; k++ )
-  for(int j = 0 ; j < _size_y-1 ; j++ )
-  for(int i = 0 ; i < _size_x-1 ; i++ )
+  for(int k = 0 ; k < _size.z-1 ; k++ )
+  for(int j = 0 ; j < _size.y-1 ; j++ )
+  for(int i = 0 ; i < _size.x-1 ; i++ )
   {
 		float cube[8];
 		// cube sign representation in [0..255]
@@ -89,10 +86,10 @@ void MarchingCubes::run( real iso )
 void MarchingCubes::init_temps()
 //-----------------------------------------------------------------------------
 {
-	_data.resize(_size_x * _size_y * _size_z);
-	_x_verts.resize(_size_x * _size_y * _size_z);
-	_y_verts.resize(_size_x * _size_y * _size_z);
-	_z_verts.resize(_size_x * _size_y * _size_z);
+	_data.resize(_size.x * _size.y * _size.z);
+	_x_verts.resize(_size.x * _size.y * _size.z);
+	_y_verts.resize(_size.x * _size.y * _size.z);
+	_z_verts.resize(_size.x * _size.y * _size.z);
 	
 	memset( _x_verts.data(), -1, _x_verts.size() * sizeof( int ) ) ;
   memset( _y_verts.data(), -1, _y_verts.size() * sizeof( int ) ) ;
@@ -124,18 +121,18 @@ void MarchingCubes::compute_intersection_points( real iso )
 {
 	float cube[8];
 	
-  for(int k = 0 ; k < _size_z ; k++ )
-  for(int j = 0 ; j < _size_y ; j++ )
-  for(int i = 0 ; i < _size_x ; i++ )
+  for(int k = 0 ; k < _size.z ; k++ )
+  for(int j = 0 ; j < _size.y ; j++ )
+  for(int i = 0 ; i < _size.x ; i++ )
   {
     cube[0] = get_data( i, j, k ) - iso ;
-    if( i < _size_x - 1 ) cube[1] = get_data(i+1, j , k ) - iso ;
+    if( i < _size.x - 1 ) cube[1] = get_data(i+1, j , k ) - iso ;
     else                   cube[1] = cube[0] ;
 
-    if( j < _size_y - 1 ) cube[3] = get_data( i ,j+1, k ) - iso ;
+    if( j < _size.y - 1 ) cube[3] = get_data( i ,j+1, k ) - iso ;
     else                   cube[3] = cube[0] ;
 
-    if( k < _size_z - 1 ) cube[4] = get_data( i , j ,k+1) - iso ;
+    if( k < _size.z - 1 ) cube[4] = get_data( i , j ,k+1) - iso ;
     else                   cube[4] = cube[0] ;
 
 		if( std::abs( cube[0] ) < std::numeric_limits<float>::epsilon() ) cube[0] = std::numeric_limits<float>::epsilon() ;
@@ -738,13 +735,15 @@ void MarchingCubes::add_triangle( const glm::ivec3 &grid_coord, const char* trig
 
 //_____________________________________________________________________________
 // Calculating gradient
+//float get_grad(const glm::ivec3 &grid_coord, const glm::ivec3 &)
+
 
 real MarchingCubes::get_x_grad( const int i, const int j, const int k ) const
 //-----------------------------------------------------------------------------
 {
   if( i > 0 )
   {
-    if ( i < _size_x - 1 )
+    if ( i < _size.x - 1 )
       return ( get_data( i+1, j, k ) - get_data( i-1, j, k ) ) / 2 ;
     else
       return get_data( i, j, k ) - get_data( i-1, j, k ) ;
@@ -759,7 +758,7 @@ real MarchingCubes::get_y_grad( const int i, const int j, const int k ) const
 {
   if( j > 0 )
   {
-    if ( j < _size_y - 1 )
+    if ( j < _size.y - 1 )
       return ( get_data( i, j+1, k ) - get_data( i, j-1, k ) ) / 2 ;
     else
       return get_data( i, j, k ) - get_data( i, j-1, k ) ;
@@ -774,7 +773,7 @@ real MarchingCubes::get_z_grad( const int i, const int j, const int k ) const
 {
   if( k > 0 )
   {
-    if ( k < _size_z - 1 )
+    if ( k < _size.z - 1 )
       return ( get_data( i, j, k+1 ) - get_data( i, j, k-1 ) ) / 2 ;
     else
       return get_data( i, j, k ) - get_data( i, j, k-1 ) ;

@@ -248,9 +248,7 @@ protected :
 protected :
   bool      _originalMC ;   /**< selects wether the algorithm will use the enhanced topologically controlled lookup table or the original MarchingCubes */
 
-  int       _size_x     ;  /**< width  of the grid */
-  int       _size_y     ;  /**< depth  of the grid */
-  int       _size_z     ;  /**< height of the grid */
+	glm::ivec3 _size;
   std::vector<float> _data;
 
 	std::vector<int> _x_verts    ;  /**< pre-computed vertex indices on the lower horizontal   edge of each cube */
