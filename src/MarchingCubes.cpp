@@ -755,54 +755,6 @@ float MarchingCubes::get_grad(const glm::ivec3 &grid_coord, int dim) {
 	}
 }
 
-/*
-real MarchingCubes::get_x_grad( const int i, const int j, const int k ) const
-//-----------------------------------------------------------------------------
-{
-  if( i > 0 )
-  {
-    if ( i < _size.x - 1 )
-      return ( get_data( i+1, j, k ) - get_data( i-1, j, k ) ) / 2 ;
-    else
-      return get_data( i, j, k ) - get_data( i-1, j, k ) ;
-  }
-  else
-    return get_data( i+1, j, k ) - get_data( i, j, k ) ;
-}
-//-----------------------------------------------------------------------------
-
-real MarchingCubes::get_y_grad( const int i, const int j, const int k ) const
-//-----------------------------------------------------------------------------
-{
-  if( j > 0 )
-  {
-    if ( j < _size.y - 1 )
-      return ( get_data( i, j+1, k ) - get_data( i, j-1, k ) ) / 2 ;
-    else
-      return get_data( i, j, k ) - get_data( i, j-1, k ) ;
-  }
-  else
-    return get_data( i, j+1, k ) - get_data( i, j, k ) ;
-}
-//-----------------------------------------------------------------------------
-
-real MarchingCubes::get_z_grad( const int i, const int j, const int k ) const
-//-----------------------------------------------------------------------------
-{
-  if( k > 0 )
-  {
-    if ( k < _size.z - 1 )
-      return ( get_data( i, j, k+1 ) - get_data( i, j, k-1 ) ) / 2 ;
-    else
-      return get_data( i, j, k ) - get_data( i, j, k-1 ) ;
-  }
-  else
-    return get_data( i, j, k+1 ) - get_data( i, j, k ) ;
-}
-*/
-//_____________________________________________________________________________
-
-
 //_____________________________________________________________________________
 // Adding vertices
 
