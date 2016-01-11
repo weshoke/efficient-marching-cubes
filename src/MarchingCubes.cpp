@@ -24,10 +24,10 @@
 
 //_____________________________________________________________________________
 // print cube for debug
-void MarchingCubes::print_cube() {
+void print_cube(float *cube) {
 	std::cout << "\t";
 	for(int i=0; i < 8; ++i) {
-		std::cout << _cube[i] << " ";
+		std::cout << cube[i] << " ";
 	}
 	std::cout << "\n";
 }
@@ -61,15 +61,18 @@ void MarchingCubes::run( real iso )
   for( _j = 0 ; _j < _size_y-1 ; _j++ )
   for( _i = 0 ; _i < _size_x-1 ; _i++ )
   {
+		float cube[8];
     _lut_entry = 0 ;
     for( int p = 0 ; p < 8 ; ++p )
     {
-      _cube[p] = get_data( _i+((p^(p>>1))&1), _j+((p>>1)&1), _k+((p>>2)&1) ) - iso ;
-			if( std::abs( _cube[p] ) < std::numeric_limits<float>::epsilon() ) _cube[p] = std::numeric_limits<float>::epsilon() ;
-      if( _cube[p] > 0 ) _lut_entry += 1 << p ;
+      cube[p] = get_data( _i+((p^(p>>1))&1), _j+((p>>1)&1), _k+((p>>2)&1) ) - iso ;
+			if( std::abs( cube[p] ) < std::numeric_limits<float>::epsilon() ) {
+				cube[p] = std::numeric_limits<float>::epsilon() ;
+			}
+			if( cube[p] > 0 ) _lut_entry += 1 << p ;
     }
 
-    process_cube(_cube) ;
+    process_cube(cube) ;
   }
 
 	std::cout << "Marching Cubes ran in " << ((double)(clock() - time)/CLOCKS_PER_SEC) << " secs.\n";
@@ -138,7 +141,6 @@ void MarchingCubes::compute_intersection_points( real iso )
     if( std::abs( cube[4] ) < std::numeric_limits<float>::epsilon() ) cube[4] = std::numeric_limits<float>::epsilon() ;
 
 		auto grid_coord = glm::ivec3(_i, _j, _k);
-
     if( cube[0] < 0 )
     {
 			if( cube[1] > 0 ) set_x_vert( add_vertex(grid_coord, glm::ivec3(1, 0, 0), 1, cube), _i,_j,_k ) ;
@@ -196,7 +198,7 @@ bool test_face( schar face, float *cube ) {
 // Test the interior of a cube
 // if s == 7, return true  if the interior is empty
 // if s ==-7, return false if the interior is empty
-bool MarchingCubes::test_interior( schar s )
+bool MarchingCubes::test_interior( schar s, float *cube )
 //-----------------------------------------------------------------------------
 {
   real t, At=0, Bt=0, Ct=0, Dt=0, a, b ;
@@ -207,16 +209,16 @@ bool MarchingCubes::test_interior( schar s )
   {
   case  4 :
   case 10 :
-    a = ( _cube[4] - _cube[0] ) * ( _cube[6] - _cube[2] ) - ( _cube[7] - _cube[3] ) * ( _cube[5] - _cube[1] ) ;
-    b =  _cube[2] * ( _cube[4] - _cube[0] ) + _cube[0] * ( _cube[6] - _cube[2] )
-             - _cube[1] * ( _cube[7] - _cube[3] ) - _cube[3] * ( _cube[5] - _cube[1] ) ;
+    a = ( cube[4] - cube[0] ) * ( cube[6] - cube[2] ) - ( cube[7] - cube[3] ) * ( cube[5] - cube[1] ) ;
+    b =  cube[2] * ( cube[4] - cube[0] ) + cube[0] * ( cube[6] - cube[2] )
+             - cube[1] * ( cube[7] - cube[3] ) - cube[3] * ( cube[5] - cube[1] ) ;
     t = - b / (2*a) ;
     if( t<0 || t>1 ) return s>0 ;
 
-    At = _cube[0] + ( _cube[4] - _cube[0] ) * t ;
-    Bt = _cube[3] + ( _cube[7] - _cube[3] ) * t ;
-    Ct = _cube[2] + ( _cube[6] - _cube[2] ) * t ;
-    Dt = _cube[1] + ( _cube[5] - _cube[1] ) * t ;
+    At = cube[0] + ( cube[4] - cube[0] ) * t ;
+    Bt = cube[3] + ( cube[7] - cube[3] ) * t ;
+    Ct = cube[2] + ( cube[6] - cube[2] ) * t ;
+    Dt = cube[1] + ( cube[5] - cube[1] ) * t ;
     break ;
 
   case  6 :
@@ -233,94 +235,94 @@ bool MarchingCubes::test_interior( schar s )
     switch( edge )
     {
     case  0 :
-      t  = _cube[0] / ( _cube[0] - _cube[1] ) ;
+      t  = cube[0] / ( cube[0] - cube[1] ) ;
       At = 0 ;
-      Bt = _cube[3] + ( _cube[2] - _cube[3] ) * t ;
-      Ct = _cube[7] + ( _cube[6] - _cube[7] ) * t ;
-      Dt = _cube[4] + ( _cube[5] - _cube[4] ) * t ;
+      Bt = cube[3] + ( cube[2] - cube[3] ) * t ;
+      Ct = cube[7] + ( cube[6] - cube[7] ) * t ;
+      Dt = cube[4] + ( cube[5] - cube[4] ) * t ;
       break ;
     case  1 :
-      t  = _cube[1] / ( _cube[1] - _cube[2] ) ;
+      t  = cube[1] / ( cube[1] - cube[2] ) ;
       At = 0 ;
-      Bt = _cube[0] + ( _cube[3] - _cube[0] ) * t ;
-      Ct = _cube[4] + ( _cube[7] - _cube[4] ) * t ;
-      Dt = _cube[5] + ( _cube[6] - _cube[5] ) * t ;
+      Bt = cube[0] + ( cube[3] - cube[0] ) * t ;
+      Ct = cube[4] + ( cube[7] - cube[4] ) * t ;
+      Dt = cube[5] + ( cube[6] - cube[5] ) * t ;
       break ;
     case  2 :
-      t  = _cube[2] / ( _cube[2] - _cube[3] ) ;
+      t  = cube[2] / ( cube[2] - cube[3] ) ;
       At = 0 ;
-      Bt = _cube[1] + ( _cube[0] - _cube[1] ) * t ;
-      Ct = _cube[5] + ( _cube[4] - _cube[5] ) * t ;
-      Dt = _cube[6] + ( _cube[7] - _cube[6] ) * t ;
+      Bt = cube[1] + ( cube[0] - cube[1] ) * t ;
+      Ct = cube[5] + ( cube[4] - cube[5] ) * t ;
+      Dt = cube[6] + ( cube[7] - cube[6] ) * t ;
       break ;
     case  3 :
-      t  = _cube[3] / ( _cube[3] - _cube[0] ) ;
+      t  = cube[3] / ( cube[3] - cube[0] ) ;
       At = 0 ;
-      Bt = _cube[2] + ( _cube[1] - _cube[2] ) * t ;
-      Ct = _cube[6] + ( _cube[5] - _cube[6] ) * t ;
-      Dt = _cube[7] + ( _cube[4] - _cube[7] ) * t ;
+      Bt = cube[2] + ( cube[1] - cube[2] ) * t ;
+      Ct = cube[6] + ( cube[5] - cube[6] ) * t ;
+      Dt = cube[7] + ( cube[4] - cube[7] ) * t ;
       break ;
     case  4 :
-      t  = _cube[4] / ( _cube[4] - _cube[5] ) ;
+      t  = cube[4] / ( cube[4] - cube[5] ) ;
       At = 0 ;
-      Bt = _cube[7] + ( _cube[6] - _cube[7] ) * t ;
-      Ct = _cube[3] + ( _cube[2] - _cube[3] ) * t ;
-      Dt = _cube[0] + ( _cube[1] - _cube[0] ) * t ;
+      Bt = cube[7] + ( cube[6] - cube[7] ) * t ;
+      Ct = cube[3] + ( cube[2] - cube[3] ) * t ;
+      Dt = cube[0] + ( cube[1] - cube[0] ) * t ;
       break ;
     case  5 :
-      t  = _cube[5] / ( _cube[5] - _cube[6] ) ;
+      t  = cube[5] / ( cube[5] - cube[6] ) ;
       At = 0 ;
-      Bt = _cube[4] + ( _cube[7] - _cube[4] ) * t ;
-      Ct = _cube[0] + ( _cube[3] - _cube[0] ) * t ;
-      Dt = _cube[1] + ( _cube[2] - _cube[1] ) * t ;
+      Bt = cube[4] + ( cube[7] - cube[4] ) * t ;
+      Ct = cube[0] + ( cube[3] - cube[0] ) * t ;
+      Dt = cube[1] + ( cube[2] - cube[1] ) * t ;
       break ;
     case  6 :
-      t  = _cube[6] / ( _cube[6] - _cube[7] ) ;
+      t  = cube[6] / ( cube[6] - cube[7] ) ;
       At = 0 ;
-      Bt = _cube[5] + ( _cube[4] - _cube[5] ) * t ;
-      Ct = _cube[1] + ( _cube[0] - _cube[1] ) * t ;
-      Dt = _cube[2] + ( _cube[3] - _cube[2] ) * t ;
+      Bt = cube[5] + ( cube[4] - cube[5] ) * t ;
+      Ct = cube[1] + ( cube[0] - cube[1] ) * t ;
+      Dt = cube[2] + ( cube[3] - cube[2] ) * t ;
       break ;
     case  7 :
-      t  = _cube[7] / ( _cube[7] - _cube[4] ) ;
+      t  = cube[7] / ( cube[7] - cube[4] ) ;
       At = 0 ;
-      Bt = _cube[6] + ( _cube[5] - _cube[6] ) * t ;
-      Ct = _cube[2] + ( _cube[1] - _cube[2] ) * t ;
-      Dt = _cube[3] + ( _cube[0] - _cube[3] ) * t ;
+      Bt = cube[6] + ( cube[5] - cube[6] ) * t ;
+      Ct = cube[2] + ( cube[1] - cube[2] ) * t ;
+      Dt = cube[3] + ( cube[0] - cube[3] ) * t ;
       break ;
     case  8 :
-      t  = _cube[0] / ( _cube[0] - _cube[4] ) ;
+      t  = cube[0] / ( cube[0] - cube[4] ) ;
       At = 0 ;
-      Bt = _cube[3] + ( _cube[7] - _cube[3] ) * t ;
-      Ct = _cube[2] + ( _cube[6] - _cube[2] ) * t ;
-      Dt = _cube[1] + ( _cube[5] - _cube[1] ) * t ;
+      Bt = cube[3] + ( cube[7] - cube[3] ) * t ;
+      Ct = cube[2] + ( cube[6] - cube[2] ) * t ;
+      Dt = cube[1] + ( cube[5] - cube[1] ) * t ;
       break ;
     case  9 :
-      t  = _cube[1] / ( _cube[1] - _cube[5] ) ;
+      t  = cube[1] / ( cube[1] - cube[5] ) ;
       At = 0 ;
-      Bt = _cube[0] + ( _cube[4] - _cube[0] ) * t ;
-      Ct = _cube[3] + ( _cube[7] - _cube[3] ) * t ;
-      Dt = _cube[2] + ( _cube[6] - _cube[2] ) * t ;
+      Bt = cube[0] + ( cube[4] - cube[0] ) * t ;
+      Ct = cube[3] + ( cube[7] - cube[3] ) * t ;
+      Dt = cube[2] + ( cube[6] - cube[2] ) * t ;
       break ;
     case 10 :
-      t  = _cube[2] / ( _cube[2] - _cube[6] ) ;
+      t  = cube[2] / ( cube[2] - cube[6] ) ;
       At = 0 ;
-      Bt = _cube[1] + ( _cube[5] - _cube[1] ) * t ;
-      Ct = _cube[0] + ( _cube[4] - _cube[0] ) * t ;
-      Dt = _cube[3] + ( _cube[7] - _cube[3] ) * t ;
+      Bt = cube[1] + ( cube[5] - cube[1] ) * t ;
+      Ct = cube[0] + ( cube[4] - cube[0] ) * t ;
+      Dt = cube[3] + ( cube[7] - cube[3] ) * t ;
       break ;
     case 11 :
-      t  = _cube[3] / ( _cube[3] - _cube[7] ) ;
+      t  = cube[3] / ( cube[3] - cube[7] ) ;
       At = 0 ;
-      Bt = _cube[2] + ( _cube[6] - _cube[2] ) * t ;
-      Ct = _cube[1] + ( _cube[5] - _cube[1] ) * t ;
-      Dt = _cube[0] + ( _cube[4] - _cube[0] ) * t ;
+      Bt = cube[2] + ( cube[6] - cube[2] ) * t ;
+      Ct = cube[1] + ( cube[5] - cube[1] ) * t ;
+      Dt = cube[0] + ( cube[4] - cube[0] ) * t ;
       break ;
-			default : std::cout << " Invalid edge " << edge << "\n";  print_cube() ;  break ;
+			default : std::cout << " Invalid edge " << edge << "\n";  print_cube(cube) ;  break ;
     }
     break ;
 
-  default : std::cout << " Invalid ambiguous case " << _case << "\n";  print_cube() ;  break ;
+  default : std::cout << " Invalid ambiguous case " << _case << "\n";  print_cube(cube) ;  break ;
   }
 
   if( At >= 0 ) test ++ ;
@@ -393,7 +395,7 @@ void MarchingCubes::process_cube(float *cube)
     break ;
 
   case  4 :
-    if( test_interior( test4[_config]) )
+    if( test_interior(test4[_config], cube))
       add_triangle( tiling4_1[_config], 2 ) ; // 4.1.1
     else
       add_triangle( tiling4_2[_config], 6 ) ; // 4.1.2
@@ -408,7 +410,7 @@ void MarchingCubes::process_cube(float *cube)
       add_triangle( tiling6_2[_config], 5 ) ; // 6.2
     else
     {
-      if( test_interior( test6[_config][1]) )
+      if( test_interior( test6[_config][1], cube) )
         add_triangle( tiling6_1_1[_config], 3 ) ; // 6.1.1
       else
 	  {
@@ -442,7 +444,7 @@ void MarchingCubes::process_cube(float *cube)
         v12 = add_c_vertex() ;
         add_triangle( tiling7_3[_config][2], 9, v12 ) ; break ;
       case 7 :
-        if( test_interior( test7[_config][3]) )
+        if( test_interior( test7[_config][3], cube) )
           add_triangle( tiling7_4_2[_config], 9 ) ;
         else
           add_triangle( tiling7_4_1[_config], 5 ) ;
@@ -478,7 +480,7 @@ void MarchingCubes::process_cube(float *cube)
       }
       else
       {
-        if( test_interior( test10[_config][2]) )
+        if( test_interior( test10[_config][2], cube) )
           add_triangle( tiling10_1_1[_config], 4 ) ; // 10.1.1
         else
           add_triangle( tiling10_1_2[_config], 8 ) ; // 10.1.2
@@ -510,7 +512,7 @@ void MarchingCubes::process_cube(float *cube)
       }
       else
       {
-        if( test_interior( test12[_config][2]) )
+        if( test_interior( test12[_config][2], cube) )
           add_triangle( tiling12_1_1[_config], 4 ) ; // 12.1.1
         else
           add_triangle( tiling12_1_2[_config], 8 ) ; // 12.1.2
@@ -595,28 +597,28 @@ void MarchingCubes::process_cube(float *cube)
 
       case 23 :/* 13.5 */
         _subconfig = 0 ;
-        if( test_interior( test13[_config][6] ) )
+        if( test_interior( test13[_config][6], cube ) )
           add_triangle( tiling13_5_1[_config][0], 6 ) ;
         else
           add_triangle( tiling13_5_2[_config][0], 10 ) ;
         break ;
       case 24 :/* 13.5 */
         _subconfig = 1 ;
-        if( test_interior( test13[_config][6] ) )
+        if( test_interior( test13[_config][6], cube ) )
           add_triangle( tiling13_5_1[_config][1], 6 ) ;
         else
           add_triangle( tiling13_5_2[_config][1], 10 ) ;
         break ;
       case 25 :/* 13.5 */
         _subconfig = 2 ;
-        if( test_interior( test13[_config][6] ) )
+        if( test_interior( test13[_config][6], cube ) )
           add_triangle( tiling13_5_1[_config][2], 6 ) ;
         else
           add_triangle( tiling13_5_2[_config][2], 10 ) ;
         break ;
       case 26 :/* 13.5 */
         _subconfig = 3 ;
-        if( test_interior( test13[_config][6] ) )
+        if( test_interior( test13[_config][6], cube ) )
           add_triangle( tiling13_5_1[_config][3], 6 ) ;
         else
           add_triangle( tiling13_5_2[_config][3], 10 ) ;
@@ -676,7 +678,7 @@ void MarchingCubes::process_cube(float *cube)
         add_triangle( tiling13_1_[_config], 4 ) ; break ;
 
       default :
-				std::cout << "Marching Cubes: Impossible case 13?\n";  print_cube() ;
+				std::cout << "Marching Cubes: Impossible case 13?\n";  print_cube(cube) ;
       }
       break ;
 
@@ -716,7 +718,7 @@ void MarchingCubes::add_triangle( const char* trig, char n, int v12 ) {
 			
 			if( tv[t] == -1 ) {
 				std::cout << "Marching Cubes: invalid triangle " << (ntrigs() + 1) << "\n";
-				print_cube() ;
+				//print_cube() ;
 			}
 		}
 		

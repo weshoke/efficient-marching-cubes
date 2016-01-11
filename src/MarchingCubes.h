@@ -152,7 +152,7 @@ protected :
   /** tesselates one cube */
   void process_cube (float *cube);
   /** tests if the components of the tesselation of the cube should be connected through the interior of the cube */
-  bool test_interior( schar s )    ;
+  bool test_interior( schar s, float *cube )    ;
 
 
 //-----------------------------------------------------------------------------
@@ -245,9 +245,6 @@ protected :
    */
   inline void  set_z_vert( const int val, const int i, const int j, const int k ) { _z_verts[ i + j*_size_x + k*_size_x*_size_y] = val ; }
 
-  /** prints cube for debug */
-  void print_cube() ;
-
 //-----------------------------------------------------------------------------
 // Elements
 protected :
@@ -269,7 +266,6 @@ protected :
   int       _j          ;  /**< height of the active cube */
   int       _k          ;  /**< ordinate of the active cube */
 
-  float      _cube[8]    ;  /**< values of the implicit function on the active cube */
   uchar     _lut_entry  ;  /**< cube sign representation in [0..255] */
   uchar     _case       ;  /**< case of the active cube in [0..15] */
   uchar     _config     ;  /**< configuration of the active cube */
