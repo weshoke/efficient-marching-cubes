@@ -150,7 +150,7 @@ public :
 
 protected :
   /** tesselates one cube */
-  void process_cube (float *cube);
+  void process_cube (const glm::ivec3 &grid_coord, float *cube);
   /** tests if the components of the tesselation of the cube should be connected through the interior of the cube */
   bool test_interior( schar s, float *cube )    ;
 
@@ -170,11 +170,11 @@ protected :
    * \param n    the number of triangles to produce
    * \param v12  the index of the interior vertex to use, if necessary
    */
-  void add_triangle ( const char* trig, char n, int v12 = -1 ) ;
+  void add_triangle ( const glm::ivec3 &grid_coord, const char* trig, char n, int v12 = -1 ) ;
 
   int add_vertex(const glm::ivec3 &grid_coord, const glm::ivec3 &dir, int corner, float *cube);
   /** adds a vertex inside the current cube */
-  int add_c_vertex() ;
+  int add_c_vertex(const glm::ivec3 &grid_coord) ;
 
   /**
    * interpolates the horizontal gradient of the implicit function at the lower vertex of the specified cube
@@ -262,9 +262,9 @@ protected :
   std::vector<Vertex> _vertices   ;  /**< vertex   buffer */
 	std::vector<Triangle> _triangles  ;  /**< triangle buffer */
 
-  int       _i          ;  /**< abscisse of the active cube */
-  int       _j          ;  /**< height of the active cube */
-  int       _k          ;  /**< ordinate of the active cube */
+//  int       _i          ;  /**< abscisse of the active cube */
+//  int       _j          ;  /**< height of the active cube */
+ // int       _k          ;  /**< ordinate of the active cube */
 
   uchar     _lut_entry  ;  /**< cube sign representation in [0..255] */
   uchar     _case       ;  /**< case of the active cube in [0..15] */
