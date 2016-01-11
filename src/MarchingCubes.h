@@ -69,7 +69,7 @@ class MarchingCubes
 {
 // Constructors
 public :
-  /**
+	/**
    * Main and default constructor
    * \brief constructor
    * \param size_x width  of the grid
@@ -150,9 +150,9 @@ public :
 
 protected :
   /** tesselates one cube */
-  void process_cube (const glm::ivec3 &grid_coord, float *cube);
+  void process_cube (const glm::ivec3 &grid_coord, uchar lut_entry, float *cube);
   /** tests if the components of the tesselation of the cube should be connected through the interior of the cube */
-  bool test_interior( schar s, float *cube )    ;
+  bool test_interior( schar s, uchar config_case, uchar config, uchar subconfig, float *cube )    ;
 
 
 //-----------------------------------------------------------------------------
@@ -261,11 +261,6 @@ protected :
 
   std::vector<Vertex> _vertices   ;  /**< vertex   buffer */
 	std::vector<Triangle> _triangles  ;  /**< triangle buffer */
-
-  uchar     _lut_entry  ;  /**< cube sign representation in [0..255] */
-  uchar     _case       ;  /**< case of the active cube in [0..15] */
-  uchar     _config     ;  /**< configuration of the active cube */
-  uchar     _subconfig  ;  /**< subconfiguration of the active cube */
 };
 //_____________________________________________________________________________
 
