@@ -174,27 +174,9 @@ protected :
   /** adds a vertex inside the current cube */
   int add_c_vertex(const glm::ivec3 &grid_coord) ;
 
-  /**
-   * interpolates the horizontal gradient of the implicit function at the lower vertex of the specified cube
-   * \param i abscisse of the cube
-   * \param j ordinate of the cube
-   * \param k height of the cube
-   */
-  real get_x_grad( const int i, const int j, const int k ) const ;
-  /**
-   * interpolates the longitudinal gradient of the implicit function at the lower vertex of the specified cube
-   * \param i abscisse of the cube
-   * \param j ordinate of the cube
-   * \param k height of the cube
-   */
-  real get_y_grad( const int i, const int j, const int k ) const ;
-  /**
-   * interpolates the vertical gradient of the implicit function at the lower vertex of the specified cube
-   * \param i abscisse of the cube
-   * \param j ordinate of the cube
-   * \param k height of the cube
-   */
-  real get_z_grad( const int i, const int j, const int k ) const ;
+	// gradient of the implicit function at the lower vertex of the specified cube
+	float get_grad(const glm::ivec3 &grid_coord, int dim);
+
 
 	int index(const int i, const int j, const int k) const { return i + j*_size.x + k*_size.x*_size.y; }
 

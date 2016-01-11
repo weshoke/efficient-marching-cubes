@@ -735,9 +735,27 @@ void MarchingCubes::add_triangle( const glm::ivec3 &grid_coord, const char* trig
 
 //_____________________________________________________________________________
 // Calculating gradient
-//float get_grad(const glm::ivec3 &grid_coord, const glm::ivec3 &)
+float MarchingCubes::get_grad(const glm::ivec3 &grid_coord, int dim) {
+	auto next_grid_coord = grid_coord;
+	next_grid_coord[dim] += 1;
+	
+	auto prev_grid_coord = grid_coord;
+	prev_grid_coord[dim] -= 1;
 
+	if(grid_coord[dim] > 0) {
+		if(grid_coord[dim] < _size[dim] - 1) {
+			return ( get_data( next_grid_coord.x, next_grid_coord.y, next_grid_coord.z ) - get_data( prev_grid_coord.x, prev_grid_coord.y, prev_grid_coord.z ) ) / 2 ;
+		}
+		else {
+			return get_data( grid_coord.x, grid_coord.y, grid_coord.z ) - get_data( prev_grid_coord.x, prev_grid_coord.y, prev_grid_coord.z ) ;
+		}
+	}
+	else {
+		return get_data( next_grid_coord.x, next_grid_coord.y, next_grid_coord.z ) - get_data( grid_coord.x, grid_coord.y, grid_coord.z ) ;
+	}
+}
 
+/*
 real MarchingCubes::get_x_grad( const int i, const int j, const int k ) const
 //-----------------------------------------------------------------------------
 {
@@ -781,6 +799,7 @@ real MarchingCubes::get_z_grad( const int i, const int j, const int k ) const
   else
     return get_data( i, j, k+1 ) - get_data( i, j, k ) ;
 }
+*/
 //_____________________________________________________________________________
 
 
@@ -792,9 +811,9 @@ int MarchingCubes::add_vertex(const glm::ivec3 &grid_coord, const glm::ivec3 &di
 	auto pos = glm::vec3(grid_coord) + glm::vec3(dir) * u;
 	
 	auto grid_coord2 = grid_coord + dir;
-	auto nx = (1-u)*get_x_grad(grid_coord.x, grid_coord.y, grid_coord.z) + u * get_x_grad(grid_coord2.x, grid_coord2.y, grid_coord2.z);
-	auto ny = (1-u)*get_y_grad(grid_coord.x, grid_coord.y, grid_coord.z) + u * get_y_grad(grid_coord2.x, grid_coord2.y, grid_coord2.z);
-	auto nz = (1-u)*get_z_grad(grid_coord.x, grid_coord.y, grid_coord.z) + u * get_z_grad(grid_coord2.x, grid_coord2.y, grid_coord2.z);
+	auto nx = (1-u)*get_grad(grid_coord, 0) + u * get_grad(grid_coord2, 0);
+	auto ny = (1-u)*get_grad(grid_coord, 1) + u * get_grad(grid_coord2, 1);
+	auto nz = (1-u)*get_grad(grid_coord, 2) + u * get_grad(grid_coord2, 2);
 	
 	auto n = glm::normalize(glm::vec3(nx, ny, nz));
 	_vertices.push_back(Vertex{pos.x, pos.y, pos.z, n.x, n.y, n.z});
