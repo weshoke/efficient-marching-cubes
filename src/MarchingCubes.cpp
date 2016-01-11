@@ -9,7 +9,6 @@
  */
 //________________________________________________
 
-
 #include <math.h>
 #include <time.h>
 #include <memory.h>
@@ -22,806 +21,915 @@
 #include "ply.h"
 #include "LookUpTable.h"
 
-bool test_interior( schar s, uchar config_case, uchar config, uchar subconfig, float *cube );
+bool test_interior(schar s, uchar config_case, uchar config, uchar subconfig,
+                   float *cube);
 
 //_____________________________________________________________________________
 // print cube for debug
 void print_cube(float *cube) {
-	std::cout << "\t";
-	for(int i=0; i < 8; ++i) {
-		std::cout << cube[i] << " ";
-	}
-	std::cout << "\n";
+  std::cout << "\t";
+  for (int i = 0; i < 8; ++i) {
+    std::cout << cube[i] << " ";
+  }
+  std::cout << "\n";
 }
 //_____________________________________________________________________________
-
-
 
 //_____________________________________________________________________________
 // Constructor
-MarchingCubes::MarchingCubes( const int size_x /*= -1*/, const int size_y /*= -1*/, const int size_z /*= -1*/ )
-: _originalMC(false)
-, _size(size_x, size_y, size_z)
-{}
+MarchingCubes::MarchingCubes(const int size_x /*= -1*/,
+                             const int size_y /*= -1*/,
+                             const int size_z /*= -1*/)
+    : _originalMC(false), _size(size_x, size_y, size_z) {}
 //_____________________________________________________________________________
-
-
 
 //_____________________________________________________________________________
 // main algorithm
-void MarchingCubes::run( real iso )
+void MarchingCubes::run(real iso)
 //-----------------------------------------------------------------------------
 {
-  clock_t time = clock() ;
+  clock_t time = clock();
 
-  compute_intersection_points( iso ) ;
+  compute_intersection_points(iso);
 
-  for(int k = 0 ; k < _size.z-1 ; k++ )
-  for(int j = 0 ; j < _size.y-1 ; j++ )
-  for(int i = 0 ; i < _size.x-1 ; i++ )
-  {
-		float cube[8];
-		// cube sign representation in [0..255]
-		auto lut_entry = uchar{0};
-    for( int p = 0 ; p < 8 ; ++p )
-    {
-      cube[p] = get_data( i+((p^(p>>1))&1), j+((p>>1)&1), k+((p>>2)&1) ) - iso ;
-			if( std::abs( cube[p] ) < std::numeric_limits<float>::epsilon() ) {
-				cube[p] = std::numeric_limits<float>::epsilon() ;
-			}
-			if( cube[p] > 0 ) lut_entry += 1 << p ;
-    }
+  for (int k = 0; k < _size.z - 1; k++)
+    for (int j = 0; j < _size.y - 1; j++)
+      for (int i = 0; i < _size.x - 1; i++) {
+        float cube[8];
+        // cube sign representation in [0..255]
+        auto lut_entry = uchar{0};
+        for (int p = 0; p < 8; ++p) {
+          cube[p] = get_data(i + ((p ^ (p >> 1)) & 1), j + ((p >> 1) & 1),
+                             k + ((p >> 2) & 1)) -
+                    iso;
+          if (std::abs(cube[p]) < std::numeric_limits<float>::epsilon()) {
+            cube[p] = std::numeric_limits<float>::epsilon();
+          }
+          if (cube[p] > 0)
+            lut_entry += 1 << p;
+        }
 
-		process_cube(glm::ivec3(i, j, k), lut_entry, cube) ;
-  }
+        process_cube(glm::ivec3(i, j, k), lut_entry, cube);
+      }
 
-	std::cout << "Marching Cubes ran in " << ((double)(clock() - time)/CLOCKS_PER_SEC) << " secs.\n";
+  std::cout << "Marching Cubes ran in "
+            << ((double)(clock() - time) / CLOCKS_PER_SEC) << " secs.\n";
 }
 //_____________________________________________________________________________
-
-
 
 //_____________________________________________________________________________
 // init temporary structures (must set sizes before call)
 void MarchingCubes::init_temps()
 //-----------------------------------------------------------------------------
 {
-	_data.resize(_size.x * _size.y * _size.z);
-	_x_verts.resize(_size.x * _size.y * _size.z);
-	_y_verts.resize(_size.x * _size.y * _size.z);
-	_z_verts.resize(_size.x * _size.y * _size.z);
-	
-	memset( _x_verts.data(), -1, _x_verts.size() * sizeof( int ) ) ;
-  memset( _y_verts.data(), -1, _y_verts.size() * sizeof( int ) ) ;
-  memset( _z_verts.data(), -1, _z_verts.size() * sizeof( int ) ) ;
+  _data.resize(_size.x * _size.y * _size.z);
+  _x_verts.resize(_size.x * _size.y * _size.z);
+  _y_verts.resize(_size.x * _size.y * _size.z);
+  _z_verts.resize(_size.x * _size.y * _size.z);
+
+  memset(_x_verts.data(), -1, _x_verts.size() * sizeof(int));
+  memset(_y_verts.data(), -1, _y_verts.size() * sizeof(int));
+  memset(_z_verts.data(), -1, _z_verts.size() * sizeof(int));
 }
 //_____________________________________________________________________________
 
-
-
 //_____________________________________________________________________________
 // init all structures (must set sizes before call)
-void MarchingCubes::init_all ()
+void MarchingCubes::init_all()
 //-----------------------------------------------------------------------------
 {
   init_temps();
 }
 //_____________________________________________________________________________
 
-
-
 //_____________________________________________________________________________
 //_____________________________________________________________________________
-
 
 //_____________________________________________________________________________
 // Compute the intersection points
-void MarchingCubes::compute_intersection_points( real iso )
+void MarchingCubes::compute_intersection_points(real iso)
 //-----------------------------------------------------------------------------
 {
-	float cube[8];
-	
-  for(int k = 0 ; k < _size.z ; k++ )
-  for(int j = 0 ; j < _size.y ; j++ )
-  for(int i = 0 ; i < _size.x ; i++ )
-  {
-    cube[0] = get_data( i, j, k ) - iso ;
-    if( i < _size.x - 1 ) cube[1] = get_data(i+1, j , k ) - iso ;
-    else                   cube[1] = cube[0] ;
+  float cube[8];
 
-    if( j < _size.y - 1 ) cube[3] = get_data( i ,j+1, k ) - iso ;
-    else                   cube[3] = cube[0] ;
+  for (int k = 0; k < _size.z; k++)
+    for (int j = 0; j < _size.y; j++)
+      for (int i = 0; i < _size.x; i++) {
+        cube[0] = get_data(i, j, k) - iso;
+        if (i < _size.x - 1)
+          cube[1] = get_data(i + 1, j, k) - iso;
+        else
+          cube[1] = cube[0];
 
-    if( k < _size.z - 1 ) cube[4] = get_data( i , j ,k+1) - iso ;
-    else                   cube[4] = cube[0] ;
+        if (j < _size.y - 1)
+          cube[3] = get_data(i, j + 1, k) - iso;
+        else
+          cube[3] = cube[0];
 
-		if( std::abs( cube[0] ) < std::numeric_limits<float>::epsilon() ) cube[0] = std::numeric_limits<float>::epsilon() ;
-    if( std::abs( cube[1] ) < std::numeric_limits<float>::epsilon() ) cube[1] = std::numeric_limits<float>::epsilon() ;
-    if( std::abs( cube[3] ) < std::numeric_limits<float>::epsilon() ) cube[3] = std::numeric_limits<float>::epsilon() ;
-    if( std::abs( cube[4] ) < std::numeric_limits<float>::epsilon() ) cube[4] = std::numeric_limits<float>::epsilon() ;
+        if (k < _size.z - 1)
+          cube[4] = get_data(i, j, k + 1) - iso;
+        else
+          cube[4] = cube[0];
 
-		auto grid_coord = glm::ivec3(i, j, k);
-    if( cube[0] < 0 )
-    {
-			if( cube[1] > 0 ) set_x_vert( add_vertex(grid_coord, glm::ivec3(1, 0, 0), 1, cube), i,j,k ) ;
-      if( cube[3] > 0 ) set_y_vert( add_vertex(grid_coord, glm::ivec3(0, 1, 0), 3, cube), i,j,k ) ;
-      if( cube[4] > 0 ) set_z_vert( add_vertex(grid_coord, glm::ivec3(0, 0, 1), 4, cube), i,j,k ) ;
-    }
-    else
-    {
-      if( cube[1] < 0 ) set_x_vert( add_vertex(grid_coord, glm::ivec3(1, 0, 0), 1, cube), i,j,k ) ;
-      if( cube[3] < 0 ) set_y_vert( add_vertex(grid_coord, glm::ivec3(0, 1, 0), 3, cube), i,j,k ) ;
-      if( cube[4] < 0 ) set_z_vert( add_vertex(grid_coord, glm::ivec3(0, 0, 1), 4, cube), i,j,k ) ;
-    }
-  }
+        if (std::abs(cube[0]) < std::numeric_limits<float>::epsilon())
+          cube[0] = std::numeric_limits<float>::epsilon();
+        if (std::abs(cube[1]) < std::numeric_limits<float>::epsilon())
+          cube[1] = std::numeric_limits<float>::epsilon();
+        if (std::abs(cube[3]) < std::numeric_limits<float>::epsilon())
+          cube[3] = std::numeric_limits<float>::epsilon();
+        if (std::abs(cube[4]) < std::numeric_limits<float>::epsilon())
+          cube[4] = std::numeric_limits<float>::epsilon();
+
+        auto grid_coord = glm::ivec3(i, j, k);
+        if (cube[0] < 0) {
+          if (cube[1] > 0)
+            set_x_vert(add_vertex(grid_coord, glm::ivec3(1, 0, 0), 1, cube), i,
+                       j, k);
+          if (cube[3] > 0)
+            set_y_vert(add_vertex(grid_coord, glm::ivec3(0, 1, 0), 3, cube), i,
+                       j, k);
+          if (cube[4] > 0)
+            set_z_vert(add_vertex(grid_coord, glm::ivec3(0, 0, 1), 4, cube), i,
+                       j, k);
+        } else {
+          if (cube[1] < 0)
+            set_x_vert(add_vertex(grid_coord, glm::ivec3(1, 0, 0), 1, cube), i,
+                       j, k);
+          if (cube[3] < 0)
+            set_y_vert(add_vertex(grid_coord, glm::ivec3(0, 1, 0), 3, cube), i,
+                       j, k);
+          if (cube[4] < 0)
+            set_z_vert(add_vertex(grid_coord, glm::ivec3(0, 0, 1), 4, cube), i,
+                       j, k);
+        }
+      }
 }
 //_____________________________________________________________________________
 
-
-
-
-
 //_____________________________________________________________________________
-// tests if the components of the tesselation of the cube should be connected by the interior of an ambiguous face
+// tests if the components of the tesselation of the cube should be connected by
+// the interior of an ambiguous face
 // Test a face
 // if face>0 return true if the face contains a part of the surface
-bool test_face( schar face, float *cube ) {
-  static int corner_lookup[6][4] = {
-		{0, 4, 5, 1},
-		{1, 5, 6, 2},
-		{2, 6, 7, 3},
-		{3, 7, 4, 0},
-		{0, 3, 2, 1},
-		{4, 7, 6, 5}
-	};
-	
-	auto idx = std::abs(face) - 1;
-	auto corners = corner_lookup[idx];
-	auto A = cube[corners[0]];
-	auto B = cube[corners[1]];
-	auto C = cube[corners[2]];
-	auto D = cube[corners[3]];
+bool test_face(schar face, float *cube) {
+  static int corner_lookup[6][4] = {{0, 4, 5, 1}, {1, 5, 6, 2}, {2, 6, 7, 3},
+                                    {3, 7, 4, 0}, {0, 3, 2, 1}, {4, 7, 6, 5}};
 
-	if(std::abs(A * C - B * D) < std::numeric_limits<float>::epsilon()) {
-    return face >= 0 ;
-	}
-	
-	// face and A invert signs
-  return face * A * ( A * C - B * D ) >= 0.f ;
+  auto idx = std::abs(face) - 1;
+  auto corners = corner_lookup[idx];
+  auto A = cube[corners[0]];
+  auto B = cube[corners[1]];
+  auto C = cube[corners[2]];
+  auto D = cube[corners[3]];
+
+  if (std::abs(A * C - B * D) < std::numeric_limits<float>::epsilon()) {
+    return face >= 0;
+  }
+
+  // face and A invert signs
+  return face * A * (A * C - B * D) >= 0.f;
 }
 
-
-
-
-
 //_____________________________________________________________________________
-// tests if the components of the tesselation of the cube should be connected through the interior of the cube
+// tests if the components of the tesselation of the cube should be connected
+// through the interior of the cube
 // Test the interior of a cube
 // if s == 7, return true  if the interior is empty
 // if s ==-7, return false if the interior is empty
-bool test_interior( schar s, uchar config_case, uchar config, uchar subconfig, float *cube )
+bool test_interior(schar s, uchar config_case, uchar config, uchar subconfig,
+                   float *cube)
 //-----------------------------------------------------------------------------
 {
-  real t, At=0, Bt=0, Ct=0, Dt=0, a, b ;
-  char  test =  0 ;
-  char  edge = -1 ; // reference edge of the triangulation
+  real t, At = 0, Bt = 0, Ct = 0, Dt = 0, a, b;
+  char test = 0;
+  char edge = -1; // reference edge of the triangulation
 
-  switch( config_case )
-  {
-  case  4 :
-  case 10 :
-    a = ( cube[4] - cube[0] ) * ( cube[6] - cube[2] ) - ( cube[7] - cube[3] ) * ( cube[5] - cube[1] ) ;
-    b =  cube[2] * ( cube[4] - cube[0] ) + cube[0] * ( cube[6] - cube[2] )
-             - cube[1] * ( cube[7] - cube[3] ) - cube[3] * ( cube[5] - cube[1] ) ;
-    t = - b / (2*a) ;
-    if( t<0 || t>1 ) return s>0 ;
+  switch (config_case) {
+  case 4:
+  case 10:
+    a = (cube[4] - cube[0]) * (cube[6] - cube[2]) -
+        (cube[7] - cube[3]) * (cube[5] - cube[1]);
+    b = cube[2] * (cube[4] - cube[0]) + cube[0] * (cube[6] - cube[2]) -
+        cube[1] * (cube[7] - cube[3]) - cube[3] * (cube[5] - cube[1]);
+    t = -b / (2 * a);
+    if (t < 0 || t > 1)
+      return s > 0;
 
-    At = cube[0] + ( cube[4] - cube[0] ) * t ;
-    Bt = cube[3] + ( cube[7] - cube[3] ) * t ;
-    Ct = cube[2] + ( cube[6] - cube[2] ) * t ;
-    Dt = cube[1] + ( cube[5] - cube[1] ) * t ;
-    break ;
+    At = cube[0] + (cube[4] - cube[0]) * t;
+    Bt = cube[3] + (cube[7] - cube[3]) * t;
+    Ct = cube[2] + (cube[6] - cube[2]) * t;
+    Dt = cube[1] + (cube[5] - cube[1]) * t;
+    break;
 
-  case  6 :
-  case  7 :
-  case 12 :
-  case 13 :
-    switch( config_case )
-    {
-    case  6 : edge = test6 [config][2] ; break ;
-    case  7 : edge = test7 [config][4] ; break ;
-    case 12 : edge = test12[config][3] ; break ;
-    case 13 : edge = tiling13_5_1[config][subconfig][0] ; break ;
+  case 6:
+  case 7:
+  case 12:
+  case 13:
+    switch (config_case) {
+    case 6:
+      edge = test6[config][2];
+      break;
+    case 7:
+      edge = test7[config][4];
+      break;
+    case 12:
+      edge = test12[config][3];
+      break;
+    case 13:
+      edge = tiling13_5_1[config][subconfig][0];
+      break;
     }
-    switch( edge )
-    {
-    case  0 :
-      t  = cube[0] / ( cube[0] - cube[1] ) ;
-      At = 0 ;
-      Bt = cube[3] + ( cube[2] - cube[3] ) * t ;
-      Ct = cube[7] + ( cube[6] - cube[7] ) * t ;
-      Dt = cube[4] + ( cube[5] - cube[4] ) * t ;
-      break ;
-    case  1 :
-      t  = cube[1] / ( cube[1] - cube[2] ) ;
-      At = 0 ;
-      Bt = cube[0] + ( cube[3] - cube[0] ) * t ;
-      Ct = cube[4] + ( cube[7] - cube[4] ) * t ;
-      Dt = cube[5] + ( cube[6] - cube[5] ) * t ;
-      break ;
-    case  2 :
-      t  = cube[2] / ( cube[2] - cube[3] ) ;
-      At = 0 ;
-      Bt = cube[1] + ( cube[0] - cube[1] ) * t ;
-      Ct = cube[5] + ( cube[4] - cube[5] ) * t ;
-      Dt = cube[6] + ( cube[7] - cube[6] ) * t ;
-      break ;
-    case  3 :
-      t  = cube[3] / ( cube[3] - cube[0] ) ;
-      At = 0 ;
-      Bt = cube[2] + ( cube[1] - cube[2] ) * t ;
-      Ct = cube[6] + ( cube[5] - cube[6] ) * t ;
-      Dt = cube[7] + ( cube[4] - cube[7] ) * t ;
-      break ;
-    case  4 :
-      t  = cube[4] / ( cube[4] - cube[5] ) ;
-      At = 0 ;
-      Bt = cube[7] + ( cube[6] - cube[7] ) * t ;
-      Ct = cube[3] + ( cube[2] - cube[3] ) * t ;
-      Dt = cube[0] + ( cube[1] - cube[0] ) * t ;
-      break ;
-    case  5 :
-      t  = cube[5] / ( cube[5] - cube[6] ) ;
-      At = 0 ;
-      Bt = cube[4] + ( cube[7] - cube[4] ) * t ;
-      Ct = cube[0] + ( cube[3] - cube[0] ) * t ;
-      Dt = cube[1] + ( cube[2] - cube[1] ) * t ;
-      break ;
-    case  6 :
-      t  = cube[6] / ( cube[6] - cube[7] ) ;
-      At = 0 ;
-      Bt = cube[5] + ( cube[4] - cube[5] ) * t ;
-      Ct = cube[1] + ( cube[0] - cube[1] ) * t ;
-      Dt = cube[2] + ( cube[3] - cube[2] ) * t ;
-      break ;
-    case  7 :
-      t  = cube[7] / ( cube[7] - cube[4] ) ;
-      At = 0 ;
-      Bt = cube[6] + ( cube[5] - cube[6] ) * t ;
-      Ct = cube[2] + ( cube[1] - cube[2] ) * t ;
-      Dt = cube[3] + ( cube[0] - cube[3] ) * t ;
-      break ;
-    case  8 :
-      t  = cube[0] / ( cube[0] - cube[4] ) ;
-      At = 0 ;
-      Bt = cube[3] + ( cube[7] - cube[3] ) * t ;
-      Ct = cube[2] + ( cube[6] - cube[2] ) * t ;
-      Dt = cube[1] + ( cube[5] - cube[1] ) * t ;
-      break ;	
-    case  9 :
-      t  = cube[1] / ( cube[1] - cube[5] ) ;
-      At = 0 ;
-      Bt = cube[0] + ( cube[4] - cube[0] ) * t ;
-      Ct = cube[3] + ( cube[7] - cube[3] ) * t ;
-      Dt = cube[2] + ( cube[6] - cube[2] ) * t ;
-      break ;
-    case 10 :
-      t  = cube[2] / ( cube[2] - cube[6] ) ;
-      At = 0 ;
-      Bt = cube[1] + ( cube[5] - cube[1] ) * t ;
-      Ct = cube[0] + ( cube[4] - cube[0] ) * t ;
-      Dt = cube[3] + ( cube[7] - cube[3] ) * t ;
-      break ;
-    case 11 :
-      t  = cube[3] / ( cube[3] - cube[7] ) ;
-      At = 0 ;
-      Bt = cube[2] + ( cube[6] - cube[2] ) * t ;
-      Ct = cube[1] + ( cube[5] - cube[1] ) * t ;
-      Dt = cube[0] + ( cube[4] - cube[0] ) * t ;
-      break ;
-			default : std::cout << " Invalid edge " << edge << "\n";  print_cube(cube) ;  break ;
+    switch (edge) {
+    case 0:
+      t = cube[0] / (cube[0] - cube[1]);
+      At = 0;
+      Bt = cube[3] + (cube[2] - cube[3]) * t;
+      Ct = cube[7] + (cube[6] - cube[7]) * t;
+      Dt = cube[4] + (cube[5] - cube[4]) * t;
+      break;
+    case 1:
+      t = cube[1] / (cube[1] - cube[2]);
+      At = 0;
+      Bt = cube[0] + (cube[3] - cube[0]) * t;
+      Ct = cube[4] + (cube[7] - cube[4]) * t;
+      Dt = cube[5] + (cube[6] - cube[5]) * t;
+      break;
+    case 2:
+      t = cube[2] / (cube[2] - cube[3]);
+      At = 0;
+      Bt = cube[1] + (cube[0] - cube[1]) * t;
+      Ct = cube[5] + (cube[4] - cube[5]) * t;
+      Dt = cube[6] + (cube[7] - cube[6]) * t;
+      break;
+    case 3:
+      t = cube[3] / (cube[3] - cube[0]);
+      At = 0;
+      Bt = cube[2] + (cube[1] - cube[2]) * t;
+      Ct = cube[6] + (cube[5] - cube[6]) * t;
+      Dt = cube[7] + (cube[4] - cube[7]) * t;
+      break;
+    case 4:
+      t = cube[4] / (cube[4] - cube[5]);
+      At = 0;
+      Bt = cube[7] + (cube[6] - cube[7]) * t;
+      Ct = cube[3] + (cube[2] - cube[3]) * t;
+      Dt = cube[0] + (cube[1] - cube[0]) * t;
+      break;
+    case 5:
+      t = cube[5] / (cube[5] - cube[6]);
+      At = 0;
+      Bt = cube[4] + (cube[7] - cube[4]) * t;
+      Ct = cube[0] + (cube[3] - cube[0]) * t;
+      Dt = cube[1] + (cube[2] - cube[1]) * t;
+      break;
+    case 6:
+      t = cube[6] / (cube[6] - cube[7]);
+      At = 0;
+      Bt = cube[5] + (cube[4] - cube[5]) * t;
+      Ct = cube[1] + (cube[0] - cube[1]) * t;
+      Dt = cube[2] + (cube[3] - cube[2]) * t;
+      break;
+    case 7:
+      t = cube[7] / (cube[7] - cube[4]);
+      At = 0;
+      Bt = cube[6] + (cube[5] - cube[6]) * t;
+      Ct = cube[2] + (cube[1] - cube[2]) * t;
+      Dt = cube[3] + (cube[0] - cube[3]) * t;
+      break;
+    case 8:
+      t = cube[0] / (cube[0] - cube[4]);
+      At = 0;
+      Bt = cube[3] + (cube[7] - cube[3]) * t;
+      Ct = cube[2] + (cube[6] - cube[2]) * t;
+      Dt = cube[1] + (cube[5] - cube[1]) * t;
+      break;
+    case 9:
+      t = cube[1] / (cube[1] - cube[5]);
+      At = 0;
+      Bt = cube[0] + (cube[4] - cube[0]) * t;
+      Ct = cube[3] + (cube[7] - cube[3]) * t;
+      Dt = cube[2] + (cube[6] - cube[2]) * t;
+      break;
+    case 10:
+      t = cube[2] / (cube[2] - cube[6]);
+      At = 0;
+      Bt = cube[1] + (cube[5] - cube[1]) * t;
+      Ct = cube[0] + (cube[4] - cube[0]) * t;
+      Dt = cube[3] + (cube[7] - cube[3]) * t;
+      break;
+    case 11:
+      t = cube[3] / (cube[3] - cube[7]);
+      At = 0;
+      Bt = cube[2] + (cube[6] - cube[2]) * t;
+      Ct = cube[1] + (cube[5] - cube[1]) * t;
+      Dt = cube[0] + (cube[4] - cube[0]) * t;
+      break;
+    default:
+      std::cout << " Invalid edge " << edge << "\n";
+      print_cube(cube);
+      break;
     }
-    break ;
+    break;
 
-  default : std::cout << " Invalid ambiguous case " << config_case << "\n";  print_cube(cube) ;  break ;
+  default:
+    std::cout << " Invalid ambiguous case " << config_case << "\n";
+    print_cube(cube);
+    break;
   }
 
-  if( At >= 0 ) test ++ ;
-  if( Bt >= 0 ) test += 2 ;
-  if( Ct >= 0 ) test += 4 ;
-  if( Dt >= 0 ) test += 8 ;
-  switch( test )
-  {
-  case  0 : return s>0 ;
-  case  1 : return s>0 ;
-  case  2 : return s>0 ;
-  case  3 : return s>0 ;
-  case  4 : return s>0 ;
-  case  5 : if( At * Ct - Bt * Dt <  std::numeric_limits<float>::epsilon() ) return s>0 ; break ;
-  case  6 : return s>0 ;
-  case  7 : return s<0 ;
-  case  8 : return s>0 ;
-  case  9 : return s>0 ;
-  case 10 : if( At * Ct - Bt * Dt >= std::numeric_limits<float>::epsilon() ) return s>0 ; break ;
-  case 11 : return s<0 ;
-  case 12 : return s>0 ;
-  case 13 : return s<0 ;
-  case 14 : return s<0 ;
-  case 15 : return s<0 ;
+  if (At >= 0)
+    test++;
+  if (Bt >= 0)
+    test += 2;
+  if (Ct >= 0)
+    test += 4;
+  if (Dt >= 0)
+    test += 8;
+  switch (test) {
+  case 0:
+    return s > 0;
+  case 1:
+    return s > 0;
+  case 2:
+    return s > 0;
+  case 3:
+    return s > 0;
+  case 4:
+    return s > 0;
+  case 5:
+    if (At * Ct - Bt * Dt < std::numeric_limits<float>::epsilon())
+      return s > 0;
+    break;
+  case 6:
+    return s > 0;
+  case 7:
+    return s < 0;
+  case 8:
+    return s > 0;
+  case 9:
+    return s > 0;
+  case 10:
+    if (At * Ct - Bt * Dt >= std::numeric_limits<float>::epsilon())
+      return s > 0;
+    break;
+  case 11:
+    return s < 0;
+  case 12:
+    return s > 0;
+  case 13:
+    return s < 0;
+  case 14:
+    return s < 0;
+  case 15:
+    return s < 0;
   }
 
   return s < 0;
 }
 //_____________________________________________________________________________
 
-
-
-
 //_____________________________________________________________________________
 // Process a unit cube
-void MarchingCubes::process_cube(const glm::ivec3 &grid_coord, uchar lut_entry, float *cube)
+void MarchingCubes::process_cube(const glm::ivec3 &grid_coord, uchar lut_entry,
+                                 float *cube)
 //-----------------------------------------------------------------------------
 {
-  if( _originalMC )
-  {
-    char nt = 0 ;
-    while( casesClassic[lut_entry][3*nt] != -1 ) nt++ ;
-    add_triangle( grid_coord, casesClassic[lut_entry], nt ) ;
-    return ;
+  if (_originalMC) {
+    char nt = 0;
+    while (casesClassic[lut_entry][3 * nt] != -1)
+      nt++;
+    add_triangle(grid_coord, casesClassic[lut_entry], nt);
+    return;
   }
 
-  int   v12 = -1 ;
-	// case of the active cube in [0..15]
-	uchar config_case = cases[lut_entry][0];
-	// configuration of the active cube
-	uchar config = cases[lut_entry][1];
-	// subconfiguration of the active cube
-	uchar subconfig = 0;
+  int v12 = -1;
+  // case of the active cube in [0..15]
+  uchar config_case = cases[lut_entry][0];
+  // configuration of the active cube
+  uchar config = cases[lut_entry][1];
+  // subconfiguration of the active cube
+  uchar subconfig = 0;
 
-  switch( config_case )
-  {
-  case  0 :
-    break ;
+  switch (config_case) {
+  case 0:
+    break;
 
-  case  1 :
-    add_triangle( grid_coord, tiling1[config], 1 ) ;
-    break ;
+  case 1:
+    add_triangle(grid_coord, tiling1[config], 1);
+    break;
 
-  case  2 :
-    add_triangle( grid_coord, tiling2[config], 2 ) ;
-    break ;
+  case 2:
+    add_triangle(grid_coord, tiling2[config], 2);
+    break;
 
-  case  3 :
-    if( test_face( test3[config], cube) )
-      add_triangle( grid_coord, tiling3_2[config], 4 ) ; // 3.2
+  case 3:
+    if (test_face(test3[config], cube))
+      add_triangle(grid_coord, tiling3_2[config], 4); // 3.2
     else
-      add_triangle( grid_coord, tiling3_1[config], 2 ) ; // 3.1
-    break ;
+      add_triangle(grid_coord, tiling3_1[config], 2); // 3.1
+    break;
 
-  case  4 :
-    if( test_interior(test4[config], config_case, config, subconfig, cube))
-      add_triangle( grid_coord, tiling4_1[config], 2 ) ; // 4.1.1
+  case 4:
+    if (test_interior(test4[config], config_case, config, subconfig, cube))
+      add_triangle(grid_coord, tiling4_1[config], 2); // 4.1.1
     else
-      add_triangle( grid_coord, tiling4_2[config], 6 ) ; // 4.1.2
-    break ;
+      add_triangle(grid_coord, tiling4_2[config], 6); // 4.1.2
+    break;
 
-  case  5 :
-    add_triangle( grid_coord, tiling5[config], 3 ) ;
-    break ;
+  case 5:
+    add_triangle(grid_coord, tiling5[config], 3);
+    break;
 
-  case  6 :
-    if( test_face( test6[config][0], cube) )
-      add_triangle( grid_coord, tiling6_2[config], 5 ) ; // 6.2
-    else
-    {
-      if( test_interior( test6[config][1], config_case, config, subconfig, cube) )
-        add_triangle( grid_coord, tiling6_1_1[config], 3 ) ; // 6.1.1
-      else
-	  {
-        v12 = add_c_vertex(grid_coord) ;
-        add_triangle( grid_coord, tiling6_1_2[config], 9 , v12) ; // 6.1.2
+  case 6:
+    if (test_face(test6[config][0], cube))
+      add_triangle(grid_coord, tiling6_2[config], 5); // 6.2
+    else {
+      if (test_interior(test6[config][1], config_case, config, subconfig, cube))
+        add_triangle(grid_coord, tiling6_1_1[config], 3); // 6.1.1
+      else {
+        v12 = add_c_vertex(grid_coord);
+        add_triangle(grid_coord, tiling6_1_2[config], 9, v12); // 6.1.2
       }
     }
-    break ;
+    break;
 
-  case  7 :
-    if( test_face( test7[config][0], cube ) ) subconfig +=  1 ;
-    if( test_face( test7[config][1], cube ) ) subconfig +=  2 ;
-    if( test_face( test7[config][2], cube ) ) subconfig +=  4 ;
-    switch( subconfig )
-      {
-      case 0 :
-        add_triangle( grid_coord, tiling7_1[config], 3 ) ; break ;
-      case 1 :
-        add_triangle( grid_coord, tiling7_2[config][0], 5 ) ; break ;
-      case 2 :
-        add_triangle( grid_coord, tiling7_2[config][1], 5 ) ; break ;
-      case 3 :
-        v12 = add_c_vertex(grid_coord) ;
-        add_triangle( grid_coord, tiling7_3[config][0], 9, v12 ) ; break ;
-      case 4 :
-        add_triangle( grid_coord, tiling7_2[config][2], 5 ) ; break ;
-      case 5 :
-        v12 = add_c_vertex(grid_coord) ;
-        add_triangle( grid_coord, tiling7_3[config][1], 9, v12 ) ; break ;
-      case 6 :
-        v12 = add_c_vertex(grid_coord) ;
-        add_triangle( grid_coord, tiling7_3[config][2], 9, v12 ) ; break ;
-      case 7 :
-        if( test_interior( test7[config][3], config_case, config, subconfig, cube) )
-          add_triangle( grid_coord, tiling7_4_2[config], 9 ) ;
-        else
-          add_triangle( grid_coord, tiling7_4_1[config], 5 ) ;
-        break ;
-      };
-    break ;
-
-  case  8 :
-    add_triangle( grid_coord, tiling8[config], 2 ) ;
-    break ;
-
-  case  9 :
-    add_triangle( grid_coord, tiling9[config], 4 ) ;
-    break ;
-
-  case 10 :
-    if( test_face( test10[config][0], cube) )
-    {
-      if( test_face( test10[config][1], cube) )
-        add_triangle( grid_coord, tiling10_1_1_[config], 4 ) ; // 10.1.1
+  case 7:
+    if (test_face(test7[config][0], cube))
+      subconfig += 1;
+    if (test_face(test7[config][1], cube))
+      subconfig += 2;
+    if (test_face(test7[config][2], cube))
+      subconfig += 4;
+    switch (subconfig) {
+    case 0:
+      add_triangle(grid_coord, tiling7_1[config], 3);
+      break;
+    case 1:
+      add_triangle(grid_coord, tiling7_2[config][0], 5);
+      break;
+    case 2:
+      add_triangle(grid_coord, tiling7_2[config][1], 5);
+      break;
+    case 3:
+      v12 = add_c_vertex(grid_coord);
+      add_triangle(grid_coord, tiling7_3[config][0], 9, v12);
+      break;
+    case 4:
+      add_triangle(grid_coord, tiling7_2[config][2], 5);
+      break;
+    case 5:
+      v12 = add_c_vertex(grid_coord);
+      add_triangle(grid_coord, tiling7_3[config][1], 9, v12);
+      break;
+    case 6:
+      v12 = add_c_vertex(grid_coord);
+      add_triangle(grid_coord, tiling7_3[config][2], 9, v12);
+      break;
+    case 7:
+      if (test_interior(test7[config][3], config_case, config, subconfig, cube))
+        add_triangle(grid_coord, tiling7_4_2[config], 9);
       else
-      {
-        v12 = add_c_vertex(grid_coord) ;
-        add_triangle( grid_coord, tiling10_2[config], 8, v12 ) ; // 10.2
+        add_triangle(grid_coord, tiling7_4_1[config], 5);
+      break;
+    };
+    break;
+
+  case 8:
+    add_triangle(grid_coord, tiling8[config], 2);
+    break;
+
+  case 9:
+    add_triangle(grid_coord, tiling9[config], 4);
+    break;
+
+  case 10:
+    if (test_face(test10[config][0], cube)) {
+      if (test_face(test10[config][1], cube))
+        add_triangle(grid_coord, tiling10_1_1_[config], 4); // 10.1.1
+      else {
+        v12 = add_c_vertex(grid_coord);
+        add_triangle(grid_coord, tiling10_2[config], 8, v12); // 10.2
+      }
+    } else {
+      if (test_face(test10[config][1], cube)) {
+        v12 = add_c_vertex(grid_coord);
+        add_triangle(grid_coord, tiling10_2_[config], 8, v12); // 10.2
+      } else {
+        if (test_interior(test10[config][2], config_case, config, subconfig,
+                          cube))
+          add_triangle(grid_coord, tiling10_1_1[config], 4); // 10.1.1
+        else
+          add_triangle(grid_coord, tiling10_1_2[config], 8); // 10.1.2
       }
     }
-    else
-    {
-      if( test_face( test10[config][1], cube) )
-      {
-        v12 = add_c_vertex(grid_coord) ;
-        add_triangle( grid_coord, tiling10_2_[config], 8, v12 ) ; // 10.2
+    break;
+
+  case 11:
+    add_triangle(grid_coord, tiling11[config], 4);
+    break;
+
+  case 12:
+    if (test_face(test12[config][0], cube)) {
+      if (test_face(test12[config][1], cube))
+        add_triangle(grid_coord, tiling12_1_1_[config], 4); // 12.1.1
+      else {
+        v12 = add_c_vertex(grid_coord);
+        add_triangle(grid_coord, tiling12_2[config], 8, v12); // 12.2
       }
-      else
-      {
-        if( test_interior( test10[config][2], config_case, config, subconfig, cube) )
-          add_triangle( grid_coord, tiling10_1_1[config], 4 ) ; // 10.1.1
+    } else {
+      if (test_face(test12[config][1], cube)) {
+        v12 = add_c_vertex(grid_coord);
+        add_triangle(grid_coord, tiling12_2_[config], 8, v12); // 12.2
+      } else {
+        if (test_interior(test12[config][2], config_case, config, subconfig,
+                          cube))
+          add_triangle(grid_coord, tiling12_1_1[config], 4); // 12.1.1
         else
-          add_triangle( grid_coord, tiling10_1_2[config], 8 ) ; // 10.1.2
-      }
-    }
-    break ;
-
-  case 11 :
-    add_triangle( grid_coord, tiling11[config], 4 ) ;
-    break ;
-
-  case 12 :
-    if( test_face( test12[config][0], cube) )
-    {
-      if( test_face( test12[config][1], cube) )
-        add_triangle( grid_coord, tiling12_1_1_[config], 4 ) ; // 12.1.1
-      else
-      {
-        v12 = add_c_vertex(grid_coord) ;
-        add_triangle( grid_coord, tiling12_2[config], 8, v12 ) ; // 12.2
+          add_triangle(grid_coord, tiling12_1_2[config], 8); // 12.1.2
       }
     }
-    else
-    {
-      if( test_face( test12[config][1], cube) )
-      {
-        v12 = add_c_vertex(grid_coord) ;
-        add_triangle( grid_coord, tiling12_2_[config], 8, v12 ) ; // 12.2
-      }
+    break;
+
+  case 13:
+    if (test_face(test13[config][0], cube))
+      subconfig += 1;
+    if (test_face(test13[config][1], cube))
+      subconfig += 2;
+    if (test_face(test13[config][2], cube))
+      subconfig += 4;
+    if (test_face(test13[config][3], cube))
+      subconfig += 8;
+    if (test_face(test13[config][4], cube))
+      subconfig += 16;
+    if (test_face(test13[config][5], cube))
+      subconfig += 32;
+    switch (subconfig13[subconfig]) {
+    case 0: /* 13.1 */
+      add_triangle(grid_coord, tiling13_1[config], 4);
+      break;
+
+    case 1: /* 13.2 */
+      add_triangle(grid_coord, tiling13_2[config][0], 6);
+      break;
+    case 2: /* 13.2 */
+      add_triangle(grid_coord, tiling13_2[config][1], 6);
+      break;
+    case 3: /* 13.2 */
+      add_triangle(grid_coord, tiling13_2[config][2], 6);
+      break;
+    case 4: /* 13.2 */
+      add_triangle(grid_coord, tiling13_2[config][3], 6);
+      break;
+    case 5: /* 13.2 */
+      add_triangle(grid_coord, tiling13_2[config][4], 6);
+      break;
+    case 6: /* 13.2 */
+      add_triangle(grid_coord, tiling13_2[config][5], 6);
+      break;
+
+    case 7: /* 13.3 */
+      v12 = add_c_vertex(grid_coord);
+      add_triangle(grid_coord, tiling13_3[config][0], 10, v12);
+      break;
+    case 8: /* 13.3 */
+      v12 = add_c_vertex(grid_coord);
+      add_triangle(grid_coord, tiling13_3[config][1], 10, v12);
+      break;
+    case 9: /* 13.3 */
+      v12 = add_c_vertex(grid_coord);
+      add_triangle(grid_coord, tiling13_3[config][2], 10, v12);
+      break;
+    case 10: /* 13.3 */
+      v12 = add_c_vertex(grid_coord);
+      add_triangle(grid_coord, tiling13_3[config][3], 10, v12);
+      break;
+    case 11: /* 13.3 */
+      v12 = add_c_vertex(grid_coord);
+      add_triangle(grid_coord, tiling13_3[config][4], 10, v12);
+      break;
+    case 12: /* 13.3 */
+      v12 = add_c_vertex(grid_coord);
+      add_triangle(grid_coord, tiling13_3[config][5], 10, v12);
+      break;
+    case 13: /* 13.3 */
+      v12 = add_c_vertex(grid_coord);
+      add_triangle(grid_coord, tiling13_3[config][6], 10, v12);
+      break;
+    case 14: /* 13.3 */
+      v12 = add_c_vertex(grid_coord);
+      add_triangle(grid_coord, tiling13_3[config][7], 10, v12);
+      break;
+    case 15: /* 13.3 */
+      v12 = add_c_vertex(grid_coord);
+      add_triangle(grid_coord, tiling13_3[config][8], 10, v12);
+      break;
+    case 16: /* 13.3 */
+      v12 = add_c_vertex(grid_coord);
+      add_triangle(grid_coord, tiling13_3[config][9], 10, v12);
+      break;
+    case 17: /* 13.3 */
+      v12 = add_c_vertex(grid_coord);
+      add_triangle(grid_coord, tiling13_3[config][10], 10, v12);
+      break;
+    case 18: /* 13.3 */
+      v12 = add_c_vertex(grid_coord);
+      add_triangle(grid_coord, tiling13_3[config][11], 10, v12);
+      break;
+
+    case 19: /* 13.4 */
+      v12 = add_c_vertex(grid_coord);
+      add_triangle(grid_coord, tiling13_4[config][0], 12, v12);
+      break;
+    case 20: /* 13.4 */
+      v12 = add_c_vertex(grid_coord);
+      add_triangle(grid_coord, tiling13_4[config][1], 12, v12);
+      break;
+    case 21: /* 13.4 */
+      v12 = add_c_vertex(grid_coord);
+      add_triangle(grid_coord, tiling13_4[config][2], 12, v12);
+      break;
+    case 22: /* 13.4 */
+      v12 = add_c_vertex(grid_coord);
+      add_triangle(grid_coord, tiling13_4[config][3], 12, v12);
+      break;
+
+    case 23: /* 13.5 */
+      subconfig = 0;
+      if (test_interior(test13[config][6], config_case, config, subconfig,
+                        cube))
+        add_triangle(grid_coord, tiling13_5_1[config][0], 6);
       else
-      {
-        if( test_interior( test12[config][2], config_case, config, subconfig, cube) )
-          add_triangle( grid_coord, tiling12_1_1[config], 4 ) ; // 12.1.1
-        else
-          add_triangle( grid_coord, tiling12_1_2[config], 8 ) ; // 12.1.2
-      }
+        add_triangle(grid_coord, tiling13_5_2[config][0], 10);
+      break;
+    case 24: /* 13.5 */
+      subconfig = 1;
+      if (test_interior(test13[config][6], config_case, config, subconfig,
+                        cube))
+        add_triangle(grid_coord, tiling13_5_1[config][1], 6);
+      else
+        add_triangle(grid_coord, tiling13_5_2[config][1], 10);
+      break;
+    case 25: /* 13.5 */
+      subconfig = 2;
+      if (test_interior(test13[config][6], config_case, config, subconfig,
+                        cube))
+        add_triangle(grid_coord, tiling13_5_1[config][2], 6);
+      else
+        add_triangle(grid_coord, tiling13_5_2[config][2], 10);
+      break;
+    case 26: /* 13.5 */
+      subconfig = 3;
+      if (test_interior(test13[config][6], config_case, config, subconfig,
+                        cube))
+        add_triangle(grid_coord, tiling13_5_1[config][3], 6);
+      else
+        add_triangle(grid_coord, tiling13_5_2[config][3], 10);
+      break;
+
+    case 27: /* 13.3 */
+      v12 = add_c_vertex(grid_coord);
+      add_triangle(grid_coord, tiling13_3_[config][0], 10, v12);
+      break;
+    case 28: /* 13.3 */
+      v12 = add_c_vertex(grid_coord);
+      add_triangle(grid_coord, tiling13_3_[config][1], 10, v12);
+      break;
+    case 29: /* 13.3 */
+      v12 = add_c_vertex(grid_coord);
+      add_triangle(grid_coord, tiling13_3_[config][2], 10, v12);
+      break;
+    case 30: /* 13.3 */
+      v12 = add_c_vertex(grid_coord);
+      add_triangle(grid_coord, tiling13_3_[config][3], 10, v12);
+      break;
+    case 31: /* 13.3 */
+      v12 = add_c_vertex(grid_coord);
+      add_triangle(grid_coord, tiling13_3_[config][4], 10, v12);
+      break;
+    case 32: /* 13.3 */
+      v12 = add_c_vertex(grid_coord);
+      add_triangle(grid_coord, tiling13_3_[config][5], 10, v12);
+      break;
+    case 33: /* 13.3 */
+      v12 = add_c_vertex(grid_coord);
+      add_triangle(grid_coord, tiling13_3_[config][6], 10, v12);
+      break;
+    case 34: /* 13.3 */
+      v12 = add_c_vertex(grid_coord);
+      add_triangle(grid_coord, tiling13_3_[config][7], 10, v12);
+      break;
+    case 35: /* 13.3 */
+      v12 = add_c_vertex(grid_coord);
+      add_triangle(grid_coord, tiling13_3_[config][8], 10, v12);
+      break;
+    case 36: /* 13.3 */
+      v12 = add_c_vertex(grid_coord);
+      add_triangle(grid_coord, tiling13_3_[config][9], 10, v12);
+      break;
+    case 37: /* 13.3 */
+      v12 = add_c_vertex(grid_coord);
+      add_triangle(grid_coord, tiling13_3_[config][10], 10, v12);
+      break;
+    case 38: /* 13.3 */
+      v12 = add_c_vertex(grid_coord);
+      add_triangle(grid_coord, tiling13_3_[config][11], 10, v12);
+      break;
+
+    case 39: /* 13.2 */
+      add_triangle(grid_coord, tiling13_2_[config][0], 6);
+      break;
+    case 40: /* 13.2 */
+      add_triangle(grid_coord, tiling13_2_[config][1], 6);
+      break;
+    case 41: /* 13.2 */
+      add_triangle(grid_coord, tiling13_2_[config][2], 6);
+      break;
+    case 42: /* 13.2 */
+      add_triangle(grid_coord, tiling13_2_[config][3], 6);
+      break;
+    case 43: /* 13.2 */
+      add_triangle(grid_coord, tiling13_2_[config][4], 6);
+      break;
+    case 44: /* 13.2 */
+      add_triangle(grid_coord, tiling13_2_[config][5], 6);
+      break;
+
+    case 45: /* 13.1 */
+      add_triangle(grid_coord, tiling13_1_[config], 4);
+      break;
+
+    default:
+      std::cout << "Marching Cubes: Impossible case 13?\n";
+      print_cube(cube);
     }
-    break ;
+    break;
 
-  case 13 :
-    if( test_face( test13[config][0], cube ) ) subconfig +=  1 ;
-    if( test_face( test13[config][1], cube ) ) subconfig +=  2 ;
-    if( test_face( test13[config][2], cube ) ) subconfig +=  4 ;
-    if( test_face( test13[config][3], cube ) ) subconfig +=  8 ;
-    if( test_face( test13[config][4], cube ) ) subconfig += 16 ;
-    if( test_face( test13[config][5], cube ) ) subconfig += 32 ;
-    switch( subconfig13[subconfig] )
-    {
-      case 0 :/* 13.1 */
-        add_triangle( grid_coord, tiling13_1[config], 4 ) ; break ;
-
-      case 1 :/* 13.2 */
-        add_triangle( grid_coord, tiling13_2[config][0], 6 ) ; break ;
-      case 2 :/* 13.2 */
-        add_triangle( grid_coord, tiling13_2[config][1], 6 ) ; break ;
-      case 3 :/* 13.2 */
-        add_triangle( grid_coord, tiling13_2[config][2], 6 ) ; break ;
-      case 4 :/* 13.2 */
-        add_triangle( grid_coord, tiling13_2[config][3], 6 ) ; break ;
-      case 5 :/* 13.2 */
-        add_triangle( grid_coord, tiling13_2[config][4], 6 ) ; break ;
-      case 6 :/* 13.2 */
-        add_triangle( grid_coord, tiling13_2[config][5], 6 ) ; break ;
-
-      case 7 :/* 13.3 */
-        v12 = add_c_vertex(grid_coord) ;
-        add_triangle( grid_coord, tiling13_3[config][0], 10, v12 ) ; break ;
-      case 8 :/* 13.3 */
-        v12 = add_c_vertex(grid_coord) ;
-        add_triangle( grid_coord, tiling13_3[config][1], 10, v12 ) ; break ;
-      case 9 :/* 13.3 */
-        v12 = add_c_vertex(grid_coord) ;
-        add_triangle( grid_coord, tiling13_3[config][2], 10, v12 ) ; break ;
-      case 10 :/* 13.3 */
-        v12 = add_c_vertex(grid_coord) ;
-        add_triangle( grid_coord, tiling13_3[config][3], 10, v12 ) ; break ;
-      case 11 :/* 13.3 */
-        v12 = add_c_vertex(grid_coord) ;
-        add_triangle( grid_coord, tiling13_3[config][4], 10, v12 ) ; break ;
-      case 12 :/* 13.3 */
-        v12 = add_c_vertex(grid_coord) ;
-        add_triangle( grid_coord, tiling13_3[config][5], 10, v12 ) ; break ;
-      case 13 :/* 13.3 */
-        v12 = add_c_vertex(grid_coord) ;
-        add_triangle( grid_coord, tiling13_3[config][6], 10, v12 ) ; break ;
-      case 14 :/* 13.3 */
-        v12 = add_c_vertex(grid_coord) ;
-        add_triangle( grid_coord, tiling13_3[config][7], 10, v12 ) ; break ;
-      case 15 :/* 13.3 */
-        v12 = add_c_vertex(grid_coord) ;
-        add_triangle( grid_coord, tiling13_3[config][8], 10, v12 ) ; break ;
-      case 16 :/* 13.3 */
-        v12 = add_c_vertex(grid_coord) ;
-        add_triangle( grid_coord, tiling13_3[config][9], 10, v12 ) ; break ;
-      case 17 :/* 13.3 */
-        v12 = add_c_vertex(grid_coord) ;
-        add_triangle( grid_coord, tiling13_3[config][10], 10, v12 ) ; break ;
-      case 18 :/* 13.3 */
-        v12 = add_c_vertex(grid_coord) ;
-        add_triangle( grid_coord, tiling13_3[config][11], 10, v12 ) ; break ;
-
-      case 19 :/* 13.4 */
-        v12 = add_c_vertex(grid_coord) ;
-        add_triangle( grid_coord, tiling13_4[config][0], 12, v12 ) ; break ;
-      case 20 :/* 13.4 */
-        v12 = add_c_vertex(grid_coord) ;
-        add_triangle( grid_coord, tiling13_4[config][1], 12, v12 ) ; break ;
-      case 21 :/* 13.4 */
-        v12 = add_c_vertex(grid_coord) ;
-        add_triangle( grid_coord, tiling13_4[config][2], 12, v12 ) ; break ;
-      case 22 :/* 13.4 */
-        v12 = add_c_vertex(grid_coord) ;
-        add_triangle( grid_coord, tiling13_4[config][3], 12, v12 ) ; break ;
-
-      case 23 :/* 13.5 */
-        subconfig = 0 ;
-        if( test_interior( test13[config][6], config_case, config, subconfig, cube ) )
-          add_triangle( grid_coord, tiling13_5_1[config][0], 6 ) ;
-        else
-          add_triangle( grid_coord, tiling13_5_2[config][0], 10 ) ;
-        break ;
-      case 24 :/* 13.5 */
-        subconfig = 1 ;
-        if( test_interior( test13[config][6], config_case, config, subconfig, cube ) )
-          add_triangle( grid_coord, tiling13_5_1[config][1], 6 ) ;
-        else
-          add_triangle( grid_coord, tiling13_5_2[config][1], 10 ) ;
-        break ;
-      case 25 :/* 13.5 */
-        subconfig = 2 ;
-        if( test_interior( test13[config][6], config_case, config, subconfig, cube ) )
-          add_triangle( grid_coord, tiling13_5_1[config][2], 6 ) ;
-        else
-          add_triangle( grid_coord, tiling13_5_2[config][2], 10 ) ;
-        break ;
-      case 26 :/* 13.5 */
-        subconfig = 3 ;
-        if( test_interior( test13[config][6], config_case, config, subconfig, cube ) )
-          add_triangle( grid_coord, tiling13_5_1[config][3], 6 ) ;
-        else
-          add_triangle( grid_coord, tiling13_5_2[config][3], 10 ) ;
-        break ;
-
-      case 27 :/* 13.3 */
-        v12 = add_c_vertex(grid_coord) ;
-        add_triangle( grid_coord, tiling13_3_[config][0], 10, v12 ) ; break ;
-      case 28 :/* 13.3 */
-        v12 = add_c_vertex(grid_coord) ;
-        add_triangle( grid_coord, tiling13_3_[config][1], 10, v12 ) ; break ;
-      case 29 :/* 13.3 */
-        v12 = add_c_vertex(grid_coord) ;
-        add_triangle( grid_coord, tiling13_3_[config][2], 10, v12 ) ; break ;
-      case 30 :/* 13.3 */
-        v12 = add_c_vertex(grid_coord) ;
-        add_triangle( grid_coord, tiling13_3_[config][3], 10, v12 ) ; break ;
-      case 31 :/* 13.3 */
-        v12 = add_c_vertex(grid_coord) ;
-        add_triangle( grid_coord, tiling13_3_[config][4], 10, v12 ) ; break ;
-      case 32 :/* 13.3 */
-        v12 = add_c_vertex(grid_coord) ;
-        add_triangle( grid_coord, tiling13_3_[config][5], 10, v12 ) ; break ;
-      case 33 :/* 13.3 */
-        v12 = add_c_vertex(grid_coord) ;
-        add_triangle( grid_coord, tiling13_3_[config][6], 10, v12 ) ; break ;
-      case 34 :/* 13.3 */
-        v12 = add_c_vertex(grid_coord) ;
-        add_triangle( grid_coord, tiling13_3_[config][7], 10, v12 ) ; break ;
-      case 35 :/* 13.3 */
-        v12 = add_c_vertex(grid_coord) ;
-        add_triangle( grid_coord, tiling13_3_[config][8], 10, v12 ) ; break ;
-      case 36 :/* 13.3 */
-        v12 = add_c_vertex(grid_coord) ;
-        add_triangle( grid_coord, tiling13_3_[config][9], 10, v12 ) ; break ;
-      case 37 :/* 13.3 */
-        v12 = add_c_vertex(grid_coord) ;
-        add_triangle( grid_coord, tiling13_3_[config][10], 10, v12 ) ; break ;
-      case 38 :/* 13.3 */
-        v12 = add_c_vertex(grid_coord) ;
-        add_triangle( grid_coord, tiling13_3_[config][11], 10, v12 ) ; break ;
-
-      case 39 :/* 13.2 */
-        add_triangle( grid_coord, tiling13_2_[config][0], 6 ) ; break ;
-      case 40 :/* 13.2 */
-        add_triangle( grid_coord, tiling13_2_[config][1], 6 ) ; break ;
-      case 41 :/* 13.2 */
-        add_triangle( grid_coord, tiling13_2_[config][2], 6 ) ; break ;
-      case 42 :/* 13.2 */
-        add_triangle( grid_coord, tiling13_2_[config][3], 6 ) ; break ;
-      case 43 :/* 13.2 */
-        add_triangle( grid_coord, tiling13_2_[config][4], 6 ) ; break ;
-      case 44 :/* 13.2 */
-        add_triangle( grid_coord, tiling13_2_[config][5], 6 ) ; break ;
-
-      case 45 :/* 13.1 */
-        add_triangle( grid_coord, tiling13_1_[config], 4 ) ; break ;
-
-      default :
-				std::cout << "Marching Cubes: Impossible case 13?\n";  print_cube(cube) ;
-      }
-      break ;
-
-  case 14 :
-    add_triangle( grid_coord, tiling14[config], 4 ) ;
-    break ;
+  case 14:
+    add_triangle(grid_coord, tiling14[config], 4);
+    break;
   };
 }
 //_____________________________________________________________________________
 
-
-
 //_____________________________________________________________________________
 // Adding triangles
-void MarchingCubes::add_triangle( const glm::ivec3 &grid_coord, const char* trig, char n, int v12 ) {
-	int i = 0;
-	while(i < 3 * n) {
-		int tv[3];
-		
-		for(int t=0; t < 3; ++t, ++i) {
-			switch(trig[i]) {
-				case  0 : tv[t] = get_x_vert( grid_coord.x , grid_coord.y , grid_coord.z ) ; break ;
-				case  1 : tv[t] = get_y_vert(grid_coord.x+1, grid_coord.y , grid_coord.z ) ; break ;
-				case  2 : tv[t] = get_x_vert( grid_coord.x ,grid_coord.y+1, grid_coord.z ) ; break ;
-				case  3 : tv[t] = get_y_vert( grid_coord.x , grid_coord.y , grid_coord.z ) ; break ;
-				case  4 : tv[t] = get_x_vert( grid_coord.x , grid_coord.y ,grid_coord.z+1) ; break ;
-				case  5 : tv[t] = get_y_vert(grid_coord.x+1, grid_coord.y ,grid_coord.z+1) ; break ;
-				case  6 : tv[t] = get_x_vert( grid_coord.x ,grid_coord.y+1,grid_coord.z+1) ; break ;
-				case  7 : tv[t] = get_y_vert( grid_coord.x , grid_coord.y ,grid_coord.z+1) ; break ;
-				case  8 : tv[t] = get_z_vert( grid_coord.x , grid_coord.y , grid_coord.z ) ; break ;
-				case  9 : tv[t] = get_z_vert(grid_coord.x+1, grid_coord.y , grid_coord.z ) ; break ;
-				case 10 : tv[t] = get_z_vert(grid_coord.x+1,grid_coord.y+1, grid_coord.z ) ; break ;
-				case 11 : tv[t] = get_z_vert( grid_coord.x ,grid_coord.y+1, grid_coord.z ) ; break ;
-				case 12 : tv[t] = v12 ; break ;
-				default : break ;
-			}
-			
-			if( tv[t] == -1 ) {
-				std::cout << "Marching Cubes: invalid triangle " << (ntrigs() + 1) << "\n";
-				//print_cube() ;
-			}
-		}
-		
-		_triangles.push_back(Triangle{tv[0], tv[1], tv[2]});
-	}
+void MarchingCubes::add_triangle(const glm::ivec3 &grid_coord, const char *trig,
+                                 char n, int v12) {
+  int i = 0;
+  while (i < 3 * n) {
+    int tv[3];
+
+    for (int t = 0; t < 3; ++t, ++i) {
+      switch (trig[i]) {
+      case 0:
+        tv[t] = get_x_vert(grid_coord.x, grid_coord.y, grid_coord.z);
+        break;
+      case 1:
+        tv[t] = get_y_vert(grid_coord.x + 1, grid_coord.y, grid_coord.z);
+        break;
+      case 2:
+        tv[t] = get_x_vert(grid_coord.x, grid_coord.y + 1, grid_coord.z);
+        break;
+      case 3:
+        tv[t] = get_y_vert(grid_coord.x, grid_coord.y, grid_coord.z);
+        break;
+      case 4:
+        tv[t] = get_x_vert(grid_coord.x, grid_coord.y, grid_coord.z + 1);
+        break;
+      case 5:
+        tv[t] = get_y_vert(grid_coord.x + 1, grid_coord.y, grid_coord.z + 1);
+        break;
+      case 6:
+        tv[t] = get_x_vert(grid_coord.x, grid_coord.y + 1, grid_coord.z + 1);
+        break;
+      case 7:
+        tv[t] = get_y_vert(grid_coord.x, grid_coord.y, grid_coord.z + 1);
+        break;
+      case 8:
+        tv[t] = get_z_vert(grid_coord.x, grid_coord.y, grid_coord.z);
+        break;
+      case 9:
+        tv[t] = get_z_vert(grid_coord.x + 1, grid_coord.y, grid_coord.z);
+        break;
+      case 10:
+        tv[t] = get_z_vert(grid_coord.x + 1, grid_coord.y + 1, grid_coord.z);
+        break;
+      case 11:
+        tv[t] = get_z_vert(grid_coord.x, grid_coord.y + 1, grid_coord.z);
+        break;
+      case 12:
+        tv[t] = v12;
+        break;
+      default:
+        break;
+      }
+
+      if (tv[t] == -1) {
+        std::cout << "Marching Cubes: invalid triangle " << (ntrigs() + 1)
+                  << "\n";
+        // print_cube() ;
+      }
+    }
+
+    _triangles.push_back(Triangle{tv[0], tv[1], tv[2]});
+  }
 }
 //_____________________________________________________________________________
-
-
 
 //_____________________________________________________________________________
 // Calculating gradient
 float MarchingCubes::get_grad(const glm::ivec3 &grid_coord, int dim) {
-	auto next_grid_coord = grid_coord;
-	next_grid_coord[dim] += 1;
-	
-	auto prev_grid_coord = grid_coord;
-	prev_grid_coord[dim] -= 1;
+  auto next_grid_coord = grid_coord;
+  next_grid_coord[dim] += 1;
 
-	if(grid_coord[dim] > 0) {
-		if(grid_coord[dim] < _size[dim] - 1) {
-			return ( get_data( next_grid_coord.x, next_grid_coord.y, next_grid_coord.z ) - get_data( prev_grid_coord.x, prev_grid_coord.y, prev_grid_coord.z ) ) / 2 ;
-		}
-		else {
-			return get_data( grid_coord.x, grid_coord.y, grid_coord.z ) - get_data( prev_grid_coord.x, prev_grid_coord.y, prev_grid_coord.z ) ;
-		}
-	}
-	else {
-		return get_data( next_grid_coord.x, next_grid_coord.y, next_grid_coord.z ) - get_data( grid_coord.x, grid_coord.y, grid_coord.z ) ;
-	}
+  auto prev_grid_coord = grid_coord;
+  prev_grid_coord[dim] -= 1;
+
+  if (grid_coord[dim] > 0) {
+    if (grid_coord[dim] < _size[dim] - 1) {
+      return (get_data(next_grid_coord.x, next_grid_coord.y,
+                       next_grid_coord.z) -
+              get_data(prev_grid_coord.x, prev_grid_coord.y,
+                       prev_grid_coord.z)) /
+             2;
+    } else {
+      return get_data(grid_coord.x, grid_coord.y, grid_coord.z) -
+             get_data(prev_grid_coord.x, prev_grid_coord.y, prev_grid_coord.z);
+    }
+  } else {
+    return get_data(next_grid_coord.x, next_grid_coord.y, next_grid_coord.z) -
+           get_data(grid_coord.x, grid_coord.y, grid_coord.z);
+  }
 }
 
 //_____________________________________________________________________________
 // Adding vertices
 
-int MarchingCubes::add_vertex(const glm::ivec3 &grid_coord, const glm::ivec3 &dir, int corner, float *cube) {
-	auto u = cube[0] / (cube[0] - cube[corner]);
-	auto pos = glm::vec3(grid_coord) + glm::vec3(dir) * u;
-	
-	auto grid_coord2 = grid_coord + dir;
-	auto nx = (1-u)*get_grad(grid_coord, 0) + u * get_grad(grid_coord2, 0);
-	auto ny = (1-u)*get_grad(grid_coord, 1) + u * get_grad(grid_coord2, 1);
-	auto nz = (1-u)*get_grad(grid_coord, 2) + u * get_grad(grid_coord2, 2);
-	
-	auto n = glm::normalize(glm::vec3(nx, ny, nz));
-	_vertices.push_back(Vertex{pos.x, pos.y, pos.z, n.x, n.y, n.z});
-	return _vertices.size() - 1;
+int MarchingCubes::add_vertex(const glm::ivec3 &grid_coord,
+                              const glm::ivec3 &dir, int corner, float *cube) {
+  auto u = cube[0] / (cube[0] - cube[corner]);
+  auto pos = glm::vec3(grid_coord) + glm::vec3(dir) * u;
+
+  auto grid_coord2 = grid_coord + dir;
+  auto nx = (1 - u) * get_grad(grid_coord, 0) + u * get_grad(grid_coord2, 0);
+  auto ny = (1 - u) * get_grad(grid_coord, 1) + u * get_grad(grid_coord2, 1);
+  auto nz = (1 - u) * get_grad(grid_coord, 2) + u * get_grad(grid_coord2, 2);
+
+  auto n = glm::normalize(glm::vec3(nx, ny, nz));
+  _vertices.push_back(Vertex{pos.x, pos.y, pos.z, n.x, n.y, n.z});
+  return _vertices.size() - 1;
 }
 
 int MarchingCubes::add_c_vertex(const glm::ivec3 &grid_coord)
 //-----------------------------------------------------------------------------
 {
   auto u = float{0.f};
-	auto pos = glm::vec3(0.f);
-	auto n = glm::vec3(0.f);
+  auto pos = glm::vec3(0.f);
+  auto n = glm::vec3(0.f);
 
   // Computes the average of the intersection points of the cube
-	// x-face
-	for(auto t : {0, 1}) {
-		for(auto s : {0, 1}) {
-			auto vid = get_x_vert( grid_coord.x , grid_coord.y + s , grid_coord.z + t ) ;
-			if( vid != -1 ) {
-				++u ;
-				const Vertex &v = _vertices[vid];
-				pos += glm::vec3(v.x, v.y, v.z);
-				n += glm::vec3(v.nx, v.ny, v.nz);
-			}
-		}
-	}
-	
-	// y-face
-	for(auto t : {0, 1}) {
-		for(auto s : {0, 1}) {
-			auto vid = get_y_vert( grid_coord.x + t , grid_coord.y , grid_coord.z + s ) ;
-			if( vid != -1 ) {
-				++u ;
-				const Vertex &v = _vertices[vid];
-				pos += glm::vec3(v.x, v.y, v.z);
-				n += glm::vec3(v.nx, v.ny, v.nz);
-			}
-		}
-	}
-	
-	// z-face
-	for(auto t : {0, 1}) {
-		for(auto s : {0, 1}) {
-			auto vid = get_z_vert( grid_coord.x + s , grid_coord.y + t , grid_coord.z ) ;
-			if( vid != -1 ) {
-				++u ;
-				const Vertex &v = _vertices[vid];
-				pos += glm::vec3(v.x, v.y, v.z);
-				n += glm::vec3(v.nx, v.ny, v.nz);
-			}
-		}
-	}
-	
-	pos *= 1.f/u;
-	n = glm::normalize(n);
-	_vertices.push_back(Vertex{pos.x, pos.y, pos.z, n.x, n.y, n.z});
+  // x-face
+  for (auto t : {0, 1}) {
+    for (auto s : {0, 1}) {
+      auto vid = get_x_vert(grid_coord.x, grid_coord.y + s, grid_coord.z + t);
+      if (vid != -1) {
+        ++u;
+        const Vertex &v = _vertices[vid];
+        pos += glm::vec3(v.x, v.y, v.z);
+        n += glm::vec3(v.nx, v.ny, v.nz);
+      }
+    }
+  }
+
+  // y-face
+  for (auto t : {0, 1}) {
+    for (auto s : {0, 1}) {
+      auto vid = get_y_vert(grid_coord.x + t, grid_coord.y, grid_coord.z + s);
+      if (vid != -1) {
+        ++u;
+        const Vertex &v = _vertices[vid];
+        pos += glm::vec3(v.x, v.y, v.z);
+        n += glm::vec3(v.nx, v.ny, v.nz);
+      }
+    }
+  }
+
+  // z-face
+  for (auto t : {0, 1}) {
+    for (auto s : {0, 1}) {
+      auto vid = get_z_vert(grid_coord.x + s, grid_coord.y + t, grid_coord.z);
+      if (vid != -1) {
+        ++u;
+        const Vertex &v = _vertices[vid];
+        pos += glm::vec3(v.x, v.y, v.z);
+        n += glm::vec3(v.nx, v.ny, v.nz);
+      }
+    }
+  }
+
+  pos *= 1.f / u;
+  n = glm::normalize(n);
+  _vertices.push_back(Vertex{pos.x, pos.y, pos.z, n.x, n.y, n.z});
   return _vertices.size() - 1;
 }
 //_____________________________________________________________________________
