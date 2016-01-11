@@ -122,7 +122,7 @@ public :
    * \param j ordinate of the cube
    * \param k height of the cube
    */
-  inline const real get_data  ( const int i, const int j, const int k ) const { return _data[ i + j*_size.x + k*_size.x*_size.y] ; }
+  inline const real get_data  ( const int i, const int j, const int k ) const { return _data[ index(i, j, k) ] ; }
   /**
    * sets a specific cube of the grid
    * \param val new value for the cube
@@ -130,7 +130,7 @@ public :
    * \param j ordinate of the cube
    * \param k height of the cube
    */
-  inline void  set_data  ( const real val, const int i, const int j, const int k ) { _data[ i + j*_size.x + k*_size.x*_size.y] = val ; }
+  inline void  set_data  ( const real val, const int i, const int j, const int k ) { _data[ index(i, j, k) ] = val ; }
 
   // Data initialization
   /** inits temporary structures (must set sizes before call) : the grid and the vertex index per cube */
