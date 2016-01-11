@@ -96,11 +96,11 @@ public :
   inline Triangle *triangles() { return _triangles.data() ; }
 
   /**  accesses the width  of the grid */
-  inline const int size_x() const { return _size_x ; }
+  inline const int size_x() const { return _size.x ; }
   /**  accesses the depth  of the grid */
-  inline const int size_y() const { return _size_y ; }
+  inline const int size_y() const { return _size.y ; }
   /**  accesses the height of the grid */
-  inline const int size_z() const { return _size_z ; }
+  inline const int size_z() const { return _size.z ; }
 
   /**
    * changes the size of the grid
@@ -108,7 +108,7 @@ public :
    * \param size_y depth  of the grid
    * \param size_z height of the grid
    */
-  inline void set_resolution( const int size_x, const int size_y, const int size_z ) { _size_x = size_x ;  _size_y = size_y ;  _size_z = size_z ; }
+  inline void set_resolution( const int size_x, const int size_y, const int size_z ) { _size.x = size_x ;  _size.y = size_y ;  _size.z = size_z ; }
   /**
    * selects wether the algorithm will use the enhanced topologically controlled lookup table or the original MarchingCubes
    * \param originalMC true for the original Marching Cubes
@@ -122,7 +122,7 @@ public :
    * \param j ordinate of the cube
    * \param k height of the cube
    */
-  inline const real get_data  ( const int i, const int j, const int k ) const { return _data[ i + j*_size_x + k*_size_x*_size_y] ; }
+  inline const real get_data  ( const int i, const int j, const int k ) const { return _data[ i + j*_size.x + k*_size.x*_size.y] ; }
   /**
    * sets a specific cube of the grid
    * \param val new value for the cube
@@ -130,7 +130,7 @@ public :
    * \param j ordinate of the cube
    * \param k height of the cube
    */
-  inline void  set_data  ( const real val, const int i, const int j, const int k ) { _data[ i + j*_size_x + k*_size_x*_size_y] = val ; }
+  inline void  set_data  ( const real val, const int i, const int j, const int k ) { _data[ i + j*_size.x + k*_size.x*_size.y] = val ; }
 
   // Data initialization
   /** inits temporary structures (must set sizes before call) : the grid and the vertex index per cube */
@@ -196,27 +196,29 @@ protected :
    */
   real get_z_grad( const int i, const int j, const int k ) const ;
 
+	int index(const int i, const int j, const int k) const { return i + j*_size.x + k*_size.x*_size.y; }
+
   /**
    * accesses the pre-computed vertex index on the lower horizontal edge of a specific cube
    * \param i abscisse of the cube
    * \param j ordinate of the cube
    * \param k height of the cube
    */
-  inline int   get_x_vert( const int i, const int j, const int k ) const { return _x_verts[ i + j*_size_x + k*_size_x*_size_y] ; }
+  inline int   get_x_vert( const int i, const int j, const int k ) const { return _x_verts[ index(i, j, k) ] ; }
   /**
    * accesses the pre-computed vertex index on the lower longitudinal edge of a specific cube
    * \param i abscisse of the cube
    * \param j ordinate of the cube
    * \param k height of the cube
    */
-  inline int   get_y_vert( const int i, const int j, const int k ) const { return _y_verts[ i + j*_size_x + k*_size_x*_size_y] ; }
+  inline int   get_y_vert( const int i, const int j, const int k ) const { return _y_verts[ index(i, j, k) ] ; }
   /**
    * accesses the pre-computed vertex index on the lower vertical edge of a specific cube
    * \param i abscisse of the cube
    * \param j ordinate of the cube
    * \param k height of the cube
    */
-  inline int   get_z_vert( const int i, const int j, const int k ) const { return _z_verts[ i + j*_size_x + k*_size_x*_size_y] ; }
+  inline int   get_z_vert( const int i, const int j, const int k ) const { return _z_verts[ index(i, j, k) ] ; }
 
   /**
    * sets the pre-computed vertex index on the lower horizontal edge of a specific cube
@@ -225,7 +227,7 @@ protected :
    * \param j ordinate of the cube
    * \param k height of the cube
    */
-  inline void  set_x_vert( const int val, const int i, const int j, const int k ) { _x_verts[ i + j*_size_x + k*_size_x*_size_y] = val ; }
+  inline void  set_x_vert( const int val, const int i, const int j, const int k ) { _x_verts[ index(i, j, k) ] = val ; }
   /**
    * sets the pre-computed vertex index on the lower longitudinal edge of a specific cube
    * \param val the index of the new vertex
@@ -233,7 +235,7 @@ protected :
    * \param j ordinate of the cube
    * \param k height of the cube
    */
-  inline void  set_y_vert( const int val, const int i, const int j, const int k ) { _y_verts[ i + j*_size_x + k*_size_x*_size_y] = val ; }
+  inline void  set_y_vert( const int val, const int i, const int j, const int k ) { _y_verts[ index(i, j, k) ] = val ; }
   /**
    * sets the pre-computed vertex index on the lower vertical edge of a specific cube
    * \param val the index of the new vertex
@@ -241,7 +243,7 @@ protected :
    * \param j ordinate of the cube
    * \param k height of the cube
    */
-  inline void  set_z_vert( const int val, const int i, const int j, const int k ) { _z_verts[ i + j*_size_x + k*_size_x*_size_y] = val ; }
+  inline void  set_z_vert( const int val, const int i, const int j, const int k ) { _z_verts[ index(i, j, k) ] = val ; }
 
 //-----------------------------------------------------------------------------
 // Elements
