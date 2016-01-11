@@ -262,10 +262,6 @@ protected :
   std::vector<Vertex> _vertices   ;  /**< vertex   buffer */
 	std::vector<Triangle> _triangles  ;  /**< triangle buffer */
 
-//  int       _i          ;  /**< abscisse of the active cube */
-//  int       _j          ;  /**< height of the active cube */
- // int       _k          ;  /**< ordinate of the active cube */
-
   uchar     _lut_entry  ;  /**< cube sign representation in [0..255] */
   uchar     _case       ;  /**< case of the active cube in [0..15] */
   uchar     _config     ;  /**< configuration of the active cube */
