@@ -121,18 +121,18 @@ void MarchingCubes::compute_intersection_points( real iso )
 {
 	float cube[8];
 	
-  for( _k = 0 ; _k < _size_z ; _k++ )
-  for( _j = 0 ; _j < _size_y ; _j++ )
-  for( _i = 0 ; _i < _size_x ; _i++ )
+  for(int k = 0 ; k < _size_z ; k++ )
+  for(int j = 0 ; j < _size_y ; j++ )
+  for(int i = 0 ; i < _size_x ; i++ )
   {
-    cube[0] = get_data( _i, _j, _k ) - iso ;
-    if( _i < _size_x - 1 ) cube[1] = get_data(_i+1, _j , _k ) - iso ;
+    cube[0] = get_data( i, j, k ) - iso ;
+    if( i < _size_x - 1 ) cube[1] = get_data(i+1, j , k ) - iso ;
     else                   cube[1] = cube[0] ;
 
-    if( _j < _size_y - 1 ) cube[3] = get_data( _i ,_j+1, _k ) - iso ;
+    if( j < _size_y - 1 ) cube[3] = get_data( i ,j+1, k ) - iso ;
     else                   cube[3] = cube[0] ;
 
-    if( _k < _size_z - 1 ) cube[4] = get_data( _i , _j ,_k+1) - iso ;
+    if( k < _size_z - 1 ) cube[4] = get_data( i , j ,k+1) - iso ;
     else                   cube[4] = cube[0] ;
 
 		if( std::abs( cube[0] ) < std::numeric_limits<float>::epsilon() ) cube[0] = std::numeric_limits<float>::epsilon() ;
@@ -140,18 +140,18 @@ void MarchingCubes::compute_intersection_points( real iso )
     if( std::abs( cube[3] ) < std::numeric_limits<float>::epsilon() ) cube[3] = std::numeric_limits<float>::epsilon() ;
     if( std::abs( cube[4] ) < std::numeric_limits<float>::epsilon() ) cube[4] = std::numeric_limits<float>::epsilon() ;
 
-		auto grid_coord = glm::ivec3(_i, _j, _k);
+		auto grid_coord = glm::ivec3(i, j, k);
     if( cube[0] < 0 )
     {
-			if( cube[1] > 0 ) set_x_vert( add_vertex(grid_coord, glm::ivec3(1, 0, 0), 1, cube), _i,_j,_k ) ;
-      if( cube[3] > 0 ) set_y_vert( add_vertex(grid_coord, glm::ivec3(0, 1, 0), 3, cube), _i,_j,_k ) ;
-      if( cube[4] > 0 ) set_z_vert( add_vertex(grid_coord, glm::ivec3(0, 0, 1), 4, cube), _i,_j,_k ) ;
+			if( cube[1] > 0 ) set_x_vert( add_vertex(grid_coord, glm::ivec3(1, 0, 0), 1, cube), i,j,k ) ;
+      if( cube[3] > 0 ) set_y_vert( add_vertex(grid_coord, glm::ivec3(0, 1, 0), 3, cube), i,j,k ) ;
+      if( cube[4] > 0 ) set_z_vert( add_vertex(grid_coord, glm::ivec3(0, 0, 1), 4, cube), i,j,k ) ;
     }
     else
     {
-      if( cube[1] < 0 ) set_x_vert( add_vertex(grid_coord, glm::ivec3(1, 0, 0), 1, cube), _i,_j,_k ) ;
-      if( cube[3] < 0 ) set_y_vert( add_vertex(grid_coord, glm::ivec3(0, 1, 0), 3, cube), _i,_j,_k ) ;
-      if( cube[4] < 0 ) set_z_vert( add_vertex(grid_coord, glm::ivec3(0, 0, 1), 4, cube), _i,_j,_k ) ;
+      if( cube[1] < 0 ) set_x_vert( add_vertex(grid_coord, glm::ivec3(1, 0, 0), 1, cube), i,j,k ) ;
+      if( cube[3] < 0 ) set_y_vert( add_vertex(grid_coord, glm::ivec3(0, 1, 0), 3, cube), i,j,k ) ;
+      if( cube[4] < 0 ) set_z_vert( add_vertex(grid_coord, glm::ivec3(0, 0, 1), 4, cube), i,j,k ) ;
     }
   }
 }
