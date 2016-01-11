@@ -54,3 +54,4 @@ then
   done
 else
   echo "WARNING: clang-format was not found, cannot format files!"
+fi

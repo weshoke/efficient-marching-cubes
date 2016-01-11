@@ -297,7 +297,7 @@ bool test_interior( schar s, uchar config_case, uchar config, uchar subconfig, f
       Bt = cube[3] + ( cube[7] - cube[3] ) * t ;
       Ct = cube[2] + ( cube[6] - cube[2] ) * t ;
       Dt = cube[1] + ( cube[5] - cube[1] ) * t ;
-      break ;
+      break ;	
     case  9 :
       t  = cube[1] / ( cube[1] - cube[5] ) ;
       At = 0 ;
