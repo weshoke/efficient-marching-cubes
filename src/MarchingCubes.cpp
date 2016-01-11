@@ -69,7 +69,7 @@ void MarchingCubes::run( real iso )
       if( _cube[p] > 0 ) _lut_entry += 1 << p ;
     }
 
-    process_cube() ;
+    process_cube(_cube) ;
   }
 
 	std::cout << "Marching Cubes ran in " << ((double)(clock() - time)/CLOCKS_PER_SEC) << " secs.\n";
@@ -116,38 +116,40 @@ void MarchingCubes::init_all ()
 void MarchingCubes::compute_intersection_points( real iso )
 //-----------------------------------------------------------------------------
 {
+	float cube[8];
+	
   for( _k = 0 ; _k < _size_z ; _k++ )
   for( _j = 0 ; _j < _size_y ; _j++ )
   for( _i = 0 ; _i < _size_x ; _i++ )
   {
-    _cube[0] = get_data( _i, _j, _k ) - iso ;
-    if( _i < _size_x - 1 ) _cube[1] = get_data(_i+1, _j , _k ) - iso ;
-    else                   _cube[1] = _cube[0] ;
+    cube[0] = get_data( _i, _j, _k ) - iso ;
+    if( _i < _size_x - 1 ) cube[1] = get_data(_i+1, _j , _k ) - iso ;
+    else                   cube[1] = cube[0] ;
 
-    if( _j < _size_y - 1 ) _cube[3] = get_data( _i ,_j+1, _k ) - iso ;
-    else                   _cube[3] = _cube[0] ;
+    if( _j < _size_y - 1 ) cube[3] = get_data( _i ,_j+1, _k ) - iso ;
+    else                   cube[3] = cube[0] ;
 
-    if( _k < _size_z - 1 ) _cube[4] = get_data( _i , _j ,_k+1) - iso ;
-    else                   _cube[4] = _cube[0] ;
+    if( _k < _size_z - 1 ) cube[4] = get_data( _i , _j ,_k+1) - iso ;
+    else                   cube[4] = cube[0] ;
 
-		if( std::abs( _cube[0] ) < std::numeric_limits<float>::epsilon() ) _cube[0] = std::numeric_limits<float>::epsilon() ;
-    if( std::abs( _cube[1] ) < std::numeric_limits<float>::epsilon() ) _cube[1] = std::numeric_limits<float>::epsilon() ;
-    if( std::abs( _cube[3] ) < std::numeric_limits<float>::epsilon() ) _cube[3] = std::numeric_limits<float>::epsilon() ;
-    if( std::abs( _cube[4] ) < std::numeric_limits<float>::epsilon() ) _cube[4] = std::numeric_limits<float>::epsilon() ;
+		if( std::abs( cube[0] ) < std::numeric_limits<float>::epsilon() ) cube[0] = std::numeric_limits<float>::epsilon() ;
+    if( std::abs( cube[1] ) < std::numeric_limits<float>::epsilon() ) cube[1] = std::numeric_limits<float>::epsilon() ;
+    if( std::abs( cube[3] ) < std::numeric_limits<float>::epsilon() ) cube[3] = std::numeric_limits<float>::epsilon() ;
+    if( std::abs( cube[4] ) < std::numeric_limits<float>::epsilon() ) cube[4] = std::numeric_limits<float>::epsilon() ;
 
 		auto grid_coord = glm::ivec3(_i, _j, _k);
 
-    if( _cube[0] < 0 )
+    if( cube[0] < 0 )
     {
-			if( _cube[1] > 0 ) set_x_vert( add_vertex(grid_coord, glm::ivec3(1, 0, 0), 1, _cube), _i,_j,_k ) ;
-      if( _cube[3] > 0 ) set_y_vert( add_vertex(grid_coord, glm::ivec3(0, 1, 0), 3, _cube), _i,_j,_k ) ;
-      if( _cube[4] > 0 ) set_z_vert( add_vertex(grid_coord, glm::ivec3(0, 0, 1), 4, _cube), _i,_j,_k ) ;
+			if( cube[1] > 0 ) set_x_vert( add_vertex(grid_coord, glm::ivec3(1, 0, 0), 1, cube), _i,_j,_k ) ;
+      if( cube[3] > 0 ) set_y_vert( add_vertex(grid_coord, glm::ivec3(0, 1, 0), 3, cube), _i,_j,_k ) ;
+      if( cube[4] > 0 ) set_z_vert( add_vertex(grid_coord, glm::ivec3(0, 0, 1), 4, cube), _i,_j,_k ) ;
     }
     else
     {
-      if( _cube[1] < 0 ) set_x_vert( add_vertex(grid_coord, glm::ivec3(1, 0, 0), 1, _cube), _i,_j,_k ) ;
-      if( _cube[3] < 0 ) set_y_vert( add_vertex(grid_coord, glm::ivec3(0, 1, 0), 3, _cube), _i,_j,_k ) ;
-      if( _cube[4] < 0 ) set_z_vert( add_vertex(grid_coord, glm::ivec3(0, 0, 1), 4, _cube), _i,_j,_k ) ;
+      if( cube[1] < 0 ) set_x_vert( add_vertex(grid_coord, glm::ivec3(1, 0, 0), 1, cube), _i,_j,_k ) ;
+      if( cube[3] < 0 ) set_y_vert( add_vertex(grid_coord, glm::ivec3(0, 1, 0), 3, cube), _i,_j,_k ) ;
+      if( cube[4] < 0 ) set_z_vert( add_vertex(grid_coord, glm::ivec3(0, 0, 1), 4, cube), _i,_j,_k ) ;
     }
   }
 }
@@ -354,7 +356,7 @@ bool MarchingCubes::test_interior( schar s )
 
 //_____________________________________________________________________________
 // Process a unit cube
-void MarchingCubes::process_cube( )
+void MarchingCubes::process_cube(float *cube)
 //-----------------------------------------------------------------------------
 {
   if( _originalMC )
@@ -384,7 +386,7 @@ void MarchingCubes::process_cube( )
     break ;
 
   case  3 :
-    if( test_face( test3[_config], _cube) )
+    if( test_face( test3[_config], cube) )
       add_triangle( tiling3_2[_config], 4 ) ; // 3.2
     else
       add_triangle( tiling3_1[_config], 2 ) ; // 3.1
@@ -402,7 +404,7 @@ void MarchingCubes::process_cube( )
     break ;
 
   case  6 :
-    if( test_face( test6[_config][0], _cube) )
+    if( test_face( test6[_config][0], cube) )
       add_triangle( tiling6_2[_config], 5 ) ; // 6.2
     else
     {
@@ -417,9 +419,9 @@ void MarchingCubes::process_cube( )
     break ;
 
   case  7 :
-    if( test_face( test7[_config][0], _cube ) ) _subconfig +=  1 ;
-    if( test_face( test7[_config][1], _cube ) ) _subconfig +=  2 ;
-    if( test_face( test7[_config][2], _cube ) ) _subconfig +=  4 ;
+    if( test_face( test7[_config][0], cube ) ) _subconfig +=  1 ;
+    if( test_face( test7[_config][1], cube ) ) _subconfig +=  2 ;
+    if( test_face( test7[_config][2], cube ) ) _subconfig +=  4 ;
     switch( _subconfig )
       {
       case 0 :
@@ -457,9 +459,9 @@ void MarchingCubes::process_cube( )
     break ;
 
   case 10 :
-    if( test_face( test10[_config][0], _cube) )
+    if( test_face( test10[_config][0], cube) )
     {
-      if( test_face( test10[_config][1], _cube) )
+      if( test_face( test10[_config][1], cube) )
         add_triangle( tiling10_1_1_[_config], 4 ) ; // 10.1.1
       else
       {
@@ -469,7 +471,7 @@ void MarchingCubes::process_cube( )
     }
     else
     {
-      if( test_face( test10[_config][1], _cube) )
+      if( test_face( test10[_config][1], cube) )
       {
         v12 = add_c_vertex() ;
         add_triangle( tiling10_2_[_config], 8, v12 ) ; // 10.2
@@ -489,9 +491,9 @@ void MarchingCubes::process_cube( )
     break ;
 
   case 12 :
-    if( test_face( test12[_config][0], _cube) )
+    if( test_face( test12[_config][0], cube) )
     {
-      if( test_face( test12[_config][1], _cube) )
+      if( test_face( test12[_config][1], cube) )
         add_triangle( tiling12_1_1_[_config], 4 ) ; // 12.1.1
       else
       {
@@ -501,7 +503,7 @@ void MarchingCubes::process_cube( )
     }
     else
     {
-      if( test_face( test12[_config][1], _cube) )
+      if( test_face( test12[_config][1], cube) )
       {
         v12 = add_c_vertex() ;
         add_triangle( tiling12_2_[_config], 8, v12 ) ; // 12.2
@@ -517,12 +519,12 @@ void MarchingCubes::process_cube( )
     break ;
 
   case 13 :
-    if( test_face( test13[_config][0], _cube ) ) _subconfig +=  1 ;
-    if( test_face( test13[_config][1], _cube ) ) _subconfig +=  2 ;
-    if( test_face( test13[_config][2], _cube ) ) _subconfig +=  4 ;
-    if( test_face( test13[_config][3], _cube ) ) _subconfig +=  8 ;
-    if( test_face( test13[_config][4], _cube ) ) _subconfig += 16 ;
-    if( test_face( test13[_config][5], _cube ) ) _subconfig += 32 ;
+    if( test_face( test13[_config][0], cube ) ) _subconfig +=  1 ;
+    if( test_face( test13[_config][1], cube ) ) _subconfig +=  2 ;
+    if( test_face( test13[_config][2], cube ) ) _subconfig +=  4 ;
+    if( test_face( test13[_config][3], cube ) ) _subconfig +=  8 ;
+    if( test_face( test13[_config][4], cube ) ) _subconfig += 16 ;
+    if( test_face( test13[_config][5], cube ) ) _subconfig += 32 ;
     switch( subconfig13[_subconfig] )
     {
       case 0 :/* 13.1 */

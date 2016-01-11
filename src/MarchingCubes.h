@@ -150,7 +150,7 @@ public :
 
 protected :
   /** tesselates one cube */
-  void process_cube ()             ;
+  void process_cube (float *cube);
   /** tests if the components of the tesselation of the cube should be connected through the interior of the cube */
   bool test_interior( schar s )    ;
 
