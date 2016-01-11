@@ -13,6 +13,7 @@
 #define _MARCHINGCUBES_H_
 
 #include <vector>
+#include <unordered_map>
 
 //_____________________________________________________________________________
 // types
@@ -214,7 +215,8 @@ class MarchingCubes
      */
     inline int get_x_vert(const int i, const int j, const int k) const
     {
-        return _x_verts[index(i, j, k)];
+        auto iter = _x_verts.find(index(i, j, k));
+        return (iter == _x_verts.end()) ? -1 : iter->second;
     }
     /**
      * accesses the pre-computed vertex index on the lower longitudinal edge of
@@ -225,7 +227,8 @@ class MarchingCubes
      */
     inline int get_y_vert(const int i, const int j, const int k) const
     {
-        return _y_verts[index(i, j, k)];
+        auto iter = _y_verts.find(index(i, j, k));
+        return (iter == _y_verts.end()) ? -1 : iter->second;
     }
     /**
      * accesses the pre-computed vertex index on the lower vertical edge of a
@@ -236,7 +239,8 @@ class MarchingCubes
      */
     inline int get_z_vert(const int i, const int j, const int k) const
     {
-        return _z_verts[index(i, j, k)];
+        auto iter = _z_verts.find(index(i, j, k));
+        return (iter == _z_verts.end()) ? -1 : iter->second;
     }
 
     /**
@@ -286,12 +290,9 @@ class MarchingCubes
     glm::ivec3 _size;
     std::vector<float> _data;
 
-    std::vector<int> _x_verts; /**< pre-computed vertex indices on the lower
-                                  horizontal   edge of each cube */
-    std::vector<int> _y_verts; /**< pre-computed vertex indices on the lower
-                                  longitudinal edge of each cube */
-    std::vector<int> _z_verts; /**< pre-computed vertex indices on the lower
-                                  vertical     edge of each cube */
+    std::unordered_map<int, int> _x_verts;
+    std::unordered_map<int, int> _y_verts;
+    std::unordered_map<int, int> _z_verts;
 
     std::vector<Vertex> _vertices;    /**< vertex   buffer */
     std::vector<Triangle> _triangles; /**< triangle buffer */
