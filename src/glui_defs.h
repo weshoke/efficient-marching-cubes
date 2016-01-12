@@ -12,40 +12,11 @@
 #ifndef _MC_GLUI_DEFS_H_
 #define _MC_GLUI_DEFS_H_
 
-#if !defined(WIN32) || defined(__CYGWIN__)
-#pragma interface
-#endif  // WIN32
-
-//#include <GL/glui.h> // openGL user interface
 #include <stdio.h>  // i/o functions
 #include "MarchingCubes.h"
 
-#ifdef _DEBUG
-#define PRINT_GL_DEBUG                                        \
-    {                                                         \
-        if (::glGetError() != GL_NO_ERROR)                    \
-            printf("openGL watch at line %d: %s\n", __LINE__, \
-                   ::gluErrorString(::glGetError()));         \
-    }
-#else  // _DEBUG
-#define PRINT_GL_DEBUG \
-    {                  \
-    }
-#endif  // _DEBUG
-
-/// setting for disaply lists
-#define USE_GL_DISPLAY_LIST 0
-
-//_____________________________________________________________________________
-// Types
-
 // forward declaration
 class CSG_Node;
-
-//_____________________________________________________________________________
-
-//_____________________________________________________________________________
-// Marching Cubes component
 
 /// isovalue defining the isosurface
 extern float isoval;
@@ -65,13 +36,6 @@ extern float ymax;
 extern float zmin;
 /// grid up extension
 extern float zmax;
-
-/// grid horizontal size control
-extern int size_x;
-/// grid depth size control
-extern int size_y;
-/// grid vertical size control
-extern int size_z;
 
 //-----------------------------------------------------------------------------
 // input data

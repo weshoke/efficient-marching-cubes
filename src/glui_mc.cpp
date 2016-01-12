@@ -31,8 +31,6 @@ int originalMC = 0;
 // grid extension
 float xmin = -1.0f, xmax = 1.0f, ymin = -1.0f, ymax = 1.0f, zmin = -1.0f,
       zmax = 1.0f;
-// grid size control
-int size_x = 50, size_y = 50, size_z = 50;
 
 // implicit formula
 char formula[1024];
@@ -123,17 +121,17 @@ bool run(MarchingCubes &mc)
     // Fills data structure
     int i, j, k;
     float val[5], w;
-    float rx = (xmax - xmin) / (size_x - 1);
-    float ry = (ymax - ymin) / (size_y - 1);
-    float rz = (zmax - zmin) / (size_z - 1);
+    float rx = (xmax - xmin) / (mc.size().x - 1);
+    float ry = (ymax - ymin) / (mc.size().y - 1);
+    float rz = (zmax - zmin) / (mc.size().z - 1);
     glm::vec3 min_pos(xmin, ymin, zmin);
     glm::vec3 range(rx, ry, rz);
     unsigned char buf[sizeof(float)];
-    for (i = 0; i < size_x; i++) {
+    for (i = 0; i < mc.size().x; i++) {
         val[X] = (float)i * rx + xmin;
-        for (j = 0; j < size_y; j++) {
+        for (j = 0; j < mc.size().y; j++) {
             val[Y] = (float)j * ry + ymin;
-            for (k = 0; k < size_z; k++) {
+            for (k = 0; k < mc.size().z; k++) {
                 val[Z] = (float)k * rz + zmin;
 
                 if (csg_root) {
