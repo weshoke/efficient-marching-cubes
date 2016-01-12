@@ -208,9 +208,17 @@ bool test_face(int8_t face, float *cube)
 // if s == 7, return true  if the interior is empty
 // if s ==-7, return false if the interior is empty
 bool test_interior(int8_t s, uint8_t config_case, uint8_t config,
-                   uint8_t subconfig, float *cube)
+                   uint8_t subconfig, const float *cube)
 //-----------------------------------------------------------------------------
 {
+    static const uint8_t edge_vertices_t[12][2] = {
+        {0, 1}, {1, 2}, {2, 3}, {3, 0}, {4, 5}, {5, 6},
+        {6, 7}, {7, 4}, {0, 4}, {1, 5}, {2, 6}, {3, 7}};
+
+    static const uint8_t edge_vertices_B[12][2] = {
+        {3, 2}, {0, 3}, {1, 0}, {2, 1}, {7, 6}, {4, 7},
+        {5, 4}, {6, 5}, {3, 7}, {0, 4}, {1, 5}, {2, 6}};
+
     float t, At = 0, Bt = 0, Ct = 0, Dt = 0, a, b;
     char test = 0;
     char edge = -1;  // reference edge of the triangulation
@@ -249,6 +257,16 @@ bool test_interior(int8_t s, uint8_t config_case, uint8_t config,
                     edge = tiling13_5_1[config][subconfig][0];
                     break;
             }
+
+            {
+                auto t0 = cube[edge_vertices_t[edge][0]];
+                auto t1 = cube[edge_vertices_t[edge][1]];
+                auto B0 = cube[edge_vertices_B[edge][0]];
+                auto B1 = cube[edge_vertices_B[edge][1]];
+                t = t0 / (t0 - t1);
+                B = B0 / (B0 - B1);
+            }
+
             switch (edge) {
                 case 0:
                     t = cube[0] / (cube[0] - cube[1]);
