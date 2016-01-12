@@ -390,31 +390,37 @@ void MarchingCubes::ProcessCubeTiling13(const glm::ivec3 &grid_coord,
                                         uint8_t config_case, uint8_t config,
                                         float *cube)
 {
+    static const int8_t TILING13_2a_0 = 1;
+    static const int8_t TILING13_3a_0 = 7;
+    static const int8_t TILING13_4_0 = 19;
+    static const int8_t TILING13_5_0 = 23;
+    static const int8_t TILING13_3b_0 = 27;
+    static const int8_t TILING13_2b_0 = 39;
+
     auto subconfig = uint8_t{0};
     for (int i = 0; i <= 5; ++i) {
         if (test_face(test13[config][i], cube)) {
             subconfig |= 1 << i;
         }
     }
-    switch (subconfig13[subconfig]) {
+    auto subcase = subconfig13[subconfig];
+    switch (subcase) {
         case 0: /* 13.1 */
             add_triangle(grid_coord, tiling13_1[config], 4);
             break;
 
-#define TILING13_2a_0 1
-        // 13.2
+        // 13.2a
         case 1:
         case 2:
         case 3:
         case 4:
         case 5:
         case 6: {
-            auto idx = subconfig13[subconfig] - TILING13_2a_0;
+            auto idx = subcase - TILING13_2a_0;
             add_triangle(grid_coord, tiling13_2[config][idx], 6);
         } break;
 
-#define TILING13_3a_0 7
-        // 13.3
+        // 13.3a
         case 7:
         case 8:
         case 9:
@@ -427,29 +433,27 @@ void MarchingCubes::ProcessCubeTiling13(const glm::ivec3 &grid_coord,
         case 16:
         case 17:
         case 18: {
-            auto idx = subconfig13[subconfig] - TILING13_3a_0;
+            auto idx = subcase - TILING13_3a_0;
             auto v12 = add_c_vertex(grid_coord);
             add_triangle(grid_coord, tiling13_3[config][idx], 10, v12);
         } break;
 
-#define TILING13_4_0 19
         // 13.4
         case 19:
         case 20:
         case 21:
         case 22: {
-            auto idx = subconfig13[subconfig] - TILING13_4_0;
+            auto idx = subcase - TILING13_4_0;
             auto v12 = add_c_vertex(grid_coord);
             add_triangle(grid_coord, tiling13_4[config][idx], 12, v12);
         } break;
 
-#define TILING13_5_0 23
         // 13.5
         case 23:
         case 24:
         case 25:
         case 26: {
-            auto idx = subconfig13[subconfig] - TILING13_5_0;
+            auto idx = subcase - TILING13_5_0;
             auto is_interior = test_interior(test13[config][6], config_case,
                                              config, idx, cube);
             if (is_interior) {
@@ -460,8 +464,7 @@ void MarchingCubes::ProcessCubeTiling13(const glm::ivec3 &grid_coord,
             }
         } break;
 
-#define TILING13_3b_0 27
-        // 13.3
+        // 13.3b
         case 27:
         case 28:
         case 29:
@@ -474,20 +477,19 @@ void MarchingCubes::ProcessCubeTiling13(const glm::ivec3 &grid_coord,
         case 36:
         case 37:
         case 38: {
-            auto idx = subconfig13[subconfig] - TILING13_3b_0;
+            auto idx = subcase - TILING13_3b_0;
             auto v12 = add_c_vertex(grid_coord);
             add_triangle(grid_coord, tiling13_3_[config][idx], 10, v12);
         } break;
 
-#define TILING13_2b_0 39
-
+        // 13.2b
         case 39:
         case 40:
         case 41:
         case 42:
         case 43:
         case 44: {
-            auto idx = subconfig13[subconfig] - TILING13_2b_0;
+            auto idx = subcase - TILING13_2b_0;
             add_triangle(grid_coord, tiling13_2_[config][idx], 6);
         } break;
 
