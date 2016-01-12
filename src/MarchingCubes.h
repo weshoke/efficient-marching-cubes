@@ -132,41 +132,25 @@ class MarchingCubes {
         return (iter == z_verts_.end()) ? -1 : iter->second;
     }
 
-    /**
-     * sets the pre-computed vertex index on the lower horizontal edge of a
-     * specific cube
-     * \param val the index of the new vertex
-     * \param i abscisse of the cube
-     * \param j ordinate of the cube
-     * \param k height of the cube
-     */
-    inline void set_x_vert(const int val, const int i, const int j, const int k)
+    // sets the pre-computed vertex index on the lower horizontal edge of a
+    // specific cube
+    inline void set_x_vert(const int val, const glm::ivec3 &grid_coord)
     {
-        x_verts_[index(i, j, k)] = val;
+        x_verts_[index(grid_coord)] = val;
     }
-    /**
-     * sets the pre-computed vertex index on the lower longitudinal edge of a
-     * specific cube
-     * \param val the index of the new vertex
-     * \param i abscisse of the cube
-     * \param j ordinate of the cube
-     * \param k height of the cube
-     */
-    inline void set_y_vert(const int val, const int i, const int j, const int k)
+
+    // sets the pre-computed vertex index on the lower longitudinal edge of a
+    // specific cube
+    inline void set_y_vert(const int val, const glm::ivec3 &grid_coord)
     {
-        y_verts_[index(i, j, k)] = val;
+        y_verts_[index(grid_coord)] = val;
     }
-    /**
-     * sets the pre-computed vertex index on the lower vertical edge of a
-     * specific cube
-     * \param val the index of the new vertex
-     * \param i abscisse of the cube
-     * \param j ordinate of the cube
-     * \param k height of the cube
-     */
-    inline void set_z_vert(const int val, const int i, const int j, const int k)
+
+    // sets the pre-computed vertex index on the lower vertical edge of a
+    // specific cube
+    inline void set_z_vert(const int val, const glm::ivec3 &grid_coord)
     {
-        z_verts_[index(i, j, k)] = val;
+        z_verts_[index(grid_coord)] = val;
     }
 
     //-----------------------------------------------------------------------------

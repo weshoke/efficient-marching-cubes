@@ -135,34 +135,34 @@ void MarchingCubes::compute_intersection_points(float iso)
                     if (cube[1] > 0) {
                         set_x_vert(add_vertex(grid_coord, glm::ivec3(1, 0, 0),
                                               1, cube),
-                                   i, j, k);
+                                   grid_coord);
                     }
                     if (cube[3] > 0) {
                         set_y_vert(add_vertex(grid_coord, glm::ivec3(0, 1, 0),
                                               3, cube),
-                                   i, j, k);
+                                   grid_coord);
                     }
                     if (cube[4] > 0) {
                         set_z_vert(add_vertex(grid_coord, glm::ivec3(0, 0, 1),
                                               4, cube),
-                                   i, j, k);
+                                   grid_coord);
                     }
                 }
                 else {
                     if (cube[1] < 0) {
                         set_x_vert(add_vertex(grid_coord, glm::ivec3(1, 0, 0),
                                               1, cube),
-                                   i, j, k);
+                                   grid_coord);
                     }
                     if (cube[3] < 0) {
                         set_y_vert(add_vertex(grid_coord, glm::ivec3(0, 1, 0),
                                               3, cube),
-                                   i, j, k);
+                                   grid_coord);
                     }
                     if (cube[4] < 0) {
                         set_z_vert(add_vertex(grid_coord, glm::ivec3(0, 0, 1),
                                               4, cube),
-                                   i, j, k);
+                                   grid_coord);
                     }
                 }
             }
