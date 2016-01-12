@@ -44,12 +44,6 @@ class MarchingCubes {
     /** accesses the triangle buffer of the generated mesh */
     inline Triangle *triangles() { return triangles_.data(); }
     glm::ivec3 size() const { return size_; }
-    /**
-     *
-     *
-     * \param originalMC true for the original Marching Cubes
-     */
-
     // selects wether the algorithm will use the enhanced topologically
     // controlled lookup table or the original MarchingCubes
     inline void SetAlgorithm(Algorithm algorithm) { algorithm_ = algorithm; }
@@ -67,17 +61,14 @@ class MarchingCubes {
 
    protected:
     /** tesselates one cube */
-    void process_cube(const glm::ivec3 &grid_coord, uint8_t lut_entry,
-                      float *cube);
+    void ProcessCube(const glm::ivec3 &grid_coord, uint8_t lut_entry,
+                     float *cube);
 
     //-----------------------------------------------------------------------------
     // Operations
    protected:
-    /**
-     * computes almost all the vertices of the mesh by interpolation along the
-     * cubes edges
-     * \param iso isovalue
-     */
+    // computes almost all the vertices of the mesh by interpolation along the
+    // cubes edges
     void compute_intersection_points(float iso);
 
     /**

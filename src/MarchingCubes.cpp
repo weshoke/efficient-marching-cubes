@@ -53,8 +53,8 @@ void MarchingCubes::run(float iso)
 
     compute_intersection_points(iso);
 
-    for (int k = 0; k < size_.z - 1; k++)
-        for (int j = 0; j < size_.y - 1; j++)
+    for (int k = 0; k < size_.z - 1; k++) {
+        for (int j = 0; j < size_.y - 1; j++) {
             for (int i = 0; i < size_.x - 1; i++) {
                 float cube[8];
                 // cube sign representation in [0..255]
@@ -71,8 +71,10 @@ void MarchingCubes::run(float iso)
                     if (cube[p] > 0) lut_entry += 1 << p;
                 }
 
-                process_cube(glm::ivec3(i, j, k), lut_entry, cube);
+                ProcessCube(glm::ivec3(i, j, k), lut_entry, cube);
             }
+        }
+    }
 
     std::cout << "Marching Cubes ran in "
               << ((double)(clock() - time) / CLOCKS_PER_SEC) << " secs.\n";
@@ -85,6 +87,22 @@ void MarchingCubes::Setup()
     x_verts_.reserve(estimated_vertex_count);
     y_verts_.reserve(estimated_vertex_count);
     z_verts_.reserve(estimated_vertex_count);
+}
+
+void CleanIsoDenormals(float *cube)
+{
+    if (std::abs(cube[0]) < std::numeric_limits<float>::epsilon()) {
+        cube[0] = std::numeric_limits<float>::epsilon();
+    }
+    if (std::abs(cube[1]) < std::numeric_limits<float>::epsilon()) {
+        cube[1] = std::numeric_limits<float>::epsilon();
+    }
+    if (std::abs(cube[3]) < std::numeric_limits<float>::epsilon()) {
+        cube[3] = std::numeric_limits<float>::epsilon();
+    }
+    if (std::abs(cube[4]) < std::numeric_limits<float>::epsilon()) {
+        cube[4] = std::numeric_limits<float>::epsilon();
+    }
 }
 
 // Compute the intersection points
@@ -118,18 +136,7 @@ void MarchingCubes::compute_intersection_points(float iso)
                     cube[4] = cube[0];
                 }
 
-                if (std::abs(cube[0]) < std::numeric_limits<float>::epsilon()) {
-                    cube[0] = std::numeric_limits<float>::epsilon();
-                }
-                if (std::abs(cube[1]) < std::numeric_limits<float>::epsilon()) {
-                    cube[1] = std::numeric_limits<float>::epsilon();
-                }
-                if (std::abs(cube[3]) < std::numeric_limits<float>::epsilon()) {
-                    cube[3] = std::numeric_limits<float>::epsilon();
-                }
-                if (std::abs(cube[4]) < std::numeric_limits<float>::epsilon()) {
-                    cube[4] = std::numeric_limits<float>::epsilon();
-                }
+                CleanIsoDenormals(cube);
 
                 if (cube[0] < 0) {
                     if (cube[1] > 0) {
