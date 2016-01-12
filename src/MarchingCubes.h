@@ -111,13 +111,7 @@ class MarchingCubes
      * \param size_y depth  of the grid
      * \param size_z height of the grid
      */
-    inline void set_resolution(const int size_x, const int size_y,
-                               const int size_z)
-    {
-        _size.x = size_x;
-        _size.y = size_y;
-        _size.z = size_z;
-    }
+    inline void set_resolution(const glm::ivec3 &size) { _size = size; }
     /**
      * selects wether the algorithm will use the enhanced topologically
      * controlled lookup table or the original MarchingCubes
