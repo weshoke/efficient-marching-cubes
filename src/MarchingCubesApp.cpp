@@ -57,14 +57,13 @@ void MarchingCubesApp::setup()
     verts.reserve(mc.ntrigs() * 3);
 
     for (int i = 0; i < mc.ntrigs(); ++i) {
-        const Triangle *t = mc.trig(i);
-        const Vertex *v;
-        v = mc.vert(t->v1);
-        verts.push_back(glm::vec3(v->x, v->y, v->z));
-        v = mc.vert(t->v2);
-        verts.push_back(glm::vec3(v->x, v->y, v->z));
-        v = mc.vert(t->v3);
-        verts.push_back(glm::vec3(v->x, v->y, v->z));
+        auto t = mc.trig(i);
+        auto v1 = mc.vert(t.v1);
+        verts.push_back(glm::vec3(v1.x, v1.y, v1.z));
+        auto v2 = mc.vert(t.v2);
+        verts.push_back(glm::vec3(v2.x, v2.y, v2.z));
+        auto v3 = mc.vert(t.v3);
+        verts.push_back(glm::vec3(v3.x, v3.y, v3.z));
     }
 
     auto mesh =

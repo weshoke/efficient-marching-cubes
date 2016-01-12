@@ -83,17 +83,21 @@ class MarchingCubes
     /** accesses the number of triangles of the generated mesh */
     inline const int ntrigs() const { return _triangles.size(); }
     /** accesses a specific vertex of the generated mesh */
+
+    inline const Vertex &vert(int i) const { return _vertices[i]; }
+    inline const Triangle &trig(int i) const { return _triangles[i]; }
+    /*
     inline const Vertex *vert(const int i) const
-    {
-        if (i < 0 || i >= nverts()) return (Vertex *)NULL;
-        return _vertices.data() + i;
-    }
-    /** accesses a specific triangle of the generated mesh */
-    inline const Triangle *trig(const int i) const
-    {
-        if (i < 0 || i >= ntrigs()) return (Triangle *)NULL;
-        return _triangles.data() + i;
-    }
+{
+    if (i < 0 || i >= nverts()) return (Vertex *)NULL;
+    return _vertices.data() + i;
+}
+inline const Triangle *trig(const int i) const
+{
+    if (i < 0 || i >= ntrigs()) return (Triangle *)NULL;
+    return _triangles.data() + i;
+}
+    */
 
     /** accesses the vertex buffer of the generated mesh */
     inline Vertex *vertices() { return _vertices.data(); }
