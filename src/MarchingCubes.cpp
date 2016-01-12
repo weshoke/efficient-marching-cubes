@@ -223,6 +223,10 @@ bool test_interior(int8_t s, uint8_t config_case, uint8_t config,
         {7, 6}, {4, 7}, {5, 4}, {6, 5}, {3, 2}, {0, 3},
         {1, 0}, {2, 1}, {2, 6}, {3, 7}, {0, 4}, {1, 5}};
 
+    static const uint8_t edge_vertices_D[12][2] = {
+        {4, 5}, {5, 6}, {6, 7}, {7, 4}, {0, 1}, {1, 2},
+        {2, 3}, {3, 0}, {1, 5}, {2, 6}, {3, 7}, {0, 4}};
+
     float t, At = 0, Bt = 0, Ct = 0, Dt = 0, a, b;
     char test = 0;
     char edge = -1;  // reference edge of the triangulation
@@ -268,7 +272,7 @@ bool test_interior(int8_t s, uint8_t config_case, uint8_t config,
                 auto B0 = cube[edge_vertices_B[edge][0]];
                 auto B1 = cube[edge_vertices_B[edge][1]];
                 t = t0 / (t0 - t1);
-                Bt = B0 / (B0 - B1);
+                // Bt = B0 / (B0 - B1);
             }
 
             switch (edge) {
