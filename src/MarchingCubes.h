@@ -53,39 +53,17 @@ class MarchingCubes {
     // selects wether the algorithm will use the enhanced topologically
     // controlled lookup table or the original MarchingCubes
     inline void SetAlgorithm(Algorithm algorithm) { algorithm_ = algorithm; }
-    // Data access
-    /**
-     * accesses a specific cube of the grid
-     * \param i abscisse of the cube
-     * \param j ordinate of the cube
-     * \param k height of the cube
-     */
-    inline const float get_data(const int i, const int j, const int k) const
+    void Setup();
+    void run(float iso = 0.f);
+
+    inline const float get_data(const glm::ivec3 &grid_coord) const
     {
-        return data_[index(i, j, k)];
+        return data_[index(grid_coord)];
     }
-    /**
-     * sets a specific cube of the grid
-     * \param val new value for the cube
-     * \param i abscisse of the cube
-     * \param j ordinate of the cube
-     * \param k height of the cube
-     */
     inline void set_data(const float val, const int i, const int j, const int k)
     {
         data_[index(i, j, k)] = val;
     }
-
-    void Setup();
-
-    //-----------------------------------------------------------------------------
-    // Algorithm
-   public:
-    /**
-     * Main algorithm : must be called after init_all
-     * \param iso isovalue
-     */
-    void run(float iso = 0.f);
 
    protected:
     /** tesselates one cube */

@@ -60,9 +60,10 @@ void MarchingCubes::run(float iso)
                 // cube sign representation in [0..255]
                 auto lut_entry = uint8_t{0};
                 for (int p = 0; p < 8; ++p) {
-                    cube[p] = get_data(i + ((p ^ (p >> 1)) & 1),
-                                       j + ((p >> 1) & 1), k + ((p >> 2) & 1)) -
-                              iso;
+                    auto grid_coord =
+                        glm::ivec3(i + ((p ^ (p >> 1)) & 1), j + ((p >> 1) & 1),
+                                   k + ((p >> 2) & 1));
+                    cube[p] = get_data(grid_coord) - iso;
                     if (std::abs(cube[p]) <
                         std::numeric_limits<float>::epsilon()) {
                         cube[p] = std::numeric_limits<float>::epsilon();
@@ -89,64 +90,80 @@ void MarchingCubes::Setup()
 // Compute the intersection points
 void MarchingCubes::compute_intersection_points(float iso)
 {
-    float cube[8];
-
     for (int k = 0; k < size_.z; k++)
         for (int j = 0; j < size_.y; j++)
             for (int i = 0; i < size_.x; i++) {
-                cube[0] = get_data(i, j, k) - iso;
-                if (i < size_.x - 1)
-                    cube[1] = get_data(i + 1, j, k) - iso;
-                else
-                    cube[1] = cube[0];
-
-                if (j < size_.y - 1)
-                    cube[3] = get_data(i, j + 1, k) - iso;
-                else
-                    cube[3] = cube[0];
-
-                if (k < size_.z - 1)
-                    cube[4] = get_data(i, j, k + 1) - iso;
-                else
-                    cube[4] = cube[0];
-
-                if (std::abs(cube[0]) < std::numeric_limits<float>::epsilon())
-                    cube[0] = std::numeric_limits<float>::epsilon();
-                if (std::abs(cube[1]) < std::numeric_limits<float>::epsilon())
-                    cube[1] = std::numeric_limits<float>::epsilon();
-                if (std::abs(cube[3]) < std::numeric_limits<float>::epsilon())
-                    cube[3] = std::numeric_limits<float>::epsilon();
-                if (std::abs(cube[4]) < std::numeric_limits<float>::epsilon())
-                    cube[4] = std::numeric_limits<float>::epsilon();
-
+                float cube[8];
                 auto grid_coord = glm::ivec3(i, j, k);
-                if (cube[0] < 0) {
-                    if (cube[1] > 0)
-                        set_x_vert(add_vertex(grid_coord, glm::ivec3(1, 0, 0),
-                                              1, cube),
-                                   i, j, k);
-                    if (cube[3] > 0)
-                        set_y_vert(add_vertex(grid_coord, glm::ivec3(0, 1, 0),
-                                              3, cube),
-                                   i, j, k);
-                    if (cube[4] > 0)
-                        set_z_vert(add_vertex(grid_coord, glm::ivec3(0, 0, 1),
-                                              4, cube),
-                                   i, j, k);
+
+                cube[0] = get_data(grid_coord) - iso;
+                if (i < size_.x - 1) {
+                    cube[1] = get_data(glm::ivec3(i + 1, j, k)) - iso;
                 }
                 else {
-                    if (cube[1] < 0)
+                    cube[1] = cube[0];
+                }
+
+                if (j < size_.y - 1) {
+                    cube[3] = get_data(glm::ivec3(i, j + 1, k)) - iso;
+                }
+                else {
+                    cube[3] = cube[0];
+                }
+
+                if (k < size_.z - 1) {
+                    cube[4] = get_data(glm::ivec3(i, j, k + 1)) - iso;
+                }
+                else {
+                    cube[4] = cube[0];
+                }
+
+                if (std::abs(cube[0]) < std::numeric_limits<float>::epsilon()) {
+                    cube[0] = std::numeric_limits<float>::epsilon();
+                }
+                if (std::abs(cube[1]) < std::numeric_limits<float>::epsilon()) {
+                    cube[1] = std::numeric_limits<float>::epsilon();
+                }
+                if (std::abs(cube[3]) < std::numeric_limits<float>::epsilon()) {
+                    cube[3] = std::numeric_limits<float>::epsilon();
+                }
+                if (std::abs(cube[4]) < std::numeric_limits<float>::epsilon()) {
+                    cube[4] = std::numeric_limits<float>::epsilon();
+                }
+
+                if (cube[0] < 0) {
+                    if (cube[1] > 0) {
                         set_x_vert(add_vertex(grid_coord, glm::ivec3(1, 0, 0),
                                               1, cube),
                                    i, j, k);
-                    if (cube[3] < 0)
+                    }
+                    if (cube[3] > 0) {
                         set_y_vert(add_vertex(grid_coord, glm::ivec3(0, 1, 0),
                                               3, cube),
                                    i, j, k);
-                    if (cube[4] < 0)
+                    }
+                    if (cube[4] > 0) {
                         set_z_vert(add_vertex(grid_coord, glm::ivec3(0, 0, 1),
                                               4, cube),
                                    i, j, k);
+                    }
+                }
+                else {
+                    if (cube[1] < 0) {
+                        set_x_vert(add_vertex(grid_coord, glm::ivec3(1, 0, 0),
+                                              1, cube),
+                                   i, j, k);
+                    }
+                    if (cube[3] < 0) {
+                        set_y_vert(add_vertex(grid_coord, glm::ivec3(0, 1, 0),
+                                              3, cube),
+                                   i, j, k);
+                    }
+                    if (cube[4] < 0) {
+                        set_z_vert(add_vertex(grid_coord, glm::ivec3(0, 0, 1),
+                                              4, cube),
+                                   i, j, k);
+                    }
                 }
             }
 }
@@ -848,22 +865,14 @@ float MarchingCubes::get_grad(const glm::ivec3 &grid_coord, int dim)
 
     if (grid_coord[dim] > 0) {
         if (grid_coord[dim] < size_[dim] - 1) {
-            return (get_data(next_grid_coord.x, next_grid_coord.y,
-                             next_grid_coord.z) -
-                    get_data(prev_grid_coord.x, prev_grid_coord.y,
-                             prev_grid_coord.z)) /
-                   2;
+            return (get_data(next_grid_coord) - get_data(prev_grid_coord)) / 2;
         }
         else {
-            return get_data(grid_coord.x, grid_coord.y, grid_coord.z) -
-                   get_data(prev_grid_coord.x, prev_grid_coord.y,
-                            prev_grid_coord.z);
+            return get_data(grid_coord) - get_data(prev_grid_coord);
         }
     }
     else {
-        return get_data(next_grid_coord.x, next_grid_coord.y,
-                        next_grid_coord.z) -
-               get_data(grid_coord.x, grid_coord.y, grid_coord.z);
+        return get_data(next_grid_coord) - get_data(grid_coord);
     }
 }
 
