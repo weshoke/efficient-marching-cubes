@@ -778,8 +778,13 @@ void MarchingCubes::process_cube(const glm::ivec3 &grid_coord,
 }
 //_____________________________________________________________________________
 
-//_____________________________________________________________________________
-// Adding triangles
+static glm::ivec3 cube_offsets[12] = {
+    glm::ivec3(0),       glm::ivec3(1, 0, 0), glm::ivec3(0, 1, 0),
+    glm::ivec3(0),       glm::ivec3(0, 0, 1), glm::ivec3(1, 0, 1),
+    glm::ivec3(0, 1, 1), glm::ivec3(0, 0, 1), glm::ivec3(0),
+    glm::ivec3(1, 0, 0), glm::ivec3(1, 1, 0), glm::ivec3(0, 1, 0),
+};
+
 void MarchingCubes::add_triangle(const glm::ivec3 &grid_coord, const char *trig,
                                  char n, int v12)
 {
@@ -788,52 +793,29 @@ void MarchingCubes::add_triangle(const glm::ivec3 &grid_coord, const char *trig,
         glm::ivec3 tv;
 
         for (int t = 0; t < 3; ++t, ++i) {
+            const auto &offset = cube_offsets[trig[i]];
             switch (trig[i]) {
                 case 0:
-                    tv[t] = get_x_vert(grid_coord);
-                    break;
-                case 1:
-                    tv[t] = get_y_vert(glm::ivec3(grid_coord.x + 1,
-                                                  grid_coord.y, grid_coord.z));
-                    break;
                 case 2:
-                    tv[t] = get_x_vert(glm::ivec3(
-                        grid_coord.x, grid_coord.y + 1, grid_coord.z));
-                    break;
-                case 3:
-                    tv[t] = get_y_vert(grid_coord);
-                    break;
                 case 4:
-                    tv[t] = get_x_vert(glm::ivec3(grid_coord.x, grid_coord.y,
-                                                  grid_coord.z + 1));
-                    break;
-                case 5:
-                    tv[t] = get_y_vert(glm::ivec3(
-                        grid_coord.x + 1, grid_coord.y, grid_coord.z + 1));
-                    break;
                 case 6:
-                    tv[t] = get_x_vert(glm::ivec3(
-                        grid_coord.x, grid_coord.y + 1, grid_coord.z + 1));
+                    tv[t] = get_x_vert(grid_coord + offset);
                     break;
+
+                case 1:
+                case 3:
+                case 5:
                 case 7:
-                    tv[t] = get_y_vert(glm::ivec3(grid_coord.x, grid_coord.y,
-                                                  grid_coord.z + 1));
+                    tv[t] = get_y_vert(grid_coord + offset);
                     break;
+
                 case 8:
-                    tv[t] = get_z_vert(grid_coord);
-                    break;
                 case 9:
-                    tv[t] = get_z_vert(glm::ivec3(grid_coord.x + 1,
-                                                  grid_coord.y, grid_coord.z));
-                    break;
                 case 10:
-                    tv[t] = get_z_vert(glm::ivec3(
-                        grid_coord.x + 1, grid_coord.y + 1, grid_coord.z));
-                    break;
                 case 11:
-                    tv[t] = get_z_vert(glm::ivec3(
-                        grid_coord.x, grid_coord.y + 1, grid_coord.z));
+                    tv[t] = get_z_vert(grid_coord + offset);
                     break;
+
                 case 12:
                     tv[t] = v12;
                     break;
