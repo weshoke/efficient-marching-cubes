@@ -85,26 +85,6 @@ CSG_Node *csg_root;
 
 //-----------------------------------------------------------------------------
 
-// run the MC algorithm
-bool run();
-
-//-----------------------------------------------------------------------------
-
-// switch to export iso grid
-int export_iso = 0;
-
-// set file extension of out_filename
-int set_ext(const char ext[3]);
-
-/// EPS export
-void export_eps();
-
-/// PPM export
-void export_ppm();
-
-/// TGA export
-void export_tga();
-
 bool run(MarchingCubes &mc)
 {
     strcpy(formula, fun_def[9]);
@@ -158,23 +138,6 @@ bool run(MarchingCubes &mc)
         v.pos = range * v.pos + min_pos;
         v.n = glm::normalize(v.n);
     }
-
-    if (isofile) {
-        rewind(isofile);
-        fread(buf, sizeof(float), 1, isofile);
-        fread(buf, sizeof(float), 1, isofile);
-        fread(buf, sizeof(float), 1, isofile);
-        fread(buf, sizeof(float), 1, isofile);
-        fread(buf, sizeof(float), 1, isofile);
-        fread(buf, sizeof(float), 1, isofile);
-        fread(buf, sizeof(float), 1, isofile);
-        fread(buf, sizeof(float), 1, isofile);
-        fread(buf, sizeof(float), 1, isofile);
-    }
-
-#if USE_GL_DISPLAY_LIST
-    draw();
-#endif  // USE_GL_DISPLAY_LIST
 
     return true;
 }
