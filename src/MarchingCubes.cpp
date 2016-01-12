@@ -353,39 +353,32 @@ bool test_interior(int8_t s, uint8_t config_case, uint8_t config,
     if (Dt >= 0) test += 8;
     switch (test) {
         case 0:
-            return s > 0;
         case 1:
-            return s > 0;
         case 2:
-            return s > 0;
         case 3:
-            return s > 0;
         case 4:
-            return s > 0;
-        case 5:
-            if (At * Ct - Bt * Dt < std::numeric_limits<float>::epsilon())
-                return s > 0;
-            break;
         case 6:
-            return s > 0;
-        case 7:
-            return s < 0;
         case 8:
-            return s > 0;
         case 9:
-            return s > 0;
-        case 10:
-            if (At * Ct - Bt * Dt >= std::numeric_limits<float>::epsilon())
-                return s > 0;
-            break;
-        case 11:
-            return s < 0;
         case 12:
             return s > 0;
+
+        case 5:
+            if (At * Ct - Bt * Dt < std::numeric_limits<float>::epsilon()) {
+                return s > 0;
+            }
+            break;
+
+        case 10:
+            if (At * Ct - Bt * Dt >= std::numeric_limits<float>::epsilon()) {
+                return s > 0;
+            }
+            break;
+
+        case 7:
+        case 11:
         case 13:
-            return s < 0;
         case 14:
-            return s < 0;
         case 15:
             return s < 0;
     }
