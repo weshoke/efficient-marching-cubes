@@ -396,8 +396,8 @@ bool test_interior(int8_t s, uint8_t config_case, uint8_t config,
 
 //_____________________________________________________________________________
 // Process a unit cube
-void MarchingCubes::process_cube(const glm::ivec3 &grid_coord,
-                                 uint8_t lut_entry, float *cube)
+void MarchingCubes::ProcessCube(const glm::ivec3 &grid_coord, uint8_t lut_entry,
+                                float *cube)
 //-----------------------------------------------------------------------------
 {
     if (algorithm_ == OriginalMarchingCubes) {
