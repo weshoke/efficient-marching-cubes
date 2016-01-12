@@ -64,6 +64,9 @@ class MarchingCubes {
     void ProcessCube(const glm::ivec3 &grid_coord, uint8_t lut_entry,
                      float *cube);
 
+    void ProcessCubeTiling13(const glm::ivec3 &grid_coord, uint8_t config_case,
+                             uint8_t config, float *cube);
+
     //-----------------------------------------------------------------------------
     // Operations
    protected:
