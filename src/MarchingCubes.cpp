@@ -38,8 +38,8 @@ void print_cube(float *cube)
 
 //_____________________________________________________________________________
 // Constructor
-MarchingCubes::MarchingCubes(const glm::ivec3 &size)
-: originalMC_(false), size_(size)
+MarchingCubes::MarchingCubes(const glm::ivec3 &size, Algorithm algorithm)
+: algorithm_(algorithm), size_(size)
 {
 }
 //_____________________________________________________________________________
@@ -376,7 +376,7 @@ void MarchingCubes::process_cube(const glm::ivec3 &grid_coord,
                                  uint8_t lut_entry, float *cube)
 //-----------------------------------------------------------------------------
 {
-    if (originalMC_) {
+    if (algorithm_ == OriginalMarchingCubes) {
         char nt = 0;
         while (casesClassic[lut_entry][3 * nt] != -1) nt++;
         add_triangle(grid_coord, casesClassic[lut_entry], nt);

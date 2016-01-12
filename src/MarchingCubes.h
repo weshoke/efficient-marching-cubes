@@ -26,7 +26,10 @@ struct Triangle {
 
 class MarchingCubes {
    public:
-    MarchingCubes(const glm::ivec3 &size);
+    enum Algorithm { OriginalMarchingCubes = 0, TopologicalMarchingCubes };
+
+    MarchingCubes(const glm::ivec3 &size,
+                  Algorithm algorithm = OriginalMarchingCubes);
 
     /** accesses the number of vertices of the generated mesh */
     inline const int nverts() const { return vertices_.size(); }
@@ -42,15 +45,14 @@ class MarchingCubes {
     inline Triangle *triangles() { return triangles_.data(); }
     glm::ivec3 size() const { return size_; }
     /**
-     * selects wether the algorithm will use the enhanced topologically
-     * controlled lookup table or the original MarchingCubes
+     *
+     *
      * \param originalMC true for the original Marching Cubes
      */
-    inline void set_method(const bool originalMC = false)
-    {
-        originalMC_ = originalMC;
-    }
 
+    // selects wether the algorithm will use the enhanced topologically
+    // controlled lookup table or the original MarchingCubes
+    inline void SetAlgorithm(Algorithm algorithm) { algorithm_ = algorithm; }
     // Data access
     /**
      * accesses a specific cube of the grid
@@ -192,10 +194,7 @@ class MarchingCubes {
     //-----------------------------------------------------------------------------
     // Elements
    protected:
-    // selects wether the algorithm will use the enhanced topologically
-    // controlled lookup table or the original MarchingCubes
-    bool originalMC_;
-
+    Algorithm algorithm_;
     glm::ivec3 size_;
     std::vector<float> data_;
 

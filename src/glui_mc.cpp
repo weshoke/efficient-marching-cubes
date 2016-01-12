@@ -129,7 +129,7 @@ bool run(MarchingCubes &mc)
     }
 
     // Run MC
-    mc.set_method(originalMC == 1);
+    mc.SetAlgorithm(MarchingCubes::TopologicalMarchingCubes);
     mc.run();
 
     // Rescale positions
