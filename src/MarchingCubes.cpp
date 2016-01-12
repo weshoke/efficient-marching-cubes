@@ -39,7 +39,7 @@ void print_cube(float *cube)
 //_____________________________________________________________________________
 // Constructor
 MarchingCubes::MarchingCubes(const glm::ivec3 &size)
-: _originalMC(false), _size(size)
+: originalMC_(false), size_(size)
 {
 }
 //_____________________________________________________________________________
@@ -53,9 +53,9 @@ void MarchingCubes::run(float iso)
 
     compute_intersection_points(iso);
 
-    for (int k = 0; k < _size.z - 1; k++)
-        for (int j = 0; j < _size.y - 1; j++)
-            for (int i = 0; i < _size.x - 1; i++) {
+    for (int k = 0; k < size_.z - 1; k++)
+        for (int j = 0; j < size_.y - 1; j++)
+            for (int i = 0; i < size_.x - 1; i++) {
                 float cube[8];
                 // cube sign representation in [0..255]
                 auto lut_entry = uint8_t{0};
@@ -79,11 +79,11 @@ void MarchingCubes::run(float iso)
 
 void MarchingCubes::Setup()
 {
-    _data.resize(_size.x * _size.y * _size.z);
-    auto estimated_vertex_count = _size.x * _size.y * _size.z / 2;
-    _x_verts.reserve(estimated_vertex_count);
-    _y_verts.reserve(estimated_vertex_count);
-    _z_verts.reserve(estimated_vertex_count);
+    data_.resize(size_.x * size_.y * size_.z);
+    auto estimated_vertex_count = size_.x * size_.y * size_.z / 2;
+    x_verts_.reserve(estimated_vertex_count);
+    y_verts_.reserve(estimated_vertex_count);
+    z_verts_.reserve(estimated_vertex_count);
 }
 
 // Compute the intersection points
@@ -91,21 +91,21 @@ void MarchingCubes::compute_intersection_points(float iso)
 {
     float cube[8];
 
-    for (int k = 0; k < _size.z; k++)
-        for (int j = 0; j < _size.y; j++)
-            for (int i = 0; i < _size.x; i++) {
+    for (int k = 0; k < size_.z; k++)
+        for (int j = 0; j < size_.y; j++)
+            for (int i = 0; i < size_.x; i++) {
                 cube[0] = get_data(i, j, k) - iso;
-                if (i < _size.x - 1)
+                if (i < size_.x - 1)
                     cube[1] = get_data(i + 1, j, k) - iso;
                 else
                     cube[1] = cube[0];
 
-                if (j < _size.y - 1)
+                if (j < size_.y - 1)
                     cube[3] = get_data(i, j + 1, k) - iso;
                 else
                     cube[3] = cube[0];
 
-                if (k < _size.z - 1)
+                if (k < size_.z - 1)
                     cube[4] = get_data(i, j, k + 1) - iso;
                 else
                     cube[4] = cube[0];
@@ -376,7 +376,7 @@ void MarchingCubes::process_cube(const glm::ivec3 &grid_coord,
                                  uint8_t lut_entry, float *cube)
 //-----------------------------------------------------------------------------
 {
-    if (_originalMC) {
+    if (originalMC_) {
         char nt = 0;
         while (casesClassic[lut_entry][3 * nt] != -1) nt++;
         add_triangle(grid_coord, casesClassic[lut_entry], nt);
@@ -831,7 +831,7 @@ void MarchingCubes::add_triangle(const glm::ivec3 &grid_coord, const char *trig,
             }
         }
 
-        _triangles.push_back(Triangle{tv});
+        triangles_.push_back(Triangle{tv});
     }
 }
 //_____________________________________________________________________________
@@ -847,7 +847,7 @@ float MarchingCubes::get_grad(const glm::ivec3 &grid_coord, int dim)
     prev_grid_coord[dim] -= 1;
 
     if (grid_coord[dim] > 0) {
-        if (grid_coord[dim] < _size[dim] - 1) {
+        if (grid_coord[dim] < size_[dim] - 1) {
             return (get_data(next_grid_coord.x, next_grid_coord.y,
                              next_grid_coord.z) -
                     get_data(prev_grid_coord.x, prev_grid_coord.y,
@@ -882,8 +882,8 @@ int MarchingCubes::add_vertex(const glm::ivec3 &grid_coord,
     auto nz = (1 - u) * get_grad(grid_coord, 2) + u * get_grad(grid_coord2, 2);
 
     auto n = glm::normalize(glm::vec3(nx, ny, nz));
-    _vertices.push_back(Vertex{pos, n});
-    return _vertices.size() - 1;
+    vertices_.push_back(Vertex{pos, n});
+    return vertices_.size() - 1;
 }
 
 int MarchingCubes::add_c_vertex(const glm::ivec3 &grid_coord)
@@ -901,7 +901,7 @@ int MarchingCubes::add_c_vertex(const glm::ivec3 &grid_coord)
                 glm::ivec3(grid_coord.x, grid_coord.y + s, grid_coord.z + t));
             if (vid != -1) {
                 ++u;
-                const Vertex &v = _vertices[vid];
+                const Vertex &v = vertices_[vid];
                 pos += v.pos;
                 n += v.n;
             }
@@ -915,7 +915,7 @@ int MarchingCubes::add_c_vertex(const glm::ivec3 &grid_coord)
                 glm::ivec3(grid_coord.x + t, grid_coord.y, grid_coord.z + s));
             if (vid != -1) {
                 ++u;
-                const Vertex &v = _vertices[vid];
+                const Vertex &v = vertices_[vid];
                 pos += v.pos;
                 n += v.n;
             }
@@ -929,7 +929,7 @@ int MarchingCubes::add_c_vertex(const glm::ivec3 &grid_coord)
                 glm::ivec3(grid_coord.x + s, grid_coord.y + t, grid_coord.z));
             if (vid != -1) {
                 ++u;
-                const Vertex &v = _vertices[vid];
+                const Vertex &v = vertices_[vid];
                 pos += v.pos;
                 n += v.n;
             }
@@ -938,7 +938,7 @@ int MarchingCubes::add_c_vertex(const glm::ivec3 &grid_coord)
 
     pos *= 1.f / u;
     n = glm::normalize(n);
-    _vertices.push_back(Vertex{pos, n});
-    return _vertices.size() - 1;
+    vertices_.push_back(Vertex{pos, n});
+    return vertices_.size() - 1;
 }
 //_____________________________________________________________________________

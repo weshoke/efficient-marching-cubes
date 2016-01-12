@@ -29,18 +29,18 @@ class MarchingCubes {
     MarchingCubes(const glm::ivec3 &size);
 
     /** accesses the number of vertices of the generated mesh */
-    inline const int nverts() const { return _vertices.size(); }
+    inline const int nverts() const { return vertices_.size(); }
     /** accesses the number of triangles of the generated mesh */
-    inline const int ntrigs() const { return _triangles.size(); }
+    inline const int ntrigs() const { return triangles_.size(); }
     /** accesses a specific vertex of the generated mesh */
 
-    inline const Vertex &vert(int i) const { return _vertices[i]; }
-    inline const Triangle &trig(int i) const { return _triangles[i]; }
+    inline const Vertex &vert(int i) const { return vertices_[i]; }
+    inline const Triangle &trig(int i) const { return triangles_[i]; }
     /** accesses the vertex buffer of the generated mesh */
-    inline Vertex *vertices() { return _vertices.data(); }
+    inline Vertex *vertices() { return vertices_.data(); }
     /** accesses the triangle buffer of the generated mesh */
-    inline Triangle *triangles() { return _triangles.data(); }
-    glm::ivec3 size() const { return _size; }
+    inline Triangle *triangles() { return triangles_.data(); }
+    glm::ivec3 size() const { return size_; }
     /**
      * selects wether the algorithm will use the enhanced topologically
      * controlled lookup table or the original MarchingCubes
@@ -48,7 +48,7 @@ class MarchingCubes {
      */
     inline void set_method(const bool originalMC = false)
     {
-        _originalMC = originalMC;
+        originalMC_ = originalMC;
     }
 
     // Data access
@@ -60,7 +60,7 @@ class MarchingCubes {
      */
     inline const float get_data(const int i, const int j, const int k) const
     {
-        return _data[index(i, j, k)];
+        return data_[index(i, j, k)];
     }
     /**
      * sets a specific cube of the grid
@@ -71,7 +71,7 @@ class MarchingCubes {
      */
     inline void set_data(const float val, const int i, const int j, const int k)
     {
-        _data[index(i, j, k)] = val;
+        data_[index(i, j, k)] = val;
     }
 
     void Setup();
@@ -120,36 +120,36 @@ class MarchingCubes {
 
     int index(const int i, const int j, const int k) const
     {
-        return i + _size.x * (j + _size.y * k);
+        return i + size_.x * (j + size_.y * k);
     }
 
     int index(const glm::ivec3 &grid_coord) const
     {
-        return grid_coord.x + _size.x * (grid_coord.y + _size.y * grid_coord.z);
+        return grid_coord.x + size_.x * (grid_coord.y + size_.y * grid_coord.z);
     }
 
     // accesses the pre-computed vertex index on the lower horizontal edge of a
     // specific cube
     inline int get_x_vert(const glm::ivec3 &grid_coord) const
     {
-        auto iter = _x_verts.find(index(grid_coord));
-        return (iter == _x_verts.end()) ? -1 : iter->second;
+        auto iter = x_verts_.find(index(grid_coord));
+        return (iter == x_verts_.end()) ? -1 : iter->second;
     }
 
     // accesses the pre-computed vertex index on the lower longitudinal edge of
     // a specific cube
     inline int get_y_vert(const glm::ivec3 &grid_coord) const
     {
-        auto iter = _y_verts.find(index(grid_coord));
-        return (iter == _y_verts.end()) ? -1 : iter->second;
+        auto iter = y_verts_.find(index(grid_coord));
+        return (iter == y_verts_.end()) ? -1 : iter->second;
     }
 
     // accesses the pre-computed vertex index on the lower vertical edge of a
     // specific cube
     inline int get_z_vert(const glm::ivec3 &grid_coord) const
     {
-        auto iter = _z_verts.find(index(grid_coord));
-        return (iter == _z_verts.end()) ? -1 : iter->second;
+        auto iter = z_verts_.find(index(grid_coord));
+        return (iter == z_verts_.end()) ? -1 : iter->second;
     }
 
     /**
@@ -162,7 +162,7 @@ class MarchingCubes {
      */
     inline void set_x_vert(const int val, const int i, const int j, const int k)
     {
-        _x_verts[index(i, j, k)] = val;
+        x_verts_[index(i, j, k)] = val;
     }
     /**
      * sets the pre-computed vertex index on the lower longitudinal edge of a
@@ -174,7 +174,7 @@ class MarchingCubes {
      */
     inline void set_y_vert(const int val, const int i, const int j, const int k)
     {
-        _y_verts[index(i, j, k)] = val;
+        y_verts_[index(i, j, k)] = val;
     }
     /**
      * sets the pre-computed vertex index on the lower vertical edge of a
@@ -186,7 +186,7 @@ class MarchingCubes {
      */
     inline void set_z_vert(const int val, const int i, const int j, const int k)
     {
-        _z_verts[index(i, j, k)] = val;
+        z_verts_[index(i, j, k)] = val;
     }
 
     //-----------------------------------------------------------------------------
@@ -194,17 +194,17 @@ class MarchingCubes {
    protected:
     // selects wether the algorithm will use the enhanced topologically
     // controlled lookup table or the original MarchingCubes
-    bool _originalMC;
+    bool originalMC_;
 
-    glm::ivec3 _size;
-    std::vector<float> _data;
+    glm::ivec3 size_;
+    std::vector<float> data_;
 
-    std::unordered_map<int, int> _x_verts;
-    std::unordered_map<int, int> _y_verts;
-    std::unordered_map<int, int> _z_verts;
+    std::unordered_map<int, int> x_verts_;
+    std::unordered_map<int, int> y_verts_;
+    std::unordered_map<int, int> z_verts_;
 
-    std::vector<Vertex> _vertices;
-    std::vector<Triangle> _triangles;
+    std::vector<Vertex> vertices_;
+    std::vector<Triangle> triangles_;
 };
 //_____________________________________________________________________________
 
