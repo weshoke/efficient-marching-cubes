@@ -203,7 +203,12 @@ class MarchingCubes
 
     int index(const int i, const int j, const int k) const
     {
-        return i + j * _size.x + k * _size.x * _size.y;
+        return i + _size.x * (j + _size.y * k);
+    }
+
+    int index(const glm::ivec3 &grid_coord) const
+    {
+        return grid_coord.x + _size.x * (grid_coord.y + _size.y * grid_coord.z);
     }
 
     /**
@@ -213,9 +218,9 @@ class MarchingCubes
      * \param j ordinate of the cube
      * \param k height of the cube
      */
-    inline int get_x_vert(const int i, const int j, const int k) const
+    inline int get_x_vert(const glm::ivec3 &grid_coord) const
     {
-        auto iter = _x_verts.find(index(i, j, k));
+        auto iter = _x_verts.find(index(grid_coord));
         return (iter == _x_verts.end()) ? -1 : iter->second;
     }
     /**
@@ -225,9 +230,9 @@ class MarchingCubes
      * \param j ordinate of the cube
      * \param k height of the cube
      */
-    inline int get_y_vert(const int i, const int j, const int k) const
+    inline int get_y_vert(const glm::ivec3 &grid_coord) const
     {
-        auto iter = _y_verts.find(index(i, j, k));
+        auto iter = _y_verts.find(index(grid_coord));
         return (iter == _y_verts.end()) ? -1 : iter->second;
     }
     /**
@@ -237,9 +242,9 @@ class MarchingCubes
      * \param j ordinate of the cube
      * \param k height of the cube
      */
-    inline int get_z_vert(const int i, const int j, const int k) const
+    inline int get_z_vert(const glm::ivec3 &grid_coord) const
     {
-        auto iter = _z_verts.find(index(i, j, k));
+        auto iter = _z_verts.find(index(grid_coord));
         return (iter == _z_verts.end()) ? -1 : iter->second;
     }
 

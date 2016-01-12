@@ -794,52 +794,49 @@ void MarchingCubes::add_triangle(const glm::ivec3 &grid_coord, const char *trig,
         for (int t = 0; t < 3; ++t, ++i) {
             switch (trig[i]) {
                 case 0:
-                    tv[t] =
-                        get_x_vert(grid_coord.x, grid_coord.y, grid_coord.z);
+                    tv[t] = get_x_vert(grid_coord);
                     break;
                 case 1:
-                    tv[t] = get_y_vert(grid_coord.x + 1, grid_coord.y,
-                                       grid_coord.z);
+                    tv[t] = get_y_vert(glm::ivec3(grid_coord.x + 1,
+                                                  grid_coord.y, grid_coord.z));
                     break;
                 case 2:
-                    tv[t] = get_x_vert(grid_coord.x, grid_coord.y + 1,
-                                       grid_coord.z);
+                    tv[t] = get_x_vert(glm::ivec3(
+                        grid_coord.x, grid_coord.y + 1, grid_coord.z));
                     break;
                 case 3:
-                    tv[t] =
-                        get_y_vert(grid_coord.x, grid_coord.y, grid_coord.z);
+                    tv[t] = get_y_vert(grid_coord);
                     break;
                 case 4:
-                    tv[t] = get_x_vert(grid_coord.x, grid_coord.y,
-                                       grid_coord.z + 1);
+                    tv[t] = get_x_vert(glm::ivec3(grid_coord.x, grid_coord.y,
+                                                  grid_coord.z + 1));
                     break;
                 case 5:
-                    tv[t] = get_y_vert(grid_coord.x + 1, grid_coord.y,
-                                       grid_coord.z + 1);
+                    tv[t] = get_y_vert(glm::ivec3(
+                        grid_coord.x + 1, grid_coord.y, grid_coord.z + 1));
                     break;
                 case 6:
-                    tv[t] = get_x_vert(grid_coord.x, grid_coord.y + 1,
-                                       grid_coord.z + 1);
+                    tv[t] = get_x_vert(glm::ivec3(
+                        grid_coord.x, grid_coord.y + 1, grid_coord.z + 1));
                     break;
                 case 7:
-                    tv[t] = get_y_vert(grid_coord.x, grid_coord.y,
-                                       grid_coord.z + 1);
+                    tv[t] = get_y_vert(glm::ivec3(grid_coord.x, grid_coord.y,
+                                                  grid_coord.z + 1));
                     break;
                 case 8:
-                    tv[t] =
-                        get_z_vert(grid_coord.x, grid_coord.y, grid_coord.z);
+                    tv[t] = get_z_vert(grid_coord);
                     break;
                 case 9:
-                    tv[t] = get_z_vert(grid_coord.x + 1, grid_coord.y,
-                                       grid_coord.z);
+                    tv[t] = get_z_vert(glm::ivec3(grid_coord.x + 1,
+                                                  grid_coord.y, grid_coord.z));
                     break;
                 case 10:
-                    tv[t] = get_z_vert(grid_coord.x + 1, grid_coord.y + 1,
-                                       grid_coord.z);
+                    tv[t] = get_z_vert(glm::ivec3(
+                        grid_coord.x + 1, grid_coord.y + 1, grid_coord.z));
                     break;
                 case 11:
-                    tv[t] = get_z_vert(grid_coord.x, grid_coord.y + 1,
-                                       grid_coord.z);
+                    tv[t] = get_z_vert(glm::ivec3(
+                        grid_coord.x, grid_coord.y + 1, grid_coord.z));
                     break;
                 case 12:
                     tv[t] = v12;
@@ -921,8 +918,8 @@ int MarchingCubes::add_c_vertex(const glm::ivec3 &grid_coord)
     // x-face
     for (auto t : {0, 1}) {
         for (auto s : {0, 1}) {
-            auto vid =
-                get_x_vert(grid_coord.x, grid_coord.y + s, grid_coord.z + t);
+            auto vid = get_x_vert(
+                glm::ivec3(grid_coord.x, grid_coord.y + s, grid_coord.z + t));
             if (vid != -1) {
                 ++u;
                 const Vertex &v = _vertices[vid];
@@ -935,8 +932,8 @@ int MarchingCubes::add_c_vertex(const glm::ivec3 &grid_coord)
     // y-face
     for (auto t : {0, 1}) {
         for (auto s : {0, 1}) {
-            auto vid =
-                get_y_vert(grid_coord.x + t, grid_coord.y, grid_coord.z + s);
+            auto vid = get_y_vert(
+                glm::ivec3(grid_coord.x + t, grid_coord.y, grid_coord.z + s));
             if (vid != -1) {
                 ++u;
                 const Vertex &v = _vertices[vid];
@@ -949,8 +946,8 @@ int MarchingCubes::add_c_vertex(const glm::ivec3 &grid_coord)
     // z-face
     for (auto t : {0, 1}) {
         for (auto s : {0, 1}) {
-            auto vid =
-                get_z_vert(grid_coord.x + s, grid_coord.y + t, grid_coord.z);
+            auto vid = get_z_vert(
+                glm::ivec3(grid_coord.x + s, grid_coord.y + t, grid_coord.z));
             if (vid != -1) {
                 ++u;
                 const Vertex &v = _vertices[vid];
