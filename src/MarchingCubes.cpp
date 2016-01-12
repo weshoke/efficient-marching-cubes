@@ -455,9 +455,11 @@ void MarchingCubes::ProcessCube(const glm::ivec3 &grid_coord, uint8_t lut_entry,
             break;
 
         case 7:
-            if (test_face(test7[config][0], cube)) subconfig += 1;
-            if (test_face(test7[config][1], cube)) subconfig += 2;
-            if (test_face(test7[config][2], cube)) subconfig += 4;
+            for (int i = 0; i <= 2; ++i) {
+                if (test_face(test7[config][i], cube)) {
+                    subconfig |= 1 << i;
+                }
+            }
             switch (subconfig) {
                 case 0:
                     add_triangle(grid_coord, tiling7_1[config], 3);
