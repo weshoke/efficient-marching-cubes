@@ -789,7 +789,7 @@ void MarchingCubes::add_triangle(const glm::ivec3 &grid_coord, const char *trig,
 {
     int i = 0;
     while (i < 3 * n) {
-        int tv[3];
+        glm::ivec3 tv;
 
         for (int t = 0; t < 3; ++t, ++i) {
             switch (trig[i]) {
@@ -852,7 +852,7 @@ void MarchingCubes::add_triangle(const glm::ivec3 &grid_coord, const char *trig,
             }
         }
 
-        _triangles.push_back(Triangle{tv[0], tv[1], tv[2]});
+        _triangles.push_back(Triangle{tv});
     }
 }
 //_____________________________________________________________________________
@@ -903,7 +903,7 @@ int MarchingCubes::add_vertex(const glm::ivec3 &grid_coord,
     auto nz = (1 - u) * get_grad(grid_coord, 2) + u * get_grad(grid_coord2, 2);
 
     auto n = glm::normalize(glm::vec3(nx, ny, nz));
-    _vertices.push_back(Vertex{pos.x, pos.y, pos.z, n.x, n.y, n.z});
+    _vertices.push_back(Vertex{pos, n});
     return _vertices.size() - 1;
 }
 
@@ -923,8 +923,8 @@ int MarchingCubes::add_c_vertex(const glm::ivec3 &grid_coord)
             if (vid != -1) {
                 ++u;
                 const Vertex &v = _vertices[vid];
-                pos += glm::vec3(v.x, v.y, v.z);
-                n += glm::vec3(v.nx, v.ny, v.nz);
+                pos += v.pos;
+                n += v.n;
             }
         }
     }
@@ -937,8 +937,8 @@ int MarchingCubes::add_c_vertex(const glm::ivec3 &grid_coord)
             if (vid != -1) {
                 ++u;
                 const Vertex &v = _vertices[vid];
-                pos += glm::vec3(v.x, v.y, v.z);
-                n += glm::vec3(v.nx, v.ny, v.nz);
+                pos += v.pos;
+                n += v.n;
             }
         }
     }
@@ -951,15 +951,15 @@ int MarchingCubes::add_c_vertex(const glm::ivec3 &grid_coord)
             if (vid != -1) {
                 ++u;
                 const Vertex &v = _vertices[vid];
-                pos += glm::vec3(v.x, v.y, v.z);
-                n += glm::vec3(v.nx, v.ny, v.nz);
+                pos += v.pos;
+                n += v.n;
             }
         }
     }
 
     pos *= 1.f / u;
     n = glm::normalize(n);
-    _vertices.push_back(Vertex{pos.x, pos.y, pos.z, n.x, n.y, n.z});
+    _vertices.push_back(Vertex{pos, n});
     return _vertices.size() - 1;
 }
 //_____________________________________________________________________________

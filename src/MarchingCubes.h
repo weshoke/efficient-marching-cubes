@@ -36,10 +36,10 @@ typedef float real;
  * \param ny Y component of the normal
  * \param nz Z component of the normal
  */
-typedef struct {
-    real x, y, z;    /**< Vertex coordinates */
-    real nx, ny, nz; /**< Vertex normal */
-} Vertex;
+struct Vertex {
+    glm::vec3 pos;
+    glm::vec3 n;
+};
 
 //-----------------------------------------------------------------------------
 // Triangle structure
@@ -50,9 +50,10 @@ typedef struct {
  * \param v2 Second vertex index
  * \param v3 Third vertex index
  */
-typedef struct {
-    int v1, v2, v3; /**< Triangle vertices */
-} Triangle;
+struct Triangle {
+    glm::ivec3 ids;
+};
+
 //_____________________________________________________________________________
 
 //_____________________________________________________________________________

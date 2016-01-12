@@ -57,13 +57,10 @@ void MarchingCubesApp::setup()
     verts.reserve(mc.ntrigs() * 3);
 
     for (int i = 0; i < mc.ntrigs(); ++i) {
-        auto t = mc.trig(i);
-        auto v1 = mc.vert(t.v1);
-        verts.push_back(glm::vec3(v1.x, v1.y, v1.z));
-        auto v2 = mc.vert(t.v2);
-        verts.push_back(glm::vec3(v2.x, v2.y, v2.z));
-        auto v3 = mc.vert(t.v3);
-        verts.push_back(glm::vec3(v3.x, v3.y, v3.z));
+        auto tri = mc.trig(i);
+        for (int t = 0; t < 3; ++t) {
+            verts.push_back(mc.vert(tri.ids[t]).pos);
+        }
     }
 
     auto mesh =

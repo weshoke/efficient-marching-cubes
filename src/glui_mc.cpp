@@ -141,6 +141,8 @@ bool run()
     float rx = (xmax - xmin) / (size_x - 1);
     float ry = (ymax - ymin) / (size_y - 1);
     float rz = (zmax - zmin) / (size_z - 1);
+    glm::vec3 min_pos(xmin, ymin, zmin);
+    glm::vec3 range(rx, ry, rz);
     unsigned char buf[sizeof(float)];
     for (i = 0; i < size_x; i++) {
         val[X] = (float)i * rx + xmin;
@@ -170,16 +172,8 @@ bool run()
     // Rescale positions
     for (i = 0; i < mc.nverts(); ++i) {
         Vertex &v = mc.vertices()[i];
-        v.x = rx * v.x + xmin;
-        v.y = ry * v.y + xmin;
-        v.z = rz * v.z + ymin;
-        float nrm = v.nx * v.nx + v.ny * v.ny + v.nz * v.nz;
-        if (nrm != 0) {
-            nrm = 1.0 / sqrt(nrm);
-            v.nx *= nrm;
-            v.ny *= nrm;
-            v.nz *= nrm;
-        }
+        v.pos = range * v.pos + min_pos;
+        v.n = glm::normalize(v.n);
     }
 
     if (isofile) {
