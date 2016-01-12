@@ -15,11 +15,6 @@
 #include <vector>
 #include <unordered_map>
 
-/** unsigned char alias */
-typedef unsigned char uchar;
-/** signed char alias */
-typedef signed char schar;
-
 struct Vertex {
     glm::vec3 pos;
     glm::vec3 n;
@@ -134,7 +129,7 @@ inline const Triangle *trig(const int i) const
 
    protected:
     /** tesselates one cube */
-    void process_cube(const glm::ivec3 &grid_coord, uchar lut_entry,
+    void process_cube(const glm::ivec3 &grid_coord, uint8_t lut_entry,
                       float *cube);
 
     //-----------------------------------------------------------------------------
@@ -175,37 +170,24 @@ inline const Triangle *trig(const int i) const
         return grid_coord.x + _size.x * (grid_coord.y + _size.y * grid_coord.z);
     }
 
-    /**
-     * accesses the pre-computed vertex index on the lower horizontal edge of a
-     * specific cube
-     * \param i abscisse of the cube
-     * \param j ordinate of the cube
-     * \param k height of the cube
-     */
+    // accesses the pre-computed vertex index on the lower horizontal edge of a
+    // specific cube
     inline int get_x_vert(const glm::ivec3 &grid_coord) const
     {
         auto iter = _x_verts.find(index(grid_coord));
         return (iter == _x_verts.end()) ? -1 : iter->second;
     }
-    /**
-     * accesses the pre-computed vertex index on the lower longitudinal edge of
-     * a specific cube
-     * \param i abscisse of the cube
-     * \param j ordinate of the cube
-     * \param k height of the cube
-     */
+
+    // accesses the pre-computed vertex index on the lower longitudinal edge of
+    // a specific cube
     inline int get_y_vert(const glm::ivec3 &grid_coord) const
     {
         auto iter = _y_verts.find(index(grid_coord));
         return (iter == _y_verts.end()) ? -1 : iter->second;
     }
-    /**
-     * accesses the pre-computed vertex index on the lower vertical edge of a
-     * specific cube
-     * \param i abscisse of the cube
-     * \param j ordinate of the cube
-     * \param k height of the cube
-     */
+
+    // accesses the pre-computed vertex index on the lower vertical edge of a
+    // specific cube
     inline int get_z_vert(const glm::ivec3 &grid_coord) const
     {
         auto iter = _z_verts.find(index(grid_coord));
@@ -252,9 +234,9 @@ inline const Triangle *trig(const int i) const
     //-----------------------------------------------------------------------------
     // Elements
    protected:
-    bool _originalMC; /**< selects wether the algorithm will use the enhanced
-                         topologically controlled lookup table or the original
-                         MarchingCubes */
+    // selects wether the algorithm will use the enhanced topologically
+    // controlled lookup table or the original MarchingCubes
+    bool _originalMC;
 
     glm::ivec3 _size;
     std::vector<float> _data;
@@ -263,8 +245,8 @@ inline const Triangle *trig(const int i) const
     std::unordered_map<int, int> _y_verts;
     std::unordered_map<int, int> _z_verts;
 
-    std::vector<Vertex> _vertices;    /**< vertex   buffer */
-    std::vector<Triangle> _triangles; /**< triangle buffer */
+    std::vector<Vertex> _vertices;
+    std::vector<Triangle> _triangles;
 };
 //_____________________________________________________________________________
 

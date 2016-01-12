@@ -21,8 +21,8 @@
 #include "ply.h"
 #include "LookUpTable.h"
 
-bool test_interior(schar s, uchar config_case, uchar config, uchar subconfig,
-                   float *cube);
+bool test_interior(int8_t s, uint8_t config_case, uint8_t config,
+                   uint8_t subconfig, float *cube);
 
 //_____________________________________________________________________________
 // print cube for debug
@@ -60,7 +60,7 @@ void MarchingCubes::run(float iso)
             for (int i = 0; i < _size.x - 1; i++) {
                 float cube[8];
                 // cube sign representation in [0..255]
-                auto lut_entry = uchar{0};
+                auto lut_entry = uint8_t{0};
                 for (int p = 0; p < 8; ++p) {
                     cube[p] = get_data(i + ((p ^ (p >> 1)) & 1),
                                        j + ((p >> 1) & 1), k + ((p >> 2) & 1)) -
@@ -178,7 +178,7 @@ void MarchingCubes::compute_intersection_points(float iso)
 // the interior of an ambiguous face
 // Test a face
 // if face>0 return true if the face contains a part of the surface
-bool test_face(schar face, float *cube)
+bool test_face(int8_t face, float *cube)
 {
     static int corner_lookup[6][4] = {{0, 4, 5, 1}, {1, 5, 6, 2}, {2, 6, 7, 3},
                                       {3, 7, 4, 0}, {0, 3, 2, 1}, {4, 7, 6, 5}};
@@ -204,8 +204,8 @@ bool test_face(schar face, float *cube)
 // Test the interior of a cube
 // if s == 7, return true  if the interior is empty
 // if s ==-7, return false if the interior is empty
-bool test_interior(schar s, uchar config_case, uchar config, uchar subconfig,
-                   float *cube)
+bool test_interior(int8_t s, uint8_t config_case, uint8_t config,
+                   uint8_t subconfig, float *cube)
 //-----------------------------------------------------------------------------
 {
     float t, At = 0, Bt = 0, Ct = 0, Dt = 0, a, b;
@@ -393,8 +393,8 @@ bool test_interior(schar s, uchar config_case, uchar config, uchar subconfig,
 
 //_____________________________________________________________________________
 // Process a unit cube
-void MarchingCubes::process_cube(const glm::ivec3 &grid_coord, uchar lut_entry,
-                                 float *cube)
+void MarchingCubes::process_cube(const glm::ivec3 &grid_coord,
+                                 uint8_t lut_entry, float *cube)
 //-----------------------------------------------------------------------------
 {
     if (_originalMC) {
@@ -406,11 +406,11 @@ void MarchingCubes::process_cube(const glm::ivec3 &grid_coord, uchar lut_entry,
 
     int v12 = -1;
     // case of the active cube in [0..15]
-    uchar config_case = cases[lut_entry][0];
+    uint8_t config_case = cases[lut_entry][0];
     // configuration of the active cube
-    uchar config = cases[lut_entry][1];
+    uint8_t config = cases[lut_entry][1];
     // subconfiguration of the active cube
-    uchar subconfig = 0;
+    uint8_t subconfig = 0;
 
     switch (config_case) {
         case 0:
