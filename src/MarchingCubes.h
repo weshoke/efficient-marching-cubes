@@ -15,56 +15,21 @@
 #include <vector>
 #include <unordered_map>
 
-//_____________________________________________________________________________
-// types
 /** unsigned char alias */
 typedef unsigned char uchar;
 /** signed char alias */
 typedef signed char schar;
-/** isovalue alias */
-typedef float real;
 
-//-----------------------------------------------------------------------------
-// Vertex structure
-/** \struct Vertex "MarchingCubes.h" MarchingCubes
- * Position and normal of a vertex
- * \brief vertex structure
- * \param x X coordinate
- * \param y Y coordinate
- * \param z Z coordinate
- * \param nx X component of the normal
- * \param ny Y component of the normal
- * \param nz Z component of the normal
- */
 struct Vertex {
     glm::vec3 pos;
     glm::vec3 n;
 };
 
-//-----------------------------------------------------------------------------
-// Triangle structure
-/** \struct Triangle "MarchingCubes.h" MarchingCubes
- * Indices of the oriented triange vertices
- * \brief triangle structure
- * \param v1 First vertex index
- * \param v2 Second vertex index
- * \param v3 Third vertex index
- */
 struct Triangle {
     glm::ivec3 ids;
 };
 
-//_____________________________________________________________________________
-
-//_____________________________________________________________________________
-/** Marching Cubes algorithm wrapper */
-/** \class MarchingCubes
-  * \brief Marching Cubes algorithm.
-  */
-class MarchingCubes
-    //-----------------------------------------------------------------------------
-    {
-    // Constructors
+class MarchingCubes {
    public:
     /**
 *Main and default constructor
@@ -134,7 +99,7 @@ inline const Triangle *trig(const int i) const
      * \param j ordinate of the cube
      * \param k height of the cube
      */
-    inline const real get_data(const int i, const int j, const int k) const
+    inline const float get_data(const int i, const int j, const int k) const
     {
         return _data[index(i, j, k)];
     }
@@ -145,7 +110,7 @@ inline const Triangle *trig(const int i) const
      * \param j ordinate of the cube
      * \param k height of the cube
      */
-    inline void set_data(const real val, const int i, const int j, const int k)
+    inline void set_data(const float val, const int i, const int j, const int k)
     {
         _data[index(i, j, k)] = val;
     }
@@ -165,7 +130,7 @@ inline const Triangle *trig(const int i) const
      * Main algorithm : must be called after init_all
      * \param iso isovalue
      */
-    void run(real iso = (real)0.0);
+    void run(float iso = 0.f);
 
    protected:
     /** tesselates one cube */
@@ -180,7 +145,7 @@ inline const Triangle *trig(const int i) const
      * cubes edges
      * \param iso isovalue
      */
-    void compute_intersection_points(real iso);
+    void compute_intersection_points(float iso);
 
     /**
      * routine to add a triangle to the mesh

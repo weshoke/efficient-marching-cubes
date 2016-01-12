@@ -48,7 +48,7 @@ MarchingCubes::MarchingCubes(const int size_x /*= -1*/,
 
 //_____________________________________________________________________________
 // main algorithm
-void MarchingCubes::run(real iso)
+void MarchingCubes::run(float iso)
 //-----------------------------------------------------------------------------
 {
     clock_t time = clock();
@@ -107,7 +107,7 @@ void MarchingCubes::init_all()
 
 //_____________________________________________________________________________
 // Compute the intersection points
-void MarchingCubes::compute_intersection_points(real iso)
+void MarchingCubes::compute_intersection_points(float iso)
 //-----------------------------------------------------------------------------
 {
     float cube[8];
@@ -208,7 +208,7 @@ bool test_interior(schar s, uchar config_case, uchar config, uchar subconfig,
                    float *cube)
 //-----------------------------------------------------------------------------
 {
-    real t, At = 0, Bt = 0, Ct = 0, Dt = 0, a, b;
+    float t, At = 0, Bt = 0, Ct = 0, Dt = 0, a, b;
     char test = 0;
     char edge = -1;  // reference edge of the triangulation
 
