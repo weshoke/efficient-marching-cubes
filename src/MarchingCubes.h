@@ -60,9 +60,9 @@ class MarchingCubes {
     {
         return data_[index(grid_coord)];
     }
-    inline void set_data(const float val, const int i, const int j, const int k)
+    inline void set_data(const float val, const glm::ivec3 &grid_coord)
     {
-        data_[index(i, j, k)] = val;
+        data_[index(grid_coord)] = val;
     }
 
    protected:

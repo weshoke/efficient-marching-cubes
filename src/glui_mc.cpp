@@ -106,7 +106,6 @@ bool run(MarchingCubes &mc)
     float rz = (zmax - zmin) / (mc.size().z - 1);
     glm::vec3 min_pos(xmin, ymin, zmin);
     glm::vec3 range(rx, ry, rz);
-    unsigned char buf[sizeof(float)];
     for (i = 0; i < mc.size().x; i++) {
         val[X] = (float)i * rx + xmin;
         for (j = 0; j < mc.size().y; j++) {
@@ -117,13 +116,9 @@ bool run(MarchingCubes &mc)
                 if (csg_root) {
                     val[3] = csg_root->eval(val[X], val[Y], val[Z]);
                 }
-                if (isofile) {
-                    fread(buf, sizeof(float), 1, isofile);
-                    val[4] = *(float *)buf;
-                }
 
                 w = fparser.Eval(val) - isoval;
-                mc.set_data(w, i, j, k);
+                mc.set_data(w, glm::ivec3(i, j, k));
             }
         }
     }
