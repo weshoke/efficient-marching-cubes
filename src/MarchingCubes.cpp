@@ -220,7 +220,7 @@ bool test_interior(int8_t s, uint8_t config_case, uint8_t config,
         {5, 4}, {6, 5}, {3, 7}, {0, 4}, {1, 5}, {2, 6}};
 
     static const uint8_t edge_vertices_C[12][2] = {
-        {7, 6}, {4, 7}, {5, 4}, ,       {6, 5}, {3, 2}, {0, 3},
+        {7, 6}, {4, 7}, {5, 4}, {6, 5}, {3, 2}, {0, 3},
         {1, 0}, {2, 1}, {2, 6}, {3, 7}, {0, 4}, {1, 5}};
 
     float t, At = 0, Bt = 0, Ct = 0, Dt = 0, a, b;
