@@ -22,9 +22,6 @@
 //_____________________________________________________________________________
 // declarations of this file
 
-// main marching cubes object
-MarchingCubes mc;
-
 // isovalue defining the isosurface
 float isoval = 0.0f;
 
@@ -110,22 +107,10 @@ void export_ppm();
 /// TGA export
 void export_tga();
 
-//_____________________________________________________________________________
-
-//_____________________________________________________________________________
-// run the MC algorithm
-bool run()
-//-----------------------------------------------------------------------------
+bool run(MarchingCubes &mc)
 {
     strcpy(formula, fun_def[9]);
-
     if (strlen(formula) <= 0) return false;
-    // if( export_iso && strlen( out_filename->get_text() ) <= 0 ) export_iso =
-    // 0 ;
-
-    // Init data
-    mc.set_resolution(glm::ivec3(size_x, size_y, size_z));
-    mc.init_all();
 
     // Parse formula
     FunctionParser fparser;

@@ -26,19 +26,8 @@ struct Triangle {
 
 class MarchingCubes {
    public:
-    /**
-*Main and default constructor
-*\brief constructor
-*\param size_x width  of the grid
-*\param size_y depth  of the grid
-*\param size_z height of the grid
-*/
-    MarchingCubes(const int size_x = -1, const int size_y = -1,
-                  const int size_z = -1);
+    MarchingCubes(const glm::ivec3 &size);
 
-    //-----------------------------------------------------------------------------
-    // Accessors
-   public:
     /** accesses the number of vertices of the generated mesh */
     inline const int nverts() const { return _vertices.size(); }
     /** accesses the number of triangles of the generated mesh */
@@ -47,36 +36,11 @@ class MarchingCubes {
 
     inline const Vertex &vert(int i) const { return _vertices[i]; }
     inline const Triangle &trig(int i) const { return _triangles[i]; }
-    /*
-    inline const Vertex *vert(const int i) const
-{
-    if (i < 0 || i >= nverts()) return (Vertex *)NULL;
-    return _vertices.data() + i;
-}
-inline const Triangle *trig(const int i) const
-{
-    if (i < 0 || i >= ntrigs()) return (Triangle *)NULL;
-    return _triangles.data() + i;
-}
-    */
-
     /** accesses the vertex buffer of the generated mesh */
     inline Vertex *vertices() { return _vertices.data(); }
     /** accesses the triangle buffer of the generated mesh */
     inline Triangle *triangles() { return _triangles.data(); }
-    /**  accesses the width  of the grid */
-    inline const int size_x() const { return _size.x; }
-    /**  accesses the depth  of the grid */
-    inline const int size_y() const { return _size.y; }
-    /**  accesses the height of the grid */
-    inline const int size_z() const { return _size.z; }
-    /**
-     * changes the size of the grid
-     * \param size_x width  of the grid
-     * \param size_y depth  of the grid
-     * \param size_z height of the grid
-     */
-    inline void set_resolution(const glm::ivec3 &size) { _size = size; }
+    glm::ivec3 size() const { return _size; }
     /**
      * selects wether the algorithm will use the enhanced topologically
      * controlled lookup table or the original MarchingCubes
@@ -110,13 +74,7 @@ inline const Triangle *trig(const int i) const
         _data[index(i, j, k)] = val;
     }
 
-    // Data initialization
-    /** inits temporary structures (must set sizes before call) : the grid and
-     * the vertex index per cube */
-    void init_temps();
-    /** inits all structures (must set sizes before call) : the temporary
-     * structures and the mesh buffers */
-    void init_all();
+    void Setup();
 
     //-----------------------------------------------------------------------------
     // Algorithm

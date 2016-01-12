@@ -51,7 +51,9 @@ void MarchingCubesApp::setup()
     camUi = CameraUi(&camera);
     ci::app::getWindow()->setTitle("Marching Cubes");
 
-    run();
+    MarchingCubes mc(glm::ivec3(50));
+    mc.Setup();
+    run(mc);
 
     auto verts = std::vector<glm::vec3>();
     verts.reserve(mc.ntrigs() * 3);

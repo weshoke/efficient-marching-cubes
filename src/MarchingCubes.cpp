@@ -38,10 +38,8 @@ void print_cube(float *cube)
 
 //_____________________________________________________________________________
 // Constructor
-MarchingCubes::MarchingCubes(const int size_x /*= -1*/,
-                             const int size_y /*= -1*/,
-                             const int size_z /*= -1*/)
-: _originalMC(false), _size(size_x, size_y, size_z)
+MarchingCubes::MarchingCubes(const glm::ivec3 &size)
+: _originalMC(false), _size(size)
 {
 }
 //_____________________________________________________________________________
@@ -78,12 +76,8 @@ void MarchingCubes::run(float iso)
     std::cout << "Marching Cubes ran in "
               << ((double)(clock() - time) / CLOCKS_PER_SEC) << " secs.\n";
 }
-//_____________________________________________________________________________
 
-//_____________________________________________________________________________
-// init temporary structures (must set sizes before call)
-void MarchingCubes::init_temps()
-//-----------------------------------------------------------------------------
+void MarchingCubes::Setup()
 {
     _data.resize(_size.x * _size.y * _size.z);
     auto estimated_vertex_count = _size.x * _size.y * _size.z / 2;
@@ -91,24 +85,9 @@ void MarchingCubes::init_temps()
     _y_verts.reserve(estimated_vertex_count);
     _z_verts.reserve(estimated_vertex_count);
 }
-//_____________________________________________________________________________
 
-//_____________________________________________________________________________
-// init all structures (must set sizes before call)
-void MarchingCubes::init_all()
-//-----------------------------------------------------------------------------
-{
-    init_temps();
-}
-//_____________________________________________________________________________
-
-//_____________________________________________________________________________
-//_____________________________________________________________________________
-
-//_____________________________________________________________________________
 // Compute the intersection points
 void MarchingCubes::compute_intersection_points(float iso)
-//-----------------------------------------------------------------------------
 {
     float cube[8];
 
