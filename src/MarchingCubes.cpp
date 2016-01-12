@@ -660,42 +660,63 @@ void MarchingCubes::ProcessCube(const glm::ivec3 &grid_coord, uint8_t lut_entry,
                     add_triangle(grid_coord, tiling13_4[config][3], 12, v12);
                     break;
 
-                case 23: /* 13.5 */
-                    if (test_interior(test13[config][6], config_case, config, 0,
-                                      cube)) {
-                        add_triangle(grid_coord, tiling13_5_1[config][0], 6);
+#define TILING13_5_0 23
+                // 13.5
+                case 23:
+                case 24:
+                case 25:
+                case 26: {
+                    auto idx = subconfig13[subconfig] - TILING13_5_0;
+                    auto is_interior = test_interior(
+                        test13[config][6], config_case, config, idx, cube);
+                    if (is_interior) {
+                        add_triangle(grid_coord, tiling13_5_1[config][idx], 6);
                     }
                     else {
-                        add_triangle(grid_coord, tiling13_5_2[config][0], 10);
+                        add_triangle(grid_coord, tiling13_5_2[config][idx], 10);
                     }
-                    break;
-                case 24: /* 13.5 */
-                    if (test_interior(test13[config][6], config_case, config, 1,
-                                      cube)) {
-                        add_triangle(grid_coord, tiling13_5_1[config][1], 6);
-                    }
-                    else {
-                        add_triangle(grid_coord, tiling13_5_2[config][1], 10);
-                    }
-                    break;
-                case 25: /* 13.5 */
-                    if (test_interior(test13[config][6], config_case, config, 2,
-                                      cube)) {
-                        add_triangle(grid_coord, tiling13_5_1[config][2], 6);
-                    }
-                    else {
-                        add_triangle(grid_coord, tiling13_5_2[config][2], 10);
-                    }
-                    break;
-                case 26: /* 13.5 */
-                    if (test_interior(test13[config][6], config_case, config, 3,
-                                      cube)) {
-                        add_triangle(grid_coord, tiling13_5_1[config][3], 6);
-                    }
-                    else {
-                        add_triangle(grid_coord, tiling13_5_2[config][3], 10);
-                    }
-                    break;
+                } break;
+
+//                case 23: /* 13.5 */
+//                    if (test_interior(test13[config][6], config_case, config,
+//                    0,
+//                                      cube)) {
+//                        add_triangle(grid_coord, tiling13_5_1[config][0], 6);
+//                    }
+//                    else {
+//                        add_triangle(grid_coord, tiling13_5_2[config][0], 10);
+//                    }
+//                    break;
+//                case 24: /* 13.5 */
+//                    if (test_interior(test13[config][6], config_case, config,
+//                    1,
+//                                      cube)) {
+//                        add_triangle(grid_coord, tiling13_5_1[config][1], 6);
+//                    }
+//                    else {
+//                        add_triangle(grid_coord, tiling13_5_2[config][1], 10);
+//                    }
+//                    break;
+//                case 25: /* 13.5 */
+//                    if (test_interior(test13[config][6], config_case, config,
+//                    2,
+//                                      cube)) {
+//                        add_triangle(grid_coord, tiling13_5_1[config][2], 6);
+//                    }
+//                    else {
+//                        add_triangle(grid_coord, tiling13_5_2[config][2], 10);
+//                    }
+//                    break;
+//                case 26: /* 13.5 */
+//                    if (test_interior(test13[config][6], config_case, config,
+//                    3,
+//                                      cube)) {
+//                        add_triangle(grid_coord, tiling13_5_1[config][3], 6);
+//                    }
+//                    else {
+//                        add_triangle(grid_coord, tiling13_5_2[config][3], 10);
+//                    }
+//                    break;
 
 #define TILING13_3_0 27
                 /*
