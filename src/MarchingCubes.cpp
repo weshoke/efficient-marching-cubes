@@ -22,11 +22,11 @@
 #include "LookUpTable.h"
 
 bool test_interior(int8_t s, uint8_t config_case, uint8_t config,
-                   uint8_t subconfig, float *cube);
+                   uint8_t subconfig, const float *cube);
 
 //_____________________________________________________________________________
 // print cube for debug
-void print_cube(float *cube)
+void print_cube(const float *cube)
 {
     std::cout << "\t";
     for (int i = 0; i < 8; ++i) {
@@ -271,101 +271,113 @@ bool test_interior(int8_t s, uint8_t config_case, uint8_t config,
                 auto t1 = cube[edge_vertices_t[edge][1]];
                 auto B0 = cube[edge_vertices_B[edge][0]];
                 auto B1 = cube[edge_vertices_B[edge][1]];
-                t = t0 / (t0 - t1);
-                // Bt = B0 / (B0 - B1);
-            }
+                auto C0 = cube[edge_vertices_C[edge][0]];
+                auto C1 = cube[edge_vertices_C[edge][1]];
+                auto D0 = cube[edge_vertices_D[edge][0]];
+                auto D1 = cube[edge_vertices_D[edge][1]];
 
-            switch (edge) {
-                case 0:
-                    t = cube[0] / (cube[0] - cube[1]);
-                    At = 0;
-                    Bt = cube[3] + (cube[2] - cube[3]) * t;
-                    Ct = cube[7] + (cube[6] - cube[7]) * t;
-                    Dt = cube[4] + (cube[5] - cube[4]) * t;
-                    break;
-                case 1:
-                    t = cube[1] / (cube[1] - cube[2]);
-                    At = 0;
-                    Bt = cube[0] + (cube[3] - cube[0]) * t;
-                    Ct = cube[4] + (cube[7] - cube[4]) * t;
-                    Dt = cube[5] + (cube[6] - cube[5]) * t;
-                    break;
-                case 2:
-                    t = cube[2] / (cube[2] - cube[3]);
-                    At = 0;
-                    Bt = cube[1] + (cube[0] - cube[1]) * t;
-                    Ct = cube[5] + (cube[4] - cube[5]) * t;
-                    Dt = cube[6] + (cube[7] - cube[6]) * t;
-                    break;
-                case 3:
-                    t = cube[3] / (cube[3] - cube[0]);
-                    At = 0;
-                    Bt = cube[2] + (cube[1] - cube[2]) * t;
-                    Ct = cube[6] + (cube[5] - cube[6]) * t;
-                    Dt = cube[7] + (cube[4] - cube[7]) * t;
-                    break;
-                case 4:
-                    t = cube[4] / (cube[4] - cube[5]);
-                    At = 0;
-                    Bt = cube[7] + (cube[6] - cube[7]) * t;
-                    Ct = cube[3] + (cube[2] - cube[3]) * t;
-                    Dt = cube[0] + (cube[1] - cube[0]) * t;
-                    break;
-                case 5:
-                    t = cube[5] / (cube[5] - cube[6]);
-                    At = 0;
-                    Bt = cube[4] + (cube[7] - cube[4]) * t;
-                    Ct = cube[0] + (cube[3] - cube[0]) * t;
-                    Dt = cube[1] + (cube[2] - cube[1]) * t;
-                    break;
-                case 6:
-                    t = cube[6] / (cube[6] - cube[7]);
-                    At = 0;
-                    Bt = cube[5] + (cube[4] - cube[5]) * t;
-                    Ct = cube[1] + (cube[0] - cube[1]) * t;
-                    Dt = cube[2] + (cube[3] - cube[2]) * t;
-                    break;
-                case 7:
-                    t = cube[7] / (cube[7] - cube[4]);
-                    At = 0;
-                    Bt = cube[6] + (cube[5] - cube[6]) * t;
-                    Ct = cube[2] + (cube[1] - cube[2]) * t;
-                    Dt = cube[3] + (cube[0] - cube[3]) * t;
-                    break;
-                case 8:
-                    t = cube[0] / (cube[0] - cube[4]);
-                    At = 0;
-                    Bt = cube[3] + (cube[7] - cube[3]) * t;
-                    Ct = cube[2] + (cube[6] - cube[2]) * t;
-                    Dt = cube[1] + (cube[5] - cube[1]) * t;
-                    break;
-                case 9:
-                    t = cube[1] / (cube[1] - cube[5]);
-                    At = 0;
-                    Bt = cube[0] + (cube[4] - cube[0]) * t;
-                    Ct = cube[3] + (cube[7] - cube[3]) * t;
-                    Dt = cube[2] + (cube[6] - cube[2]) * t;
-                    break;
-                case 10:
-                    t = cube[2] / (cube[2] - cube[6]);
-                    At = 0;
-                    Bt = cube[1] + (cube[5] - cube[1]) * t;
-                    Ct = cube[0] + (cube[4] - cube[0]) * t;
-                    Dt = cube[3] + (cube[7] - cube[3]) * t;
-                    break;
-                case 11:
-                    t = cube[3] / (cube[3] - cube[7]);
-                    At = 0;
-                    Bt = cube[2] + (cube[6] - cube[2]) * t;
-                    Ct = cube[1] + (cube[5] - cube[1]) * t;
-                    Dt = cube[0] + (cube[4] - cube[0]) * t;
-                    break;
-                default:
-                    std::cout << " Invalid edge " << edge << "\n";
-                    print_cube(cube);
-                    break;
+                t = t0 / (t0 - t1);
+                At = 0.f;
+                Bt = glm::mix(B0, B1, t);
+                Ct = glm::mix(C0, C1, t);
+                Dt = glm::mix(D0, D1, t);
             }
             break;
+
+        /*
+switch (edge) {
+case 0:
+    t = cube[0] / (cube[0] - cube[1]);
+    At = 0;
+    Bt = cube[3] + (cube[2] - cube[3]) * t;
+    Ct = cube[7] + (cube[6] - cube[7]) * t;
+    Dt = cube[4] + (cube[5] - cube[4]) * t;
+    break;
+case 1:
+    t = cube[1] / (cube[1] - cube[2]);
+    At = 0;
+    Bt = cube[0] + (cube[3] - cube[0]) * t;
+    Ct = cube[4] + (cube[7] - cube[4]) * t;
+    Dt = cube[5] + (cube[6] - cube[5]) * t;
+    break;
+case 2:
+    t = cube[2] / (cube[2] - cube[3]);
+    At = 0;
+    Bt = cube[1] + (cube[0] - cube[1]) * t;
+    Ct = cube[5] + (cube[4] - cube[5]) * t;
+    Dt = cube[6] + (cube[7] - cube[6]) * t;
+    break;
+case 3:
+    t = cube[3] / (cube[3] - cube[0]);
+    At = 0;
+    Bt = cube[2] + (cube[1] - cube[2]) * t;
+    Ct = cube[6] + (cube[5] - cube[6]) * t;
+    Dt = cube[7] + (cube[4] - cube[7]) * t;
+    break;
+case 4:
+    t = cube[4] / (cube[4] - cube[5]);
+    At = 0;
+    Bt = cube[7] + (cube[6] - cube[7]) * t;
+    Ct = cube[3] + (cube[2] - cube[3]) * t;
+    Dt = cube[0] + (cube[1] - cube[0]) * t;
+    break;
+case 5:
+    t = cube[5] / (cube[5] - cube[6]);
+    At = 0;
+    Bt = cube[4] + (cube[7] - cube[4]) * t;
+    Ct = cube[0] + (cube[3] - cube[0]) * t;
+    Dt = cube[1] + (cube[2] - cube[1]) * t;
+    break;
+case 6:
+    t = cube[6] / (cube[6] - cube[7]);
+    At = 0;
+    Bt = cube[5] + (cube[4] - cube[5]) * t;
+    Ct = cube[1] + (cube[0] - cube[1]) * t;
+    Dt = cube[2] + (cube[3] - cube[2]) * t;
+    break;
+case 7:
+    t = cube[7] / (cube[7] - cube[4]);
+    At = 0;
+    Bt = cube[6] + (cube[5] - cube[6]) * t;
+    Ct = cube[2] + (cube[1] - cube[2]) * t;
+    Dt = cube[3] + (cube[0] - cube[3]) * t;
+    break;
+case 8:
+    t = cube[0] / (cube[0] - cube[4]);
+    At = 0;
+    Bt = cube[3] + (cube[7] - cube[3]) * t;
+    Ct = cube[2] + (cube[6] - cube[2]) * t;
+    Dt = cube[1] + (cube[5] - cube[1]) * t;
+    break;
+case 9:
+    t = cube[1] / (cube[1] - cube[5]);
+    At = 0;
+    Bt = cube[0] + (cube[4] - cube[0]) * t;
+    Ct = cube[3] + (cube[7] - cube[3]) * t;
+    Dt = cube[2] + (cube[6] - cube[2]) * t;
+    break;
+case 10:
+    t = cube[2] / (cube[2] - cube[6]);
+    At = 0;
+    Bt = cube[1] + (cube[5] - cube[1]) * t;
+    Ct = cube[0] + (cube[4] - cube[0]) * t;
+    Dt = cube[3] + (cube[7] - cube[3]) * t;
+    break;
+case 11:
+    t = cube[3] / (cube[3] - cube[7]);
+    At = 0;
+    Bt = cube[2] + (cube[6] - cube[2]) * t;
+    Ct = cube[1] + (cube[5] - cube[1]) * t;
+    Dt = cube[0] + (cube[4] - cube[0]) * t;
+    break;
+
+default:
+    std::cout << " Invalid edge " << edge << "\n";
+    print_cube(cube);
+    break;
+}
+break;
+        */
 
         default:
             std::cout << " Invalid ambiguous case " << config_case << "\n";
