@@ -21,7 +21,6 @@
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 		9B3A64AB3E7B4EFEBE9F21FD /* MarchingCubesApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1B7AD8D1974E4649870D393C /* MarchingCubesApp.cpp */; };
 		A89BCD9F1C42D520007737A3 /* MarchingCubes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A89BCD9C1C42D520007737A3 /* MarchingCubes.cpp */; };
-		A89BCDA21C42D561007737A3 /* ply.c in Sources */ = {isa = PBXBuildFile; fileRef = A89BCDA01C42D561007737A3 /* ply.c */; };
 		A89BCDA51C42D82C007737A3 /* fparser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A89BCDA31C42D82C007737A3 /* fparser.cpp */; };
 		A89BCDA71C42DE6C007737A3 /* glui_mc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A89BCDA61C42DE6C007737A3 /* glui_mc.cpp */; };
 /* End PBXBuildFile section */
@@ -47,8 +46,6 @@
 		A89BCD9A1C42D520007737A3 /* LookUpTable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LookUpTable.h; path = ../src/LookUpTable.h; sourceTree = "<group>"; };
 		A89BCD9C1C42D520007737A3 /* MarchingCubes.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MarchingCubes.cpp; path = ../src/MarchingCubes.cpp; sourceTree = "<group>"; };
 		A89BCD9D1C42D520007737A3 /* MarchingCubes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MarchingCubes.h; path = ../src/MarchingCubes.h; sourceTree = "<group>"; };
-		A89BCDA01C42D561007737A3 /* ply.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ply.c; path = ../src/ply.c; sourceTree = "<group>"; };
-		A89BCDA11C42D561007737A3 /* ply.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ply.h; path = ../src/ply.h; sourceTree = "<group>"; };
 		A89BCDA31C42D82C007737A3 /* fparser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = fparser.cpp; path = ../src/fparser.cpp; sourceTree = "<group>"; };
 		A89BCDA41C42D82C007737A3 /* fparser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = fparser.h; path = ../src/fparser.h; sourceTree = "<group>"; };
 		A89BCDA61C42DE6C007737A3 /* glui_mc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = glui_mc.cpp; path = ../src/glui_mc.cpp; sourceTree = "<group>"; };
@@ -95,8 +92,6 @@
 				A89BCD9A1C42D520007737A3 /* LookUpTable.h */,
 				A89BCD9C1C42D520007737A3 /* MarchingCubes.cpp */,
 				A89BCD9D1C42D520007737A3 /* MarchingCubes.h */,
-				A89BCDA01C42D561007737A3 /* ply.c */,
-				A89BCDA11C42D561007737A3 /* ply.h */,
 				A89BCDA81C42DE80007737A3 /* glui_defs.h */,
 				A89BCDA61C42DE6C007737A3 /* glui_mc.cpp */,
 			);
@@ -244,7 +239,6 @@
 				A89BCD9F1C42D520007737A3 /* MarchingCubes.cpp in Sources */,
 				9B3A64AB3E7B4EFEBE9F21FD /* MarchingCubesApp.cpp in Sources */,
 				A89BCDA71C42DE6C007737A3 /* glui_mc.cpp in Sources */,
-				A89BCDA21C42D561007737A3 /* ply.c in Sources */,
 				A89BCDA51C42D82C007737A3 /* fparser.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

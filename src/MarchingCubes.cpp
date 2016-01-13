@@ -18,7 +18,6 @@
 #include <limits>
 #include <iostream>
 #include "MarchingCubes.h"
-#include "ply.h"
 #include "LookUpTable.h"
 
 bool test_interior(int8_t s, uint8_t config_case, uint8_t config,
