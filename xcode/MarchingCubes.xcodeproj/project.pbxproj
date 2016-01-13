@@ -24,7 +24,22 @@
 		A89BCDA51C42D82C007737A3 /* fparser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A89BCDA31C42D82C007737A3 /* fparser.cpp */; };
 		A89BCDA71C42DE6C007737A3 /* glui_mc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A89BCDA61C42DE6C007737A3 /* glui_mc.cpp */; };
 		A89BCDAA1C45F965007737A3 /* assets in Resources */ = {isa = PBXBuildFile; fileRef = A89BCDA91C45F965007737A3 /* assets */; };
+		A89BCDBA1C46156D007737A3 /* test_mc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A89BCDAD1C4609A2007737A3 /* test_mc.cpp */; };
+		A89BCDBB1C461574007737A3 /* MarchingCubes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A89BCD9C1C42D520007737A3 /* MarchingCubes.cpp */; };
+		A89BCDBF1C46194B007737A3 /* MarchingCubes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A89BCDBD1C46186C007737A3 /* MarchingCubes.cpp */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		A89BCDB11C461561007737A3 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		006D720219952D00008149E2 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
@@ -52,6 +67,11 @@
 		A89BCDA61C42DE6C007737A3 /* glui_mc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = glui_mc.cpp; path = ../src/glui_mc.cpp; sourceTree = "<group>"; };
 		A89BCDA81C42DE80007737A3 /* glui_defs.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = glui_defs.h; path = ../src/glui_defs.h; sourceTree = "<group>"; };
 		A89BCDA91C45F965007737A3 /* assets */ = {isa = PBXFileReference; lastKnownFileType = folder; name = assets; path = ../assets; sourceTree = "<group>"; };
+		A89BCDAC1C460976007737A3 /* lest.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = lest.hpp; sourceTree = "<group>"; };
+		A89BCDAD1C4609A2007737A3 /* test_mc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_mc.cpp; sourceTree = "<group>"; };
+		A89BCDB31C461561007737A3 /* test_mc */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = test_mc; sourceTree = BUILT_PRODUCTS_DIR; };
+		A89BCDBD1C46186C007737A3 /* MarchingCubes.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = MarchingCubes.cpp; sourceTree = "<group>"; };
+		A89BCDBE1C46186C007737A3 /* MarchingCubes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MarchingCubes.h; sourceTree = "<group>"; };
 		C6AEE4F60DE44BF4AD7CF914 /* MarchingCubes_Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; path = MarchingCubes_Prefix.pch; sourceTree = "<group>"; };
 		F7F4D3FFFDC94DED9ABC60A0 /* Resources.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Resources.h; path = ../include/Resources.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -75,6 +95,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		A89BCDB01C461561007737A3 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -92,8 +119,8 @@
 				A89BCDA41C42D82C007737A3 /* fparser.h */,
 				1B7AD8D1974E4649870D393C /* MarchingCubesApp.cpp */,
 				A89BCD9A1C42D520007737A3 /* LookUpTable.h */,
-				A89BCD9C1C42D520007737A3 /* MarchingCubes.cpp */,
 				A89BCD9D1C42D520007737A3 /* MarchingCubes.h */,
+				A89BCD9C1C42D520007737A3 /* MarchingCubes.cpp */,
 				A89BCDA81C42DE80007737A3 /* glui_defs.h */,
 				A89BCDA61C42DE6C007737A3 /* glui_mc.cpp */,
 			);
@@ -131,6 +158,7 @@
 			isa = PBXGroup;
 			children = (
 				8D1107320486CEB800E47090 /* MarchingCubes.app */,
+				A89BCDB31C461561007737A3 /* test_mc */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -142,6 +170,7 @@
 				01B97315FEAEA392516A2CEA /* Blocks */,
 				29B97315FDCFA39411CA2CEA /* Headers */,
 				080E96DDFE201D6D7F000001 /* Source */,
+				A89BCDAB1C460976007737A3 /* test */,
 				29B97317FDCFA39411CA2CEA /* Resources */,
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
 				19C28FACFE9D520D11CA2CBB /* Products */,
@@ -176,6 +205,26 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		A89BCDAB1C460976007737A3 /* test */ = {
+			isa = PBXGroup;
+			children = (
+				A89BCDAC1C460976007737A3 /* lest.hpp */,
+				A89BCDAD1C4609A2007737A3 /* test_mc.cpp */,
+				A89BCDBC1C46186C007737A3 /* original-implementation */,
+			);
+			name = test;
+			path = ../test;
+			sourceTree = "<group>";
+		};
+		A89BCDBC1C46186C007737A3 /* original-implementation */ = {
+			isa = PBXGroup;
+			children = (
+				A89BCDBE1C46186C007737A3 /* MarchingCubes.h */,
+				A89BCDBD1C46186C007737A3 /* MarchingCubes.cpp */,
+			);
+			path = "original-implementation";
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -197,12 +246,34 @@
 			productReference = 8D1107320486CEB800E47090 /* MarchingCubes.app */;
 			productType = "com.apple.product-type.application";
 		};
+		A89BCDB21C461561007737A3 /* test_mc */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A89BCDB71C461561007737A3 /* Build configuration list for PBXNativeTarget "test_mc" */;
+			buildPhases = (
+				A89BCDAF1C461561007737A3 /* Sources */,
+				A89BCDB01C461561007737A3 /* Frameworks */,
+				A89BCDB11C461561007737A3 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = test_mc;
+			productName = test_mc;
+			productReference = A89BCDB31C461561007737A3 /* test_mc */;
+			productType = "com.apple.product-type.tool";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
 		29B97313FDCFA39411CA2CEA /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				TargetAttributes = {
+					A89BCDB21C461561007737A3 = {
+						CreatedOnToolsVersion = 7.1.1;
+					};
+				};
 			};
 			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "MarchingCubes" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -219,6 +290,7 @@
 			projectRoot = "";
 			targets = (
 				8D1107260486CEB800E47090 /* MarchingCubes */,
+				A89BCDB21C461561007737A3 /* test_mc */,
 			);
 		};
 /* End PBXProject section */
@@ -247,9 +319,92 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		A89BCDAF1C461561007737A3 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A89BCDBB1C461574007737A3 /* MarchingCubes.cpp in Sources */,
+				A89BCDBF1C46194B007737A3 /* MarchingCubes.cpp in Sources */,
+				A89BCDBA1C46156D007737A3 /* test_mc.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
+		A89BCDB81C461561007737A3 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				USER_HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\" ../include ../src";
+			};
+			name = Debug;
+		};
+		A89BCDB91C461561007737A3 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				USER_HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\" ../include ../src";
+			};
+			name = Release;
+		};
 		C01FCF4B08A954540054247B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -343,6 +498,14 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		A89BCDB71C461561007737A3 /* Build configuration list for PBXNativeTarget "test_mc" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A89BCDB81C461561007737A3 /* Debug */,
+				A89BCDB91C461561007737A3 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
 		C01FCF4A08A954540054247B /* Build configuration list for PBXNativeTarget "MarchingCubes" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

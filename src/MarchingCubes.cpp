@@ -364,7 +364,7 @@ void MarchingCubes::ProcessCubeTiling13(const glm::ivec3 &grid_coord,
         case 18: {
             auto idx = subcase - TILING13_3a_0;
             auto v12 = add_c_vertex(grid_coord);
-            add_triangle(grid_coord, tiling13_3[config][idx], 10, v12);
+            add_triangle(grid_coord, tiling13_3[config][idx], 10, int(v12));
         } break;
 
         // 13.4
@@ -374,7 +374,7 @@ void MarchingCubes::ProcessCubeTiling13(const glm::ivec3 &grid_coord,
         case 22: {
             auto idx = subcase - TILING13_4_0;
             auto v12 = add_c_vertex(grid_coord);
-            add_triangle(grid_coord, tiling13_4[config][idx], 12, v12);
+            add_triangle(grid_coord, tiling13_4[config][idx], 12, int(v12));
         } break;
 
         // 13.5
@@ -408,7 +408,7 @@ void MarchingCubes::ProcessCubeTiling13(const glm::ivec3 &grid_coord,
         case 38: {
             auto idx = subcase - TILING13_3b_0;
             auto v12 = add_c_vertex(grid_coord);
-            add_triangle(grid_coord, tiling13_3_[config][idx], 10, v12);
+            add_triangle(grid_coord, tiling13_3_[config][idx], 10, int(v12));
         } break;
 
         // 13.2b
@@ -487,7 +487,7 @@ void MarchingCubes::ProcessCube(const glm::ivec3 &grid_coord, uint8_t lut_entry,
                                   subconfig, cube))
                     add_triangle(grid_coord, tiling6_1_1[config], 3);  // 6.1.1
                 else {
-                    v12 = add_c_vertex(grid_coord);
+                    v12 = int(add_c_vertex(grid_coord));
                     add_triangle(grid_coord, tiling6_1_2[config], 9,
                                  v12);  // 6.1.2
                 }
@@ -511,18 +511,18 @@ void MarchingCubes::ProcessCube(const glm::ivec3 &grid_coord, uint8_t lut_entry,
                     add_triangle(grid_coord, tiling7_2[config][1], 5);
                     break;
                 case 3:
-                    v12 = add_c_vertex(grid_coord);
+                    v12 = int(add_c_vertex(grid_coord));
                     add_triangle(grid_coord, tiling7_3[config][0], 9, v12);
                     break;
                 case 4:
                     add_triangle(grid_coord, tiling7_2[config][2], 5);
                     break;
                 case 5:
-                    v12 = add_c_vertex(grid_coord);
+                    v12 = int(add_c_vertex(grid_coord));
                     add_triangle(grid_coord, tiling7_3[config][1], 9, v12);
                     break;
                 case 6:
-                    v12 = add_c_vertex(grid_coord);
+                    v12 = int(add_c_vertex(grid_coord));
                     add_triangle(grid_coord, tiling7_3[config][2], 9, v12);
                     break;
                 case 7:
@@ -549,14 +549,14 @@ void MarchingCubes::ProcessCube(const glm::ivec3 &grid_coord, uint8_t lut_entry,
                     add_triangle(grid_coord, tiling10_1_1_[config],
                                  4);  // 10.1.1
                 else {
-                    v12 = add_c_vertex(grid_coord);
+                    v12 = int(add_c_vertex(grid_coord));
                     add_triangle(grid_coord, tiling10_2[config], 8,
                                  v12);  // 10.2
                 }
             }
             else {
                 if (test_face(test10[config][1], cube)) {
-                    v12 = add_c_vertex(grid_coord);
+                    v12 = int(add_c_vertex(grid_coord));
                     add_triangle(grid_coord, tiling10_2_[config], 8,
                                  v12);  // 10.2
                 }
@@ -582,14 +582,14 @@ void MarchingCubes::ProcessCube(const glm::ivec3 &grid_coord, uint8_t lut_entry,
                     add_triangle(grid_coord, tiling12_1_1_[config],
                                  4);  // 12.1.1
                 else {
-                    v12 = add_c_vertex(grid_coord);
+                    v12 = int(add_c_vertex(grid_coord));
                     add_triangle(grid_coord, tiling12_2[config], 8,
                                  v12);  // 12.2
                 }
             }
             else {
                 if (test_face(test12[config][1], cube)) {
-                    v12 = add_c_vertex(grid_coord);
+                    v12 = int(add_c_vertex(grid_coord));
                     add_triangle(grid_coord, tiling12_2_[config], 8,
                                  v12);  // 12.2
                 }
@@ -636,21 +636,21 @@ void MarchingCubes::add_triangle(const glm::ivec3 &grid_coord, const char *trig,
                 case 2:
                 case 4:
                 case 6:
-                    tv[t] = get_x_vert(grid_coord + offset);
+                    tv[t] = int(get_x_vert(grid_coord + offset));
                     break;
 
                 case 1:
                 case 3:
                 case 5:
                 case 7:
-                    tv[t] = get_y_vert(grid_coord + offset);
+                    tv[t] = int(get_y_vert(grid_coord + offset));
                     break;
 
                 case 8:
                 case 9:
                 case 10:
                 case 11:
-                    tv[t] = get_z_vert(grid_coord + offset);
+                    tv[t] = int(get_z_vert(grid_coord + offset));
                     break;
 
                 case 12:
@@ -698,8 +698,8 @@ float MarchingCubes::get_grad(const glm::ivec3 &grid_coord, int dim)
 //_____________________________________________________________________________
 // Adding vertices
 
-int MarchingCubes::add_vertex(const glm::ivec3 &grid_coord,
-                              const glm::ivec3 &dir, int corner, float *cube)
+size_t MarchingCubes::add_vertex(const glm::ivec3 &grid_coord,
+                                 const glm::ivec3 &dir, int corner, float *cube)
 {
     auto u = cube[0] / (cube[0] - cube[corner]);
     auto pos = glm::vec3(grid_coord) + glm::vec3(dir) * u;
@@ -714,7 +714,7 @@ int MarchingCubes::add_vertex(const glm::ivec3 &grid_coord,
     return vertices_.size() - 1;
 }
 
-int MarchingCubes::add_c_vertex(const glm::ivec3 &grid_coord)
+size_t MarchingCubes::add_c_vertex(const glm::ivec3 &grid_coord)
 //-----------------------------------------------------------------------------
 {
     auto u = float{0.f};

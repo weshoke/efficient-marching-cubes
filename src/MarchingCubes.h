@@ -14,6 +14,7 @@
 
 #include <vector>
 #include <unordered_map>
+#include "glm/glm.hpp"
 
 struct Vertex {
     glm::vec3 pos;
@@ -31,8 +32,8 @@ class MarchingCubes {
     MarchingCubes(const glm::ivec3 &size,
                   Algorithm algorithm = OriginalMarchingCubes);
 
-    inline const int nverts() const { return vertices_.size(); }
-    inline const int ntrigs() const { return triangles_.size(); }
+    inline const size_t nverts() const { return vertices_.size(); }
+    inline const size_t ntrigs() const { return triangles_.size(); }
     inline const Vertex &vert(int i) const { return vertices_[i]; }
     inline const Triangle &trig(int i) const { return triangles_[i]; }
     inline Vertex *vertices() { return vertices_.data(); }
@@ -50,6 +51,10 @@ class MarchingCubes {
     {
         data_[index(grid_coord)] = val;
     }
+    inline void set_data(const float val, int i, int j, int k)
+    {
+        data_[index(glm::ivec3(i, j, k))] = val;
+    }
 
    protected:
     /** tesselates one cube */
@@ -61,7 +66,8 @@ class MarchingCubes {
 
     //-----------------------------------------------------------------------------
     // Operations
-   protected:
+    // protected:
+   public:
     // computes almost all the vertices of the mesh by interpolation along the
     // cubes edges
     void compute_intersection_points(float iso);
@@ -75,10 +81,10 @@ class MarchingCubes {
     void add_triangle(const glm::ivec3 &grid_coord, const char *trig, char n,
                       int v12 = -1);
 
-    int add_vertex(const glm::ivec3 &grid_coord, const glm::ivec3 &dir,
-                   int corner, float *cube);
+    size_t add_vertex(const glm::ivec3 &grid_coord, const glm::ivec3 &dir,
+                      int corner, float *cube);
     /** adds a vertex inside the current cube */
-    int add_c_vertex(const glm::ivec3 &grid_coord);
+    size_t add_c_vertex(const glm::ivec3 &grid_coord);
 
     // gradient of the implicit function at the lower vertex of the specified
     // cube
@@ -99,7 +105,7 @@ class MarchingCubes {
     inline int get_x_vert(const glm::ivec3 &grid_coord) const
     {
         auto iter = x_verts_.find(index(grid_coord));
-        return (iter == x_verts_.end()) ? -1 : iter->second;
+        return (iter == x_verts_.end()) ? -1 : int(iter->second);
     }
 
     // accesses the pre-computed vertex index on the lower longitudinal edge of
@@ -107,7 +113,7 @@ class MarchingCubes {
     inline int get_y_vert(const glm::ivec3 &grid_coord) const
     {
         auto iter = y_verts_.find(index(grid_coord));
-        return (iter == y_verts_.end()) ? -1 : iter->second;
+        return (iter == y_verts_.end()) ? -1 : int(iter->second);
     }
 
     // accesses the pre-computed vertex index on the lower vertical edge of a
@@ -115,30 +121,33 @@ class MarchingCubes {
     inline int get_z_vert(const glm::ivec3 &grid_coord) const
     {
         auto iter = z_verts_.find(index(grid_coord));
-        return (iter == z_verts_.end()) ? -1 : iter->second;
+        return (iter == z_verts_.end()) ? -1 : int(iter->second);
     }
 
     // sets the pre-computed vertex index on the lower horizontal edge of a
     // specific cube
-    inline void set_x_vert(const int val, const glm::ivec3 &grid_coord)
+    inline void set_x_vert(const size_t val, const glm::ivec3 &grid_coord)
     {
         x_verts_[index(grid_coord)] = val;
     }
 
     // sets the pre-computed vertex index on the lower longitudinal edge of a
     // specific cube
-    inline void set_y_vert(const int val, const glm::ivec3 &grid_coord)
+    inline void set_y_vert(const size_t val, const glm::ivec3 &grid_coord)
     {
         y_verts_[index(grid_coord)] = val;
     }
 
     // sets the pre-computed vertex index on the lower vertical edge of a
     // specific cube
-    inline void set_z_vert(const int val, const glm::ivec3 &grid_coord)
+    inline void set_z_vert(const size_t val, const glm::ivec3 &grid_coord)
     {
         z_verts_[index(grid_coord)] = val;
     }
 
+    const std::unordered_map<int, size_t> x_verts() const { return x_verts_; }
+    const std::unordered_map<int, size_t> y_verts() const { return y_verts_; }
+    const std::unordered_map<int, size_t> z_verts() const { return z_verts_; }
     //-----------------------------------------------------------------------------
     // Elements
    protected:
@@ -146,9 +155,9 @@ class MarchingCubes {
     glm::ivec3 size_;
     std::vector<float> data_;
 
-    std::unordered_map<int, int> x_verts_;
-    std::unordered_map<int, int> y_verts_;
-    std::unordered_map<int, int> z_verts_;
+    std::unordered_map<int, size_t> x_verts_;
+    std::unordered_map<int, size_t> y_verts_;
+    std::unordered_map<int, size_t> z_verts_;
 
     std::vector<Vertex> vertices_;
     std::vector<Triangle> triangles_;
