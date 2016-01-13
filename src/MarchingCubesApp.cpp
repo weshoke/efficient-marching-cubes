@@ -66,7 +66,7 @@ void MarchingCubesApp::setup()
     }
 
     auto mesh =
-        gl::VboMesh::create(verts.size(), GL_LINES,
+        gl::VboMesh::create(verts.size(), GL_TRIANGLES,
                             {gl::VboMesh::Layout().attrib(geom::POSITION, 3)});
     mesh->bufferAttrib(geom::POSITION, verts);
     auto shader = LoadShader("pass", false);

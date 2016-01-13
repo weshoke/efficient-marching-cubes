@@ -19,12 +19,6 @@
 #include "fparser.h"
 #include "glui_defs.h"
 
-//_____________________________________________________________________________
-// declarations of this file
-
-// isovalue defining the isosurface
-float isoval = 0.0f;
-
 // original/topological MC switch
 int originalMC = 0;
 
@@ -74,18 +68,7 @@ const char *fun_def[NFUNS] = {
 // chosen implicit function
 int curr_string = -1;
 
-// cube data
-float v[8];
-
-// loaded iso grid
-FILE *isofile;
-
-// loaded CSG tree
-CSG_Node *csg_root;
-
-//-----------------------------------------------------------------------------
-
-bool run(MarchingCubes &mc)
+bool run(MarchingCubes &mc, float isoval)
 {
     strcpy(formula, fun_def[9]);
     if (strlen(formula) <= 0) return false;
@@ -98,26 +81,20 @@ bool run(MarchingCubes &mc)
         return false;
     }
 
-    // Fills data structure
-    int i, j, k;
-    float val[5], w;
     float rx = (xmax - xmin) / (mc.size().x - 1);
     float ry = (ymax - ymin) / (mc.size().y - 1);
     float rz = (zmax - zmin) / (mc.size().z - 1);
     glm::vec3 min_pos(xmin, ymin, zmin);
     glm::vec3 range(rx, ry, rz);
-    for (i = 0; i < mc.size().x; i++) {
+    for (int i = 0; i < mc.size().x; i++) {
+        float val[5];
         val[X] = (float)i * rx + xmin;
-        for (j = 0; j < mc.size().y; j++) {
+        for (int j = 0; j < mc.size().y; j++) {
             val[Y] = (float)j * ry + ymin;
-            for (k = 0; k < mc.size().z; k++) {
+            for (int k = 0; k < mc.size().z; k++) {
                 val[Z] = (float)k * rz + zmin;
 
-                if (csg_root) {
-                    val[3] = csg_root->eval(val[X], val[Y], val[Z]);
-                }
-
-                w = fparser.Eval(val) - isoval;
+                auto w = fparser.Eval(val) - isoval;
                 mc.set_data(w, glm::ivec3(i, j, k));
             }
         }
@@ -128,7 +105,7 @@ bool run(MarchingCubes &mc)
     mc.run();
 
     // Rescale positions
-    for (i = 0; i < mc.nverts(); ++i) {
+    for (int i = 0; i < mc.nverts(); ++i) {
         Vertex &v = mc.vertices()[i];
         v.pos = range * v.pos + min_pos;
         v.n = glm::normalize(v.n);
