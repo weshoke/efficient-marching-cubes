@@ -22,6 +22,7 @@ class MarchingCubesApp : public App {
     CameraPersp camera;
     CameraUi camUi;
     std::vector<gl::BatchRef> batches;
+    gl::GlslProgRef wireframe_shader;
 };
 
 gl::GlslProgRef LoadShader(const std::string &name,
@@ -69,8 +70,10 @@ void MarchingCubesApp::setup()
         gl::VboMesh::create(verts.size(), GL_TRIANGLES,
                             {gl::VboMesh::Layout().attrib(geom::POSITION, 3)});
     mesh->bufferAttrib(geom::POSITION, verts);
-    auto shader = LoadShader("pass", false);
-    batches.push_back(gl::Batch::create(mesh, shader));
+    // auto shader = LoadShader("pass", false);
+    wireframe_shader = LoadShader("wireframe", true);
+    wireframe_shader->uniform("uBrightness", 1.f);
+    batches.push_back(gl::Batch::create(mesh, wireframe_shader));
 }
 
 void MarchingCubesApp::mouseDown(MouseEvent event) { camUi.mouseDown(event); }
@@ -78,6 +81,8 @@ void MarchingCubesApp::mouseDrag(MouseEvent event) { camUi.mouseDrag(event); }
 void MarchingCubesApp::resize()
 {
     camera.setAspectRatio(getWindowAspectRatio());
+    wireframe_shader->uniform("uViewportSize",
+                              glm::vec2(toPixels(getWindowSize())));
 }
 
 void MarchingCubesApp::update() {}
@@ -90,7 +95,7 @@ void MarchingCubesApp::draw()
     gl::clear(Color(0.93, 0.93, 0.93));
     gl::setMatrices(camera);
 
-    gl::color(1., 0., 0.);
+    gl::color(0.124 * 0.7, 0.37, 0.36);
     for (auto &batch : batches) {
         batch->draw();
     }

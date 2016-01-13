@@ -23,6 +23,7 @@
 		A89BCD9F1C42D520007737A3 /* MarchingCubes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A89BCD9C1C42D520007737A3 /* MarchingCubes.cpp */; };
 		A89BCDA51C42D82C007737A3 /* fparser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A89BCDA31C42D82C007737A3 /* fparser.cpp */; };
 		A89BCDA71C42DE6C007737A3 /* glui_mc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A89BCDA61C42DE6C007737A3 /* glui_mc.cpp */; };
+		A89BCDAA1C45F965007737A3 /* assets in Resources */ = {isa = PBXBuildFile; fileRef = A89BCDA91C45F965007737A3 /* assets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -50,6 +51,7 @@
 		A89BCDA41C42D82C007737A3 /* fparser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = fparser.h; path = ../src/fparser.h; sourceTree = "<group>"; };
 		A89BCDA61C42DE6C007737A3 /* glui_mc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = glui_mc.cpp; path = ../src/glui_mc.cpp; sourceTree = "<group>"; };
 		A89BCDA81C42DE80007737A3 /* glui_defs.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = glui_defs.h; path = ../src/glui_defs.h; sourceTree = "<group>"; };
+		A89BCDA91C45F965007737A3 /* assets */ = {isa = PBXFileReference; lastKnownFileType = folder; name = assets; path = ../assets; sourceTree = "<group>"; };
 		C6AEE4F60DE44BF4AD7CF914 /* MarchingCubes_Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; path = MarchingCubes_Prefix.pch; sourceTree = "<group>"; };
 		F7F4D3FFFDC94DED9ABC60A0 /* Resources.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Resources.h; path = ../include/Resources.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -136,6 +138,7 @@
 		29B97314FDCFA39411CA2CEA /* MarchingCubes */ = {
 			isa = PBXGroup;
 			children = (
+				A89BCDA91C45F965007737A3 /* assets */,
 				01B97315FEAEA392516A2CEA /* Blocks */,
 				29B97315FDCFA39411CA2CEA /* Headers */,
 				080E96DDFE201D6D7F000001 /* Source */,
@@ -226,6 +229,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				88C551093F4D42A8B7F48D79 /* CinderApp.icns in Resources */,
+				A89BCDAA1C45F965007737A3 /* assets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
