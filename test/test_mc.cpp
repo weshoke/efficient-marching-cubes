@@ -87,15 +87,10 @@ void TestMarchingCubes(lest::env &lest_env, int size, F f)
     }
 }
 
-const lest::test specification[] = {
-    CASE("Empty string has length zero (succeed)"){
-        EXPECT(0 == std::string().length());
-EXPECT(0 == std::string("").length());
-}
-, CASE("Test MC")
-{
-    auto size = int{50};
+const lest::test specification[] = {CASE("Test MC"){for (auto size
+                                                         : {10, 25, 50, 100}){
     TestMarchingCubes(lest_env, size, SphereDistanceField);
+}
 }
 }
 ;
