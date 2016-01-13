@@ -95,7 +95,9 @@ void MarchingCubesApp::draw()
     gl::clear(Color(0.93, 0.93, 0.93));
     gl::setMatrices(camera);
 
-    gl::color(0.124 * 0.7, 0.37, 0.36);
+    // gl::color(0.124 * 0.7, 0.37, 0.36);
+    // gl::color(0.93, 0.93, 0.93);
+    gl::color(0.98, 0.98, 0.98);
     for (auto &batch : batches) {
         batch->draw();
     }

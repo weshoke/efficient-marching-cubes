@@ -13,7 +13,8 @@ void main() {
 
 	// blend between edge color and face color
 	vec3 vFaceColor = vColor.rgb;
-	vec3 vEdgeColor = vec3(.45, .8, .8);
+	//vec3 vEdgeColor = vec3(.45, .8, .8);
+	vec3 vEdgeColor = vec3(0.2);
 
 	fragColor.rgb = mix( vFaceColor, vEdgeColor, fEdgeIntensity ) * uBrightness;
 	fragColor.a = 1.;
