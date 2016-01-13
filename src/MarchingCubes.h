@@ -31,21 +31,13 @@ class MarchingCubes {
     MarchingCubes(const glm::ivec3 &size,
                   Algorithm algorithm = OriginalMarchingCubes);
 
-    /** accesses the number of vertices of the generated mesh */
     inline const int nverts() const { return vertices_.size(); }
-    /** accesses the number of triangles of the generated mesh */
     inline const int ntrigs() const { return triangles_.size(); }
-    /** accesses a specific vertex of the generated mesh */
-
     inline const Vertex &vert(int i) const { return vertices_[i]; }
     inline const Triangle &trig(int i) const { return triangles_[i]; }
-    /** accesses the vertex buffer of the generated mesh */
     inline Vertex *vertices() { return vertices_.data(); }
-    /** accesses the triangle buffer of the generated mesh */
     inline Triangle *triangles() { return triangles_.data(); }
     glm::ivec3 size() const { return size_; }
-    // selects wether the algorithm will use the enhanced topologically
-    // controlled lookup table or the original MarchingCubes
     inline void SetAlgorithm(Algorithm algorithm) { algorithm_ = algorithm; }
     void Setup();
     void run(float iso = 0.f);

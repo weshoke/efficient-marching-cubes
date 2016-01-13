@@ -9,45 +9,43 @@
 #ifndef ONCE_FPARSER_H_
 #define ONCE_FPARSER_H_
 
-#if defined(WIN32) && !defined(__CYGWIN__)
-#pragma warning(disable:4786)
-#endif // WIN32
-
 #include <string>
 #include <map>
 #include <vector>
 #include <iostream>
 
-class FunctionParser
-{
-public:
-    enum ParseErrorType
-    {
-        NO_SYNTAX_ERROR=-1,
-        SYNTAX_ERROR=0, MISM_PARENTH, MISSING_PARENTH, EMPTY_PARENTH,
-        EXPECT_OPERATOR, OUT_OF_MEMORY, UNEXPECTED_ERROR, INVALID_VARS,
-        ILL_PARAMS_AMOUNT, PREMATURE_EOS, EXPECT_PARENTH_FUNC
+class FunctionParser {
+   public:
+    enum ParseErrorType {
+        NO_SYNTAX_ERROR = -1,
+        SYNTAX_ERROR = 0,
+        MISM_PARENTH,
+        MISSING_PARENTH,
+        EMPTY_PARENTH,
+        EXPECT_OPERATOR,
+        OUT_OF_MEMORY,
+        UNEXPECTED_ERROR,
+        INVALID_VARS,
+        ILL_PARAMS_AMOUNT,
+        PREMATURE_EOS,
+        EXPECT_PARENTH_FUNC
     };
-
 
     int Parse(const std::string& Function, const std::string& Vars,
               bool useDegrees = false);
     const char* ErrorMsg() const;
     inline ParseErrorType GetParseErrorType() const { return parseErrorType; }
-
     float Eval(const float* Vars);
     inline int EvalError() const { return evalErrorType; }
-
     bool AddConstant(const std::string& name, float value);
 
     typedef float (*FunctionPtr)(const float*);
 
-    bool AddFunction(const std::string& name,
-                     FunctionPtr, unsigned paramsAmount);
+    bool AddFunction(const std::string& name, FunctionPtr,
+                     unsigned paramsAmount);
     bool AddFunction(const std::string& name, FunctionParser&);
 
     void Optimize();
-
 
     FunctionParser();
     ~FunctionParser();
@@ -57,26 +55,22 @@ public:
     FunctionParser(const FunctionParser&);
     FunctionParser& operator=(const FunctionParser&);
 
-
     // For debugging purposes only:
     void PrintByteCode(std::ostream& dest) const;
 
-public:
-  bool *using_var;
+   public:
+    bool* using_var;
 
+    //========================================================================
+   private:
+    //========================================================================
 
-
-//========================================================================
-private:
-//========================================================================
-
-// Private data:
-// ------------
+    // Private data:
+    // ------------
     ParseErrorType parseErrorType;
     int evalErrorType;
 
-    struct Data
-    {
+    struct Data {
         unsigned referenceCounter;
 
         int varAmount;
@@ -89,10 +83,10 @@ private:
         ConstMap_t Constants;
 
         VarMap_t FuncPtrNames;
-        struct FuncPtrData
-        {
-            FunctionPtr ptr; unsigned params;
-            FuncPtrData(FunctionPtr p, unsigned par): ptr(p), params(par) {}
+        struct FuncPtrData {
+            FunctionPtr ptr;
+            unsigned params;
+            FuncPtrData(FunctionPtr p, unsigned par) : ptr(p), params(par) {}
         };
         std::vector<FuncPtrData> FuncPtrs;
 
@@ -110,7 +104,7 @@ private:
         ~Data();
         Data(const Data&);
 
-        Data& operator=(const Data&); // not implemented on purpose
+        Data& operator=(const Data&);  // not implemented on purpose
     };
 
     Data* data;
@@ -120,11 +114,9 @@ private:
     std::vector<unsigned>* tempByteCode;
     std::vector<float>* tempImmed;
 
-
-// Private methods:
-// ---------------
+    // Private methods:
+    // ---------------
     inline void copyOnWrite();
-
 
     bool checkRecursiveLinking(const FunctionParser*) const;
 
@@ -148,8 +140,7 @@ private:
     int CompileComparison(const char*, int);
     int CompileAnd(const char*, int);
     int CompileOr(const char*, int);
-    int CompileExpression(const char*, int, bool=false);
-
+    int CompileExpression(const char*, int, bool = false);
 
     void MakeTree(void*) const;
 };

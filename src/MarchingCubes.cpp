@@ -24,8 +24,6 @@
 bool test_interior(int8_t s, uint8_t config_case, uint8_t config,
                    uint8_t subconfig, const float *cube);
 
-//_____________________________________________________________________________
-// print cube for debug
 void print_cube(const float *cube)
 {
     std::cout << "\t";
@@ -34,28 +32,21 @@ void print_cube(const float *cube)
     }
     std::cout << "\n";
 }
-//_____________________________________________________________________________
 
-//_____________________________________________________________________________
-// Constructor
 MarchingCubes::MarchingCubes(const glm::ivec3 &size, Algorithm algorithm)
 : algorithm_(algorithm), size_(size)
 {
 }
-//_____________________________________________________________________________
 
-//_____________________________________________________________________________
-// main algorithm
 void MarchingCubes::run(float iso)
-//-----------------------------------------------------------------------------
 {
     clock_t time = clock();
 
     compute_intersection_points(iso);
 
-    for (int k = 0; k < size_.z - 1; k++) {
-        for (int j = 0; j < size_.y - 1; j++) {
-            for (int i = 0; i < size_.x - 1; i++) {
+    for (int k = 0; k < size_.z - 1; ++k) {
+        for (int j = 0; j < size_.y - 1; ++j) {
+            for (int i = 0; i < size_.x - 1; ++i) {
                 float cube[8];
                 // cube sign representation in [0..255]
                 auto lut_entry = uint8_t{0};
@@ -174,9 +165,7 @@ void MarchingCubes::compute_intersection_points(float iso)
                 }
             }
 }
-//_____________________________________________________________________________
 
-//_____________________________________________________________________________
 // tests if the components of the tesselation of the cube should be connected by
 // the interior of an ambiguous face
 // Test a face
@@ -201,7 +190,6 @@ bool test_face(int8_t face, float *cube)
     return face * A * (A * C - B * D) >= 0.f;
 }
 
-//_____________________________________________________________________________
 // tests if the components of the tesselation of the cube should be connected
 // through the interior of the cube
 // Test the interior of a cube
@@ -209,7 +197,6 @@ bool test_face(int8_t face, float *cube)
 // if s ==-7, return false if the interior is empty
 bool test_interior(int8_t s, uint8_t config_case, uint8_t config,
                    uint8_t subconfig, const float *cube)
-//-----------------------------------------------------------------------------
 {
     static const uint8_t edge_vertices_t[12][2] = {
         {0, 1}, {1, 2}, {2, 3}, {3, 0}, {4, 5}, {5, 6},
