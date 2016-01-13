@@ -87,13 +87,15 @@ void TestMarchingCubes(lest::env &lest_env, int size, F f)
     }
 }
 
-const lest::test specification[] = {CASE("Test MC"){for (auto size
-                                                         : {10, 25, 50, 100}){
-    TestMarchingCubes(lest_env, size, SphereDistanceField);
-}
-}
-}
-;
+// clang-format off
+const lest::test specification[] = {
+	CASE("Test MC") {
+		for (auto size : {10, 25, 50, 100}) {
+			TestMarchingCubes(lest_env, size, SphereDistanceField);
+		}
+	}
+};
+// clang-format on
 
 int main(int argc, char *argv[])
 {
