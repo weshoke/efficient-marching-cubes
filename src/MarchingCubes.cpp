@@ -119,20 +119,20 @@ void MarchingCubes::init_all ()
 void MarchingCubes::compute_intersection_points( real iso )
 //-----------------------------------------------------------------------------
 {
-	for(int k=0; k < _size_z; ++k) {
-		for(int j=0; j < _size_y; ++j) {
-			for(int i=0; i < _size_x; ++i) {
-				auto grid_coord = glm::ivec3(i, j, k);
+	for(int _k=0; _k < _size_z; ++_k) {
+		for(int _j=0; _j < _size_y; ++_j) {
+			for(int _i=0; _i < _size_x; ++_i) {
+				auto grid_coord = glm::ivec3(_i, _j, _k);
 			
 				float cube[8];
 				cube[0] = get_data(grid_coord) - iso ;
-				if( _i < _size_x - 1 ) cube[1] = get_data(glm::ivec3(i+1, j, k)) - iso ;
+				if( _i < _size_x - 1 ) cube[1] = get_data(glm::ivec3(_i+1, _j, _k)) - iso ;
 				else                   cube[1] = cube[0] ;
 
-				if( _j < _size_y - 1 ) cube[3] = get_data(glm::ivec3(i, j+1, k)) - iso ;
+				if( _j < _size_y - 1 ) cube[3] = get_data(glm::ivec3(_i, _j+1, _k)) - iso ;
 				else                   cube[3] = cube[0] ;
 
-				if( _k < _size_z - 1 ) cube[4] = get_data(glm::ivec3(i, j ,k+1)) - iso ;
+				if( _k < _size_z - 1 ) cube[4] = get_data(glm::ivec3(_i, _j ,_k+1)) - iso ;
 				else                   cube[4] = cube[0] ;
 
 				if( std::abs( cube[0] ) < std::numeric_limits<float>::epsilon() ) cube[0] = std::numeric_limits<float>::epsilon() ;
